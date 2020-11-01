@@ -1,0 +1,63 @@
+@border-color: #4f5467;
+@bg-color: #353c48;
+.userManage {
+  width: 100%;
+  // height: calc(100% - 56px);
+  min-height: calc(100% - 56px);
+  padding: 25px;
+  box-sizing: border-box;
+
+  .title {
+    display:flex;
+    justify-content: flex-end;
+    margin-bottom:15px;
+  }
+
+  /deep/.el-table {
+    background: @bg-color;
+    border-color: @border-color;
+    tr {
+      color: #ced4da;
+
+      th {
+        background: @bg-color;
+        border-color: @border-color;
+      }
+      td {
+        background: @bg-color;
+        border-color: @border-color;
+        .el-icon-edit {
+          margin-left:10px;
+          display:none;
+        }
+      }
+      td:hover {
+        .el-icon-edit {
+          display:inline;
+        }
+      }
+    }
+  }
+  .el-table::before {
+    background: @border-color;
+  }
+  .el-table::after {
+    background: @border-color;
+  }
+  .pageBox {
+    width: 100%;
+    margin-top: 5px;
+    /deep/.el-pagination {
+      float: right;
+      .btn-prev {
+        background: #303641;
+      }
+      .btn-next {
+        background: #303641;
+      }
+      .el-input__inner {
+        background: #303641;
+      }
+    }
+  }
+} 
