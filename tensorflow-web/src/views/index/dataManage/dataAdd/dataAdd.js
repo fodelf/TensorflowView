@@ -4,16 +4,16 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-09-24 09:14:42
+ * @LastEditTime: 2020-11-02 09:27:22
  */
 import {
   getServiceType,
   addService,
   serviceDetail,
   updateService
-} from '@/api/index/projectManage.js'
+} from '@/api/index/dataManage.js'
 export default {
-  name: 'projectAdd',
+  name: 'dataAdd',
   data() {
     const validateEn = (rule, value, callback) => {
       if (value === '') {
@@ -152,6 +152,9 @@ export default {
     }
   },
   methods:{
+    getFile(res){
+      debugger
+    },
     handleClose(tag) {
       if(this.$route.query.type =='check'){
         return
@@ -171,19 +174,6 @@ export default {
       }
       this.inputVisible = false;
       this.inputValue = '';
-    },
-    addRule() {
-      this.ruleForm.serviceRules.push(
-        {
-          interceptLoc:'',
-          locationReset:'',
-          pathReWriteBefore:"",
-          pathReWriteUrl:""
-        }
-      );
-    },
-    deleteRule(index) {
-      this.ruleForm.serviceRules.splice(index,1)
     },
     cancel() {
       this.$router.push({

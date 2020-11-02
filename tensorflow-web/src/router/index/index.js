@@ -3,8 +3,8 @@
  * @Author: 吴文周
  * @Github: https://github.com/fodelf
  * @Date: 2019-06-05 18:57:53
- * @LastEditors: pym
- * @LastEditTime: 2020-09-06 21:47:43
+ * @LastEditors: 吴文周
+ * @LastEditTime: 2020-11-02 09:25:35
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -15,6 +15,7 @@ const ProjectManage = () => import('@/views/index/projectManage/projectManage.vu
 const ProjectInit = () =>
   import('@/views/index/projectManage/projectInit/ProjectInit.vue')
 const ProjectAdd = () =>  import('@/views/index/projectManage/projectAdd/projectAdd.vue')
+const DataAdd = () =>  import('@/views/index/dataManage/dataAdd/dataAdd.vue')
 import serviceSet from '@/views/index/systemManage/serviceSet/serviceSet.vue'
 
 // const TerminalView = () => import('components/terminal/TerminalView.vue')
@@ -62,11 +63,11 @@ const vueRouter = new Router({
           }
         },
         {
-          path: 'projectAdd',
-          component: ProjectAdd,
-          name: 'projectAdd',
+          path: 'dataAdd',
+          component: DataAdd,
+          name: 'dataAdd',
           meta: {
-            title: '新增服务'
+            title: '新增数据源'
           }
         }
       ]

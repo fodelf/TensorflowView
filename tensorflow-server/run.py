@@ -55,15 +55,15 @@ def creatData():
     data = request_parse(request)
     print(data)
     session = Session()
-    file = File(dataName=data["dataName"], 
-            fileName=data["fileName"], 
+    file = File(dataName=data["dataName"],
+            fileName=data["fileName"],
             filePath=data["filePath"],
             fileSize =data["fileSize"])
-    session.add(file) 
-    session.commit()    
+    session.add(file)
+    session.commit()
     # session.add(ed_user)
     return jsonify(t)
-   
+
 # 查询数据源列表
 @app.route('/api/v1/data/dataList')
 def dataList():
@@ -74,7 +74,7 @@ def dataList():
     }
     return jsonify(t)
 
-@app.route('/upload', methods=['POST', 'GET'])
+@app.route('/api/v1/data/upload', methods=['POST', 'GET'])
 def upload():
     if request.method == 'POST':
         if 'file' not in request.files:

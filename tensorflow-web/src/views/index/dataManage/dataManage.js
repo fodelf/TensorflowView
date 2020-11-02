@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-09-10 16:20:48
+ * @LastEditTime: 2020-11-02 09:22:18
  */
 import menuList from 'components/menuList/menuList.vue'
 import tableBox from 'components/tableBox/tableBox.vue'
@@ -52,7 +52,7 @@ export default {
   methods: {
     addPro() {
       this.$router.push({
-        name:'projectAdd',
+        name:'dataAdd',
         query:{
           type:'add'
         }
