@@ -4,13 +4,13 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-02 09:28:30
+ * @LastEditTime: 2020-11-02 12:45:51
  */
 import request from '@/utils/request'
 
-export function getServiceList() {
+export function getDataType() {
   return request({
-    url: '/uiApi/v1/service/serviceList',
+    url: '/api/v1/data/getDataType',
     method: 'GET'
   })
 }
