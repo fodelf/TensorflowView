@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-02 12:45:51
+ * @LastEditTime: 2020-11-03 20:34:47
  */
 import request from '@/utils/request'
 
@@ -15,9 +15,9 @@ export function getDataType() {
   })
 }
 
-export function getServiceList() {
+export function getDataList() {
   return request({
-    url: '/uiApi/v1/service/serviceList',
+    url: '/api/v1/data/getDataList',
     method: 'GET'
   })
 }
@@ -27,9 +27,9 @@ export function getServiceType() {
     method: 'GET',
   })
 }
-export function addService(params) {
+export function createData(params) {
   return request({
-    url: '/uiApi/v1/service/addService',
+    url: '/api/v1/data/createData',
     method: 'POST',
     params: params
   })
@@ -40,9 +40,9 @@ export function serviceDetail(id) {
     method: 'GET'
   })
 }
-export function updateService(params) {
+export function train(params) {
   return request({
-    url: '/uiApi/v1/service/editService',
+    url: '/api/v1/data/train',
     method: 'POST',
     params: params
   })

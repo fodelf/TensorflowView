@@ -4,12 +4,12 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-03 19:47:07
+ * @LastEditTime: 2020-11-03 20:44:51
  */
 import {
-  getDataType,
-  createData
-  // dataDetail,
+  getDataList,
+  createData,
+  train
   // updatedata
 } from '@/api/index/dataManage.js'
 export default {
@@ -103,7 +103,8 @@ export default {
           {validator: validateCheckPath, trigger: 'blur' },
         ]
       },
-      serverList:[]
+      serverList:[],
+      src:''
     }
   },
   methods:{
@@ -130,7 +131,7 @@ export default {
       })
     },
     queryProjectType() {
-      getDataType().then(res=>{
+      getDataList().then(res=>{
         this.serverList = res || []
         try {
           this.form.dataType = this.serverList[0]['dataId']
@@ -142,6 +143,11 @@ export default {
         this.$router.push({
           name:'dataManage'
         })
+      })
+    },
+    train(){
+      train().then(res=>{
+        this.src = res
       })
     },
     initDetail() {

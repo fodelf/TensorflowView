@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import uuid
 Base = declarative_base()
 engine = create_engine('sqlite:///tensorflow.db',echo=True)
 Session = sessionmaker(bind=engine)
@@ -27,9 +28,13 @@ class File(Base):
     dataName = Column(String)
     fileName = Column(String)
     fileSize = Column(String)
-    # def __repr__(self):
-    #     return "<User(name='%s', fullname='%s', password='%s')>" % (
-    #         self.name, self.fullname, self.password)
+    dataType = Column(String)
+    def to_json(self):
+      dict = self.__dict__
+      if "_sa_instance_state" in dict:
+          del dict["_sa_instance_state"]
+      return dict
+
 class DataType(Base):
     __tablename__ = 'dataType'
     id = Column(Integer, primary_key=True)
@@ -45,3 +50,11 @@ def getDataTypes():
     session = Session()
     dataTypes = session.query(DataType).all()
     return dataTypes
+
+def getDataList():
+    session = Session()
+    Files = session.query(File).all()
+    result = []
+    for f in Files:
+        result.append(f.to_json())
+    return result

@@ -1,15 +1,16 @@
 from flask import Flask
 from flask import Flask, flash, request, redirect, url_for, jsonify,Response
 import time
+import random
+import string
 from werkzeug.utils import secure_filename
 import os
 import json
-import uuid
-# from model.database import *
 import model.database
-UPLOAD_FOLDER = 'static/uploads'
+import service.train
+UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
-app = Flask(__name__)
+app = Flask(__name__,static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = 'tensorflow'
 code = 200
@@ -35,16 +36,26 @@ def createData():
         'data':{}
     }
     data = request_parse(request)
-    print(data)
-    file = File(dataName=data["dataName"],
-            fileName=data["fileName"],
-            filePath=data["filePath"],
-            fileSize =data["fileSize"])
-    session = getSession()
+    file = model.database.File(dataName=data["dataName"],
+            dataType=data["dataType"],
+            filePath=data["filePath"])
+    session = model.database.Session()
     session.add(file)
     session.commit()
     # session.add(ed_user)
     return jsonify(t)
+
+# 查询数据源列表
+@app.route('/api/v1/data/train', methods=['POST'])
+def train():
+    data = request_parse(request)
+    service.train.train(),
+    res = {
+        'code': code,
+        'msg': msg,
+        'data':'http://127.0.0.1:9567/1.jpg'
+    }
+    return jsonify(res)
 
 # 查询数据源列表
 @app.route('/api/v1/data/dataList')
@@ -70,6 +81,18 @@ def getDataType():
     }
     return jsonify(res)
 
+# 查询数据源列表
+@app.route('/api/v1/data/getDataList')
+def getDataList():
+    result = model.database.getDataList()
+    res = {
+        'code': code,
+        'msg': msg,
+        'data':result
+    }
+    return jsonify(res)
+
+# 上传文件功能
 @app.route('/api/v1/data/upload', methods=['POST', 'GET'])
 def upload():
     if request.method == 'POST':
@@ -82,11 +105,17 @@ def upload():
             return 'No selected file'
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.mkdir(app.config['UPLOAD_FOLDER'])
+            mid =  ''.join(random.sample(['z','y','x','w','v','u','t','s','r','q','p','o','n','m','l','k','j','i','h','g','f','e','d','c','b','a'], 10))
+            print(mid)
+            print(filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'],filename)
             file.save(filepath)
             return filepath
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0',
+    app.run(debug=True,
+            # host='0.0.0.0',
             port='9567')
 

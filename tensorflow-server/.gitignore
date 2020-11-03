@@ -29,5 +29,6 @@ package-lock.json
 /app/sql/work.db
 /app/log
 /callbacks/*
+/dnn-selu-dropout-callbacks/*
 cheese.log
 __pycache__/

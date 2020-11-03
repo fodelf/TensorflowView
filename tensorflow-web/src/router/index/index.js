@@ -4,14 +4,15 @@
  * @Github: https://github.com/fodelf
  * @Date: 2019-06-05 18:57:53
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-02 09:25:35
+ * @LastEditTime: 2020-11-03 19:43:39
  */
 import Vue from 'vue'
 import Router from 'vue-router'
 import MainLayout from '@/views/layout/Layout.vue'
 const Home = () => import('@/views/index/home/Home.vue')
 const DataManage = () => import('@/views/index/dataManage/dataManage.vue')
-const ProjectManage = () => import('@/views/index/projectManage/projectManage.vue')
+const ModelManage = () => import('@/views/index/modelManage/modelManage.vue')
+const ModelAdd = () =>  import('@/views/index/modelManage/modelAdd/modelAdd.vue')
 const ProjectInit = () =>
   import('@/views/index/projectManage/projectInit/ProjectInit.vue')
 const ProjectAdd = () =>  import('@/views/index/projectManage/projectAdd/projectAdd.vue')
@@ -73,20 +74,20 @@ const vueRouter = new Router({
       ]
     },
     {
-      path: '/project',
-      name: 'project',
-      redirect: '/project/projectManage',
+      path: '/model',
+      name: 'model',
+      redirect: '/model/modelManage',
       component: MainLayout,
       meta: {
-        title: '服务管理'
+        title: '模型管理'
       },
       children: [
         {
-          path: 'projectManage',
-          component: ProjectManage,
-          name: 'projectManage',
+          path: 'modelManage',
+          component: ModelManage,
+          name: 'modelManage',
           meta: {
-            title: '服务列表'
+            title: '模型列表'
           }
         },
         {
@@ -98,11 +99,11 @@ const vueRouter = new Router({
           }
         },
         {
-          path: 'projectAdd',
-          component: ProjectAdd,
-          name: 'projectAdd',
+          path: 'modelAdd',
+          component: ModelAdd,
+          name: 'modelAdd',
           meta: {
-            title: '新增服务'
+            title: '新增模型'
           }
         }
       ]
