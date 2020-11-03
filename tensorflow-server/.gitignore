@@ -30,3 +30,4 @@ package-lock.json
 /app/log
 /callbacks/*
 cheese.log
+__pycache__/
