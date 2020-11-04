@@ -60,3 +60,35 @@ def train():
     ]
     history = model.fit(train_dataset, epochs=10,callbacks=callbacks)
     plot_learning_curves(history)
+
+def parseHeader(filePath):
+    df = pd.read_csv(filePath,header=0,nrows=1)
+    # print(df.dtypes)
+    # print(df)
+    # print(to_json(df.dtypes))
+    dtypesOrg = df.dtypes
+    dtypes = []
+    for i in dtypesOrg.keys():
+      child = {}
+      child['name'] =  str(i)
+      child['value'] = str(dtypesOrg[i])
+      dtypes.append(child)
+    data = []
+    for i in df.keys():
+      for k in df[i].keys():
+        print(str(k))
+        print(str(df[i][k]))
+      child = {}
+      child['name'] =  str(i)
+      child['value'] = str(df[i])
+      data.append(child)
+    res = {}
+    res['dtypes'] = dtypes
+    res['data'] = data
+    # print(res)
+    # res = {
+    #   'dtypes':to_json(df.dtypes),
+    #   'df':to_json(df)
+    # }
+    # print(res)
+    return res

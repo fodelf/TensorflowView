@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-03 20:34:47
+ * @LastEditTime: 2020-11-04 08:50:01
  */
 import request from '@/utils/request'
 
@@ -47,9 +47,9 @@ export function train(params) {
     params: params
   })
 }
-export function deleteService(params) {
+export function parseHeader(params) {
   return request({
-    url: '/uiApi/v1/service/deleteService',
+    url: '/api/v1/data/parseHeader',
     method: 'POST',
     params: params
   })

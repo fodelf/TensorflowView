@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 import os
 import json
 import model.database
-import service.train
+import service.utils
 UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 app = Flask(__name__,static_url_path='')
@@ -45,11 +45,25 @@ def createData():
     # session.add(ed_user)
     return jsonify(t)
 
+# 解析文件头
+@app.route('/api/v1/data/parseHeader', methods=['POST', 'GET'])
+def parseHeader():
+    data = request_parse(request)
+    print(data)
+    res = service.utils.parseHeader(data["filePath"])
+    t = {
+        'code': code,
+        'msg': msg,
+        'data':res
+    }
+    # session.add(ed_user)
+    return jsonify(t)
+
 # 查询数据源列表
 @app.route('/api/v1/data/train', methods=['POST'])
 def train():
     data = request_parse(request)
-    service.train.train(),
+    service.utils.train(),
     res = {
         'code': code,
         'msg': msg,

@@ -4,13 +4,13 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-03 20:44:51
+ * @LastEditTime: 2020-11-04 09:05:21
  */
 import {
   getDataList,
   createData,
-  train
-  // updatedata
+  train,
+  parseHeader
 } from '@/api/index/dataManage.js'
 export default {
   name: 'dataAdd',
@@ -104,26 +104,20 @@ export default {
         ]
       },
       serverList:[],
-      src:''
+      src:'',
+      dataList:[[{index:'类型'},'','','',''],[{index:'数据预览'},'','','','']],
+      headerList:[
+        { name: '首列', code: 'index' },
+        { name: '列一', code: 'dataName' },
+        { name: '列二', code: 'fileName' },
+        { name: '列三', code: 'fileType' },
+        { name: '列四', code: 'fileSize' }
+      ]
     }
   },
   methods:{
     getFile(res){
       this.form.filePath = res
-    },
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.ruleForm.dingdingList.push(inputValue);
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
     },
     cancel() {
       this.$router.push({
@@ -135,8 +129,23 @@ export default {
         this.serverList = res || []
         try {
           this.form.dataType = this.serverList[0]['dataId']
-        } catch (error) {}
+          this.parseHeader()
+        } catch (error) {
+          console.log(error)
+        }
       })
+    },
+    parseHeader(){
+      let selected = this.serverList.filter((item)=>{
+        return item.dataId == this.form.dataType
+      })
+      try {
+        parseHeader({filePath:selected[0]['filePath']}).then(res=>{
+          debugger
+        })
+      } catch (error) {
+        
+      }
     },
     save() {
       createData(this.form).then(res=>{
