@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-05 09:24:09
+ * @LastEditTime: 2020-11-05 12:53:09
 -->
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
@@ -29,6 +29,10 @@
     <el-tabs>
       <el-tab-pane label="数据预览"></el-tab-pane>
     </el-tabs>
+      <el-row>
+        <el-form-item label="设置输出列">
+        </el-form-item>
+      </el-row>
     <div  class="tableBox" ref="tableBox">
         <el-table :data="dataList"  border ref="mainTable">
           <el-table-column
@@ -36,6 +40,10 @@
             :key="item.code"
             :label="item.name"
           >
+            <template slot="header" slot-scope="scope">
+              <span>{{item.name}}</span>
+              <span style="margin-left: 10px;"><el-radio v-model="radio" :label='item.code'>{{item.radio}}</el-radio></span>
+            </template>
             <template slot-scope="scope">
               <!-- {{item.showValue}} -->
               {{ scope.row[item.code] || scope.row[item.code] ==0 ? scope.row[item.code] : '--' }}

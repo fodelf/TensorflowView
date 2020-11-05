@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-05 09:26:50
+ * @LastEditTime: 2020-11-05 12:52:47
  */
 import {
   getDataList,
@@ -112,7 +112,8 @@ export default {
         { name: '列二', code: 'fileName' },
         { name: '列三', code: 'fileType' },
         { name: '列四', code: 'fileSize' }
-      ]
+      ],
+      radio:''
     }
   },
   methods:{
@@ -146,6 +147,7 @@ export default {
           res.forEach((item,index)=>{
             lineOne[index] = item[index]
             lineTow[index] = item["type"]
+            item["radio"]=''
           })
           this.headerList = res;
           this.headerList.unshift({ name: '首列', code: 'index' });
