@@ -64,31 +64,23 @@ def train():
 def parseHeader(filePath):
     df = pd.read_csv(filePath,header=0,nrows=1)
     # print(df.dtypes)
-    # print(df)
-    # print(to_json(df.dtypes))
-    dtypesOrg = df.dtypes
-    dtypes = []
-    for i in dtypesOrg.keys():
+    # print(df.info()["Data"])
+    info = df.info()
+    print(df.values[0])
+    dtypes = df.dtypes
+    res = []
+    k = 0
+    for i in dtypes.keys():
       child = {}
+      typeString = str(dtypes[i])
+      if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
+          typeString ='数值'
+      if str(dtypes[i]) =="object":
+          typeString ='文本'
       child['name'] =  str(i)
-      child['value'] = str(dtypesOrg[i])
-      dtypes.append(child)
-    data = []
-    for i in df.keys():
-      for k in df[i].keys():
-        print(str(k))
-        print(str(df[i][k]))
-      child = {}
-      child['name'] =  str(i)
-      child['value'] = str(df[i])
-      data.append(child)
-    res = {}
-    res['dtypes'] = dtypes
-    res['data'] = data
-    # print(res)
-    # res = {
-    #   'dtypes':to_json(df.dtypes),
-    #   'df':to_json(df)
-    # }
-    # print(res)
+      child['code'] = k
+      child['type'] = typeString
+      child[str(k)] = df.values[0][k]
+      k = k + 1
+      res.append(child)
     return res

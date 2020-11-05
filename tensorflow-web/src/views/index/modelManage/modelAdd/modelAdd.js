@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-04 09:05:21
+ * @LastEditTime: 2020-11-05 09:26:50
  */
 import {
   getDataList,
@@ -105,7 +105,7 @@ export default {
       },
       serverList:[],
       src:'',
-      dataList:[[{index:'类型'},'','','',''],[{index:'数据预览'},'','','','']],
+      dataList:[{index:'类型',dataName:"xx"},{index:'类型',dataName:"xx"}],
       headerList:[
         { name: '首列', code: 'index' },
         { name: '列一', code: 'dataName' },
@@ -141,7 +141,15 @@ export default {
       })
       try {
         parseHeader({filePath:selected[0]['filePath']}).then(res=>{
-          debugger
+          let lineOne = {"index":"源数据"};
+          let lineTow = {"index":"数据类型"};
+          res.forEach((item,index)=>{
+            lineOne[index] = item[index]
+            lineTow[index] = item["type"]
+          })
+          this.headerList = res;
+          this.headerList.unshift({ name: '首列', code: 'index' });
+          this.dataList = [lineOne,lineTow];
         })
       } catch (error) {
         

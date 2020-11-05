@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-04 08:41:08
+ * @LastEditTime: 2020-11-05 09:24:09
 -->
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
@@ -37,7 +37,8 @@
             :label="item.name"
           >
             <template slot-scope="scope">
-              {{ scope.row[item.code] ? scope.row[item.code] : '--' }}
+              <!-- {{item.showValue}} -->
+              {{ scope.row[item.code] || scope.row[item.code] ==0 ? scope.row[item.code] : '--' }}
             </template>
           </el-table-column>
         </el-table>
