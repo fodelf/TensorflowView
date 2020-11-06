@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-05 12:53:09
+ * @LastEditTime: 2020-11-06 08:55:09
 -->
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
@@ -26,6 +26,20 @@
         </el-form-item>
       </el-col>
     </el-row>
+     <el-row :gutter=20>
+      <el-col :span='8'>
+        <el-form-item label="神经网络层数" prop='number'>
+          <el-input-number v-model="form.number" @change="handleChange" :min="2" :max="100000"></el-input-number>
+        </el-form-item>
+      </el-col>
+      <el-col :span='8'>
+        <el-form-item label="激活函数" prop='activeFuns'>
+          <el-select v-model="form.activeFunction" placeholder="激活函数">
+            <el-option v-for="item in activeFuns" :key='item.label' :label='item.label' :value='item.value'></el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+    </el-row>
     <el-tabs>
       <el-tab-pane label="数据预览"></el-tab-pane>
     </el-tabs>
@@ -42,7 +56,9 @@
           >
             <template slot="header" slot-scope="scope">
               <span>{{item.name}}</span>
-              <span style="margin-left: 10px;"><el-radio v-model="radio" :label='item.code'>{{item.radio}}</el-radio></span>
+              <span style="margin-left: 10px;">
+                <el-radio v-model="form.target" :label='item.name'>{{item.radio}}</el-radio>
+              </span>
             </template>
             <template slot-scope="scope">
               <!-- {{item.showValue}} -->
@@ -51,8 +67,22 @@
           </el-table-column>
         </el-table>
       </div>
+      <el-tabs>
+        <el-tab-pane label="评估模型"></el-tab-pane>
+      </el-tabs>
+      <el-row :gutter=20>
+         <el-col :span='8'>
+          <el-form-item label="预测准确率">
+          </el-form-item>
+         </el-col>
+         <el-col :span='8'>
+          <el-form-item label="损失值">
+          </el-form-item>
+         </el-col>
+      </el-row>
      <el-form-item>
         <el-button type="primary" @click="train" v-if="$route.query.type === 'add'">训练</el-button>
+        <el-button type="primary" @click="train" v-if="isTrain">验证</el-button>
         <el-button type="primary" @click="save" v-if="$route.query.type === 'add'">保存</el-button>
         <el-button type="primary" @click="updateRule" v-if="$route.query.type === 'edit'">保存</el-button>
         <el-button type='default' @click='cancel' v-if="$route.query.type != 'check'">取消</el-button>

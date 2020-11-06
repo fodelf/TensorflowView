@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-03 19:47:07
+ * @LastEditTime: 2020-11-06 08:36:51
  */
 import {
   getDataType,
@@ -82,8 +82,14 @@ export default {
       form: {
         dataName: '',
         dataType: '',
-        filePath:''
+        filePath:'',
+        activeFunction:'relu',
+        number:2
       },
+      activeFuns:[
+        {label: 'relu',value:'relu'},
+        {label: 'sigmoid',value:'sigmoid'},
+      ],
       dataRules:{
         dataName:[
           { required: true, validator: validateEn, trigger: 'blur' },

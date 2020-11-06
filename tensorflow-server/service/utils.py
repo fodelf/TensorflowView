@@ -37,13 +37,30 @@ def plot_learning_curves(history):
 # print("Predicted survival: {:.2%}".format(predictions[0][0]))
 # print(predictions)
 
-def train():
-    csv_file = tf.keras.utils.get_file('heart.csv', 'https://storage.googleapis.com/applied-dl/heart.csv')
-    df = pd.read_csv(csv_file)
-    df.head()
-    df['thal'] = pd.Categorical(df['thal'])
-    df['thal'] = df.thal.cat.codes
-    target = df.pop('target')
+def train(data):
+    df = pd.read_csv(data["filePath"])
+    df2 = pd.read_csv(data["filePath"])
+    df2['thal'] = df2['thal'].astype("category")
+    df2['thal'] = df2.thal.cat.codes
+    print(df2['thal'])
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    data1 = {
+        'thal':['fixed']
+    }
+    df1 = pd.DataFrame(data1,
+               columns=['thal'])
+    df1['thal'] = df1['thal'].astype("category")
+    df1['thal'] = df1['thal'].cat.codes
+    print(df1['thal'])
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    dtypes = df.dtypes
+    for i in dtypes.keys():
+      dtype = str(dtypes[i])
+      if dtype == "object":
+         key = str(i)
+         df[key] = pd.Categorical(df[key])
+         df[key] = df[key].cat.codes
+    target = df.pop(data['target'])
     dataset = tf.data.Dataset.from_tensor_slices((df.values, target.values))
     train_dataset = dataset.shuffle(len(df)).batch(1)
     model = get_compiled_model()
@@ -77,7 +94,7 @@ def parseHeader(filePath):
           typeString ='数值'
       if str(dtypes[i]) =="object":
           typeString ='文本'
-      child['name'] =  str(i)
+      child['name'] = str(i)
       child['code'] = k
       child['type'] = typeString
       child[str(k)] = df.values[0][k]

@@ -49,7 +49,6 @@ def createData():
 @app.route('/api/v1/data/parseHeader', methods=['POST', 'GET'])
 def parseHeader():
     data = request_parse(request)
-    print(data)
     res = service.utils.parseHeader(data["filePath"])
     t = {
         'code': code,
@@ -63,7 +62,7 @@ def parseHeader():
 @app.route('/api/v1/data/train', methods=['POST'])
 def train():
     data = request_parse(request)
-    service.utils.train(),
+    service.utils.train(data)
     res = {
         'code': code,
         'msg': msg,

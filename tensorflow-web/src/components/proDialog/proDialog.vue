@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-22 17:59:36
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-09-08 08:51:56
+ * @LastEditTime: 2020-11-06 08:45:30
  -->
 <template>
   <el-dialog
@@ -188,7 +188,7 @@ export default {
       this.proForm.decImg = response.resultEntity
     },
     show() {
-      this.title = this.$props.type == 'modify' ? '修改服务' : '新增服务'
+      this.title = this.$props.type == 'modify' ? '修改服务' : '新增模型'
       if (this.$props.type == 'modify') {
         this.proForm = this.$props.itemObj
       } else {

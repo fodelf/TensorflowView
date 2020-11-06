@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-04-04 09:49:32
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-09-10 09:07:57
+ * @LastEditTime: 2020-11-06 08:45:47
  -->
 <template>
   <div class="tabBread">
@@ -48,8 +48,8 @@ export default {
         this.currentTab ="查看服务"
         this.levelList[1].meta.title ="查看服务"
       }else if(this.$route.query.type =="add"){
-        this.currentTab ="新增服务"
-        this.levelList[1].meta.title ="新增服务"
+        this.currentTab ="新增模型"
+        this.levelList[1].meta.title ="新增模型"
       }else if (this.$route.query.type =="edit"){
         this.currentTab ="编辑服务"
         this.levelList[1].meta.title="编辑服务"

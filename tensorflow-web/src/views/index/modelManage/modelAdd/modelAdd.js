@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-05 12:52:47
+ * @LastEditTime: 2020-11-06 08:55:43
  */
 import {
   getDataList,
@@ -82,14 +82,28 @@ export default {
       form: {
         dataName: '',
         dataType: '',
-        filePath:''
+        filePath:'',
+        target:'',
+        activeFunction:'relu',
+        number:2
       },
+      isTrain:false,
+      activeFuns:[
+        {label: 'relu',value:'relu'},
+        {label: 'sigmoid',value:'sigmoid'},
+      ],
       dataRules:{
         dataName:[
           { required: true, validator: validateEn, trigger: 'blur' },
         ],
         dataType:[
           { required: true, message: '请选择服务类型', trigger: 'blur' },
+        ],
+        activeFuns:[
+          { required: true, validator: validateEn, trigger: 'blur' },
+        ],
+        number:[
+          { required: true, validator: validateEn, trigger: 'blur' },
         ]
       },
       rules:{
@@ -113,7 +127,6 @@ export default {
         { name: '列三', code: 'fileType' },
         { name: '列四', code: 'fileSize' }
       ],
-      radio:''
     }
   },
   methods:{
@@ -130,6 +143,7 @@ export default {
         this.serverList = res || []
         try {
           this.form.dataType = this.serverList[0]['dataId']
+          this.form.filePath = this.serverList[0]['filePath']
           this.parseHeader()
         } catch (error) {
           console.log(error)
@@ -137,11 +151,8 @@ export default {
       })
     },
     parseHeader(){
-      let selected = this.serverList.filter((item)=>{
-        return item.dataId == this.form.dataType
-      })
       try {
-        parseHeader({filePath:selected[0]['filePath']}).then(res=>{
+        parseHeader({filePath:this.form.filePath}).then(res=>{
           let lineOne = {"index":"源数据"};
           let lineTow = {"index":"数据类型"};
           res.forEach((item,index)=>{
@@ -153,9 +164,7 @@ export default {
           this.headerList.unshift({ name: '首列', code: 'index' });
           this.dataList = [lineOne,lineTow];
         })
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     },
     save() {
       createData(this.form).then(res=>{
@@ -165,7 +174,14 @@ export default {
       })
     },
     train(){
-      train().then(res=>{
+      if(!this.form.target){
+        this.$message({
+          message: '目标对象不能为空',
+          type: 'warning'
+        });
+        return
+      }
+      train(this.form).then(res=>{
         this.src = res
       })
     },
@@ -176,31 +192,6 @@ export default {
       })
     },
     updateRule() {
-      if(this.ruleForm.dataRules.length == 0){
-        this.$message({
-          message: '拦截规则不能为空',
-          type: 'warning'
-        });
-        return
-      }
-      this.$refs["ruleForm"].validate((valid) => {
-        if (valid) {
-          let params = JSON.parse(JSON.stringify(this.ruleForm))
-          params.dataPort = params.dataPort*1
-          params.dataLimit = params.dataLimit*1
-          params.dataBreak = params.dataBreak*1
-          params.useConsulPort = params.useConsulPort*1
-          params.useConsulInterval = params.useConsulInterval*1
-          params.useConsulTimeout = params.useConsulTimeout*1
-          updatedata(params).then(res=>{
-            this.$router.push({
-              name:'projectManage'
-            })
-          })
-        } else {
-          return false
-        }
-      })
     }
   },
   created() {
