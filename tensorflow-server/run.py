@@ -58,17 +58,30 @@ def parseHeader():
     # session.add(ed_user)
     return jsonify(t)
 
-# 查询数据源列表
+# 训练
 @app.route('/api/v1/data/train', methods=['POST'])
 def train():
     data = request_parse(request)
-    service.utils.train(data)
-    res = {
+    res = service.utils.train(data)
+    t = {
         'code': code,
         'msg': msg,
-        'data':'http://127.0.0.1:9567/1.jpg'
+        'data':res
     }
-    return jsonify(res)
+    return jsonify(t)
+
+# 预测试
+@app.route('/api/v1/data/test', methods=['POST'])
+def test():
+    data = request_parse(request)
+    res = service.utils.test(data)
+    # res['onehots'] = jsonify(res['onehots'])
+    t = {
+        'code': code,
+        'msg': msg,
+        'data':res
+    }
+    return jsonify(t)
 
 # 查询数据源列表
 @app.route('/api/v1/data/dataList')

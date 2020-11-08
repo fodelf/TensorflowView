@@ -1,9 +1,13 @@
+#!/usr/bin/python
+# -*- coding:utf8 -*-
+
 import pandas as pd
 import tensorflow as tf
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from tensorflow import keras
+from sklearn.model_selection import train_test_split
 import os
 csv_file = tf.keras.utils.get_file('heart.csv', 'https://storage.googleapis.com/applied-dl/heart.csv')
 
@@ -19,6 +23,11 @@ print(df['thal'])
 target = df.pop('target')
 dataset = tf.data.Dataset.from_tensor_slices((df.values, target.values))
 train_dataset = dataset.shuffle(len(df)).batch(1)
+print(len(train_dataset))
+print("xxxxxxxxxxxxxx")
+train = dataset.shuffle(100).batch(1)
+val = dataset.shuffle(20).batch(1)
+# train, val = train_test_split(train, test_size=0.2)
 
 def get_compiled_model():
   # model = tf.keras.Sequential([
@@ -53,8 +62,11 @@ callbacks = [
     keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3)
 ]
 
-history = model.fit(train_dataset, epochs=100,callbacks=callbacks)
-
+# history = model.fit(train_dataset, epochs=100,callbacks=callbacks)
+history = model.fit(train, 
+          epochs=100,
+          validation_data=val,
+          callbacks=callbacks)
 def plot_learning_curves(history):
     pd.DataFrame(history.history).plot(figsize=(8, 5))
     plt.grid(True)
@@ -64,8 +76,8 @@ def plot_learning_curves(history):
 
 plot_learning_curves(history)
 
-# predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,2)]))
-predictions = model.predict(np.array([(67,1,4,160,286,0,2,108,1,1.5,2,3,3)]))
+predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,2)]))
+  # predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,0.514)]))
 print(predictions)
 print("Predicted survival: {:.2%}".format(predictions[0][0]))
 # print(predictions)

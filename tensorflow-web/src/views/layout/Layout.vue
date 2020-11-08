@@ -11,7 +11,7 @@
        class="clearfix">
     <!-- <sideBar ref="sideBar"></sideBar> -->
     <sideMenu ref="sideBar"></sideMenu>
-    <div class="mainContent">
+    <div :class="showMenu ? 'mainContent':'smallContent'">
       <!--头部组件-->
       <headerModule @changeCollapse="changeMenu"></headerModule>
       <!--面包屑组件-->
@@ -43,7 +43,8 @@ export default {
     return {
       userName: '',
       activePath: '/',
-      meslist: []
+      meslist: [],
+      showMenu: true,
     }
   },
   mounted () { },
@@ -59,8 +60,15 @@ export default {
     },
     changeMenu () {
       this.$refs.sideBar.isCollapse = !this.$refs.sideBar.isCollapse
+      this.showMenu =  !this.showMenu
     }
-  }
+  },
+  // watch:{
+  //   showMenu: ()=>{
+  //     return this.$refs.sideBar.isCollapse
+  //   }
+  // }
+
 }
 </script>
 

@@ -85,7 +85,8 @@ export default {
         filePath:'',
         target:'',
         activeFunction:'relu',
-        number:2
+        number:2,
+        times:1
       },
       isTrain:false,
       activeFuns:[
@@ -103,6 +104,9 @@ export default {
           { required: true, validator: validateEn, trigger: 'blur' },
         ],
         number:[
+          { required: true, validator: validateEn, trigger: 'blur' },
+        ],
+        times:[
           { required: true, validator: validateEn, trigger: 'blur' },
         ]
       },
@@ -127,6 +131,16 @@ export default {
         { name: '列三', code: 'fileType' },
         { name: '列四', code: 'fileSize' }
       ],
+      trainData:{
+        imgUrl:"",
+        test:{
+          "accuracy":"",
+          "loss":""
+        }
+      },
+      fullscreenLoading:false,
+      preDataList:[],
+      preHeadList:[]
     }
   },
   methods:{
@@ -174,15 +188,33 @@ export default {
       })
     },
     train(){
+      // this.fullscreenLoading = true
+      const loading = this.$loading({
+        lock: true,
+        text: '训练中，请耐心等待！',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
       if(!this.form.target){
         this.$message({
           message: '目标对象不能为空',
           type: 'warning'
         });
+        // this.fullscreenLoading = false
+        loading.close()
         return
       }
+      console.log(this.form.target)
       train(this.form).then(res=>{
-        this.src = res
+        this.trainData = res
+        this.preHeadList = this.headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
+        let obj = {}
+        this.preHeadList.forEach(item=>{
+          obj[item] = ''
+        })
+        this.preDataList = [obj]
+        // this.fullscreenLoading = false
+        loading.close()
       })
     },
     initDetail() {
@@ -192,6 +224,9 @@ export default {
       })
     },
     updateRule() {
+    },
+    handleChange(){
+
     }
   },
   created() {

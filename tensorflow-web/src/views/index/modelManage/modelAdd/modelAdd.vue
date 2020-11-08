@@ -39,6 +39,11 @@
           </el-select>
         </el-form-item>
       </el-col>
+      <el-col :span='8'>
+        <el-form-item label="训练次数" prop='times'>
+           <el-input-number v-model="form.times" @change="handleChange" :min="1" :max="100000"></el-input-number>
+        </el-form-item>
+      </el-col>
     </el-row>
     <el-tabs>
       <el-tab-pane label="数据预览"></el-tab-pane>
@@ -48,16 +53,16 @@
         </el-form-item>
       </el-row>
     <div  class="tableBox" ref="tableBox">
-        <el-table :data="dataList"  border ref="mainTable">
+        <el-table :data="dataList"  style="width:100%" ref="mainTable">
           <el-table-column
-            v-for="item in headerList"
+            v-for="(item) in headerList"
             :key="item.code"
             :label="item.name"
           >
             <template slot="header" slot-scope="scope">
               <span>{{item.name}}</span>
               <span style="margin-left: 10px;">
-                <el-radio v-model="form.target" :label='item.name'>{{item.radio}}</el-radio>
+                <el-radio v-model="form.target" :label='item.name' v-if ="item.name !='首列'">{{item.radio}}</el-radio>
               </span>
             </template>
             <template slot-scope="scope">
@@ -73,22 +78,45 @@
       <el-row :gutter=20>
          <el-col :span='8'>
           <el-form-item label="预测准确率">
+            <span class='labelText'>{{trainData.test.accuracy}}</span>
           </el-form-item>
          </el-col>
          <el-col :span='8'>
           <el-form-item label="损失值">
+             <span class='labelText'>{{trainData.test.loss}}</span>
           </el-form-item>
          </el-col>
       </el-row>
+      <el-tabs>
+      <el-tab-pane label="预测试数据"></el-tab-pane>
+      </el-tabs> 
+      <el-row :gutter=20>
+          <div class='tableBox'>
+            <el-table :data="preDataList"  style="width:100%" ref="mainTable">
+              <el-table-column
+                v-for="(item) in preHeadList"
+                :key="item.code"
+                :label="item.name"
+              >
+                <template slot-scope="scope">
+                  <!-- {{item.showValue}} -->
+                  <el-input v-model="scope.row[item.code]"></el-input>
+                  <!-- {{ scope.row[item.code] || scope.row[item.code] ==0 ? scope.row[item.code] : '--' }} -->
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+      </el-row>
      <el-form-item>
-        <el-button type="primary" @click="train" v-if="$route.query.type === 'add'">训练</el-button>
+        <el-button type="primary" v-loading.fullscreen.lock="fullscreenLoading"  @click="train" v-if="$route.query.type === 'add'">训练</el-button>
+        <el-button type="primary">预测试</el-button>
         <el-button type="primary" @click="train" v-if="isTrain">验证</el-button>
         <el-button type="primary" @click="save" v-if="$route.query.type === 'add'">保存</el-button>
         <el-button type="primary" @click="updateRule" v-if="$route.query.type === 'edit'">保存</el-button>
         <el-button type='default' @click='cancel' v-if="$route.query.type != 'check'">取消</el-button>
      </el-form-item>
     <el-row :gutter=20>
-      <el-image :src="src" v-if="src"></el-image>
+      <el-image :src="trainData.imgUrl" v-if="trainData.imgUrl"></el-image>
     </el-row>
   </el-form>
 </template>

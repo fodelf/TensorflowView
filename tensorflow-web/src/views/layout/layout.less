@@ -14,16 +14,25 @@
   .mainContent {
     flex: auto;
     // padding:0 25px;
-    // width: calc(100% - 180px);
+    width: calc(100% - 180px);
     background: #3c4452;
     height: 100%;
-
-    .main {
-      // height: 100%;
-      height: calc(100% - 125px);
-      width: 100%;
-      overflow: auto;
-    }
+    transition: all 0.3s;
+    position: relative;
+  }
+  .smallContent {
+    width: calc(100% - 64px);
+    flex: auto;
+    transition: all 0.3s;
+    background: #3c4452;
+    height: 100%;
+    position: relative;
+  }
+  .main {
+    // height: 100%;
+    height: calc(100% - 125px);
+    width: 100%;
+    overflow: auto;
   }
 
   /deep/.el-menu-demo.el-menu--horizontal {
