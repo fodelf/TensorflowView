@@ -20,7 +20,7 @@
       </el-col>
       <el-col :span='8'>
         <el-form-item label="数据源" prop='dataType'>
-          <el-select v-model="form.dataType" placeholder="数据源">
+          <el-select v-model="form.dataType" placeholder="数据源"  @change="handleChangeDataType()">
             <el-option v-for="item in serverList" :key='item.dataId' :label='item.dataName' :value='item.dataId'></el-option>
           </el-select>
         </el-form-item>

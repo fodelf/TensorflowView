@@ -152,6 +152,9 @@ export default {
         name:'projectManage'
       })
     },
+    handleChangeDataType(){
+      this.parseHeader()
+    },
     queryProjectType() {
       getDataList().then(res=>{
         this.serverList = res || []

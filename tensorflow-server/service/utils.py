@@ -4,6 +4,9 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from tensorflow import keras
+# from keras.backend import K
+# from keras.callbacks import LearningRateScheduler
+from tensorflow.keras.callbacks import LearningRateScheduler
 from tensorflow import feature_column
 from sklearn.model_selection import train_test_split
 import os
@@ -30,9 +33,9 @@ def get_compiled_model(headers):
   model = keras.models.Sequential()
   # model.add(feature_layer)
   # model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(,  return_sequences=True)))
-  for _ in range(10):
+  for _ in range(20):
     # model.add(keras.layers.Dense(10, activation="selu"))
-    model.add(keras.layers.Dense(10, activation="relu"))
+    model.add(keras.layers.Dense((len(headers)+1), activation="relu"))
   model.add(keras.layers.AlphaDropout(rate=0.5))
     # AlphaDropout: 1. 均值和方差不变 2. 归一化性质也不变
   model.add(keras.layers.Dense(1, activation="sigmoid"))
@@ -42,10 +45,12 @@ def get_compiled_model(headers):
   #   keras.layers.Dense(128, activation='relu'),
   #   keras.layers.Dense(1, activation='sigmoid')
   # ])
-  model.compile(optimizer='adam',
+  model.compile(
+                optimizer='adam',
                 loss='binary_crossentropy',
                 metrics=['accuracy'],
-                run_eagerly=True
+                run_eagerly=True,
+                # optimizer='sgd'
                 )
   # model.compile(optimizer='adam',
   #             loss='binary_crossentropy',
@@ -64,14 +69,32 @@ def plot_learning_curves(history):
 # print(predictions)
 # print("Predicted survival: {:.2%}".format(predictions[0][0]))
 # print(predictions)
+# def scheduler(epoch):
+#     # 每隔100个epoch，学习率减小为原来的1/10
+#     if epoch % 10 == 0 and epoch != 0:
+#         lr = K.get_value(model.optimizer.lr)
+#         K.set_value(model.optimizer.lr, lr * 0.1)
+#         print("lr changed to {}".format(lr * 0.1))
+#     return K.get_value(model.optimizer.lr)
+ 
+# reduce_lr = LearningRateScheduler(scheduler)
+
+# num_epochs = 100
+learning_rate=0.1
+#定义学习率衰减函数
+def scheduler(epoch):
+   
+    # if epoch % 5 == 0 and epoch != 0:
+    #     return learning_rate * 0.1
+    return learning_rate
 def num(x):
     num = str(x).encode('utf-8')
     str_16 = binascii.b2a_hex(num)
     print(int(str_16, 16))
     return int(str_16, 16)
 def getGroup(x,groupmap):
-    print(x)
-    print("xxxxxxxxxxxxxxxxxx")
+    # print(x)
+    # print("xxxxxxxxxxxxxxxxxx")
     return groupmap[str(x)]
 def onegrounp(df, column,groupmap):
     # df[column] = df[column].apply(lambda x: abs(hash(str(x))))
@@ -162,8 +185,9 @@ def train(data):
     # val = pd.read_csv('out.csv',header=0,,skiprows= train_sum,nrows=train_count)
     train, test = train_test_split(df, test_size=0.2)
     train, val = train_test_split(train, test_size=0.2)
-    # train = df.iloc[0:train_count,:]
-    # print(train)
+    print(len(train), 'train examples')
+    print(len(val), 'validation examples')
+    print(len(test), 'test examples')
     target = train.pop(data['target'])
     train_dataset = tf.data.Dataset.from_tensor_slices((train.values, target.values))
     target = test.pop(data['target'])
@@ -230,6 +254,16 @@ def train(data):
                                       save_Weights_only = False,
                                       ),
       keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3),
+      # keras.callbacks.LearningRateScheduler(scheduler),
+      # keras.callbacks.EarlyStopping(
+      #     # patience=5, 
+      #     # min_delta=1e-3,
+      #     monitor='val_loss',
+      #     min_delta=0,
+      #     patience=10,
+      #     verbose=1
+      # )
+                           
     ]
     history = model.fit(train_ds, 
             epochs=100,
@@ -244,7 +278,14 @@ def train(data):
     # imported = tf.saved_model.load(logdir)
     # outputs = imported(model)
     model.load_weights(output_model_file)
-    loss, accuracy = model.evaluate(test_ds)
+    # loss, accuracy = model.evaluate(test_ds)
+    predictions = model.predict(test_ds)
+    # 显示部分结果
+    # for prediction, survived in zip(predictions[:2], list(test_ds)[0][1][:2]):
+    #   print("Predicted survival: {:.2%}".format(prediction[0]),
+    #         " | Actual outcome: ",
+    #         ("SURVIVED" if bool(survived) else "DIED"))
+
     data1 = {
         "age":[67],
         "sex":[1],
@@ -287,13 +328,13 @@ def train(data):
     print("xxxxxxxxxxxxxxxxxx")
     res = {}
     res["onehots"] = onehots
-    res["test"] = {
-      "accuracy":accuracy,
-      "loss":loss
-    }
+    # res["test"] = {
+    #   "accuracy":accuracy,
+    #   "loss":loss
+    # }
     res["imgUrl"] ="http://127.0.0.1:9567/1.jpg"
-    print("Accuracy", accuracy)    
-    print("loss", loss)
+    # print("Accuracy", accuracy)    
+    # print("loss", loss)
     return res     
    
 def parseHeader(filePath):
