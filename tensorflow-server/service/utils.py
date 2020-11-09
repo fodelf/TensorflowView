@@ -29,7 +29,9 @@ def get_compiled_model(headers):
   feature_layer = tf.keras.layers.DenseFeatures(feature_columns)
   model = keras.models.Sequential()
   # model.add(feature_layer)
-  for _ in range(20):
+  # model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(,  return_sequences=True)))
+  for _ in range(10):
+    # model.add(keras.layers.Dense(10, activation="selu"))
     model.add(keras.layers.Dense(10, activation="relu"))
   model.add(keras.layers.AlphaDropout(rate=0.5))
     # AlphaDropout: 1. 均值和方差不变 2. 归一化性质也不变
@@ -43,7 +45,7 @@ def get_compiled_model(headers):
   model.compile(optimizer='adam',
                 loss='binary_crossentropy',
                 metrics=['accuracy'],
-                # run_eagerly=True
+                run_eagerly=True
                 )
   # model.compile(optimizer='adam',
   #             loss='binary_crossentropy',
@@ -67,11 +69,14 @@ def num(x):
     str_16 = binascii.b2a_hex(num)
     print(int(str_16, 16))
     return int(str_16, 16)
-
+def getGroup(x,groupmap):
+    print(x)
+    print("xxxxxxxxxxxxxxxxxx")
+    return groupmap[str(x)]
 def onegrounp(df, column,groupmap):
     # df[column] = df[column].apply(lambda x: abs(hash(str(x))))
     # df[column] = df[column].apply(lambda x: binascii.b2a_hex(x))
-    df[column] = df[column].apply(lambda x: groupmap[str(x)])    
+    df[column] = df[column].apply(lambda x: getGroup(x,groupmap))
 def onehot_hash(df, column):
     # df[column] = df[column].apply(lambda x: abs(hash(str(x))))
     # df[column] = df[column].apply(lambda x: binascii.b2a_hex(x))
@@ -87,25 +92,37 @@ def df_to_dataset(dataframe,target,shuffle=True, batch_size=32):
   if shuffle:
     ds = ds.shuffle(buffer_size=len(dataframe))
   ds = ds.batch(batch_size)
-  return ds   
+  return ds
+def typeof(variate):
+    type=None
+    if isinstance(variate,int):
+        type = "int"
+    elif isinstance(variate,str):
+        type = "str"
+    elif isinstance(variate,float):
+        type = "float"
+    elif isinstance(variate,list):
+        type = "list"
+    elif isinstance(variate,tuple):
+        type = "tuple"
+    elif isinstance(variate,dict):
+        type = "dict"
+    elif isinstance(variate,set):
+        type = "set"
+    return type  
+def getType(variate):
+    arr = {"int":"整数","float":"浮点","str":"字符串","list":"列表","tuple":"元组","dict":"字典","set":"集合"}
+    vartype = typeof(variate)
+    if not (vartype in arr):
+      return "未知类型"
+    return arr[vartype]
+
 def train(data):
     df = pd.read_csv(data["filePath"])
-    # df2 = pd.read_csv(data["filePath"])
-    # onehot_hash(df2,'thal')
-    # df2['thal'] = df2['thal'].astype("category")
-    # df2['thal'] = df2.thal.cat.codes
-    # print(df2['thal'])
-    # print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-    # data1 = {
-    #     'thal':['fixed']
-    # }
-    # df1 = pd.DataFrame(data1,
-    #            columns=['thal'])
-    # onehot_hash(df1,'thal')           
-    # print(df1['thal'])
-    # print(abs(hash(str('fixed')))%D)
-    # return("sssss")  
-    # print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    count = len(df)
+    train_sum = round(count*0.8)
+    test_count = round(count*0.2)
+    train_count = round(train_sum*0.8)
     dtypes = df.dtypes
     headers = []
     onehots = []
@@ -116,13 +133,16 @@ def train(data):
          headers.append(name)
       if dtype == "object":
          key = str(i)
-         groupby = df.groupby(key)
+         dataframe = df.copy()
+         groupby = dataframe.groupby(key)
          groupDict = dict(list(groupby))
-         count = 1 
+         count = 1
          grupMap = {}
          for k in groupDict.keys():
+            # if str(k) !='1' and str(k) !='2':
             grupMap[str(k)] = count
             count = count+1
+         print(grupMap)
          child = {}
          child['name'] = key
          child['grupMap'] = grupMap
@@ -135,16 +155,37 @@ def train(data):
          child['min'] = str(minvalue)
          onehots.append(child)
          print(df[key])
-    # return ""     
-    target = df.pop(data['target'])
-    dataset = tf.data.Dataset.from_tensor_slices((df.values, target.values))
+    # return ""
+    # df.to_csv('out.csv')
+    # train = pd.read_csv('out.csv',header=0, skiprows=3,nrows= train_count)
+    # test = pd.read_csv('out.csv',header=0,skiprows= train_sum,nrows=count)
+    # val = pd.read_csv('out.csv',header=0,,skiprows= train_sum,nrows=train_count)
+    train, test = train_test_split(df, test_size=0.2)
+    train, val = train_test_split(train, test_size=0.2)
+    # train = df.iloc[0:train_count,:]
+    # print(train)
+    target = train.pop(data['target'])
+    train_dataset = tf.data.Dataset.from_tensor_slices((train.values, target.values))
+    target = test.pop(data['target'])
+    test_dataset = tf.data.Dataset.from_tensor_slices((test.values,target.values))
+    target = val.pop(data['target'])
+    val_dataset = tf.data.Dataset.from_tensor_slices((val.values, target.values))
+    batch_size = 1
+    train_ds = train_dataset.shuffle(len(train)).batch(batch_size)
+    test_ds = test_dataset.shuffle(len(test)).batch(batch_size)
+    val_ds = val_dataset.shuffle(len(val)).batch(batch_size)
+    # dataset = tf.data.Dataset.from_tensor_slices((df.values, target.values))
     # train_dataset = dataset.shuffle(len(df)).batch(1)
-    count = len(df)
-    train_num = round(count*0.8)
-    test_count = round(count*0.2)
-    train_ds = dataset.shuffle(train_num).batch(1)
-    test_ds = dataset.shuffle(test_count).batch(1)
-    val_ds = dataset.shuffle(test_count).batch(1)       
+    # count = len(df)
+    # train_num = round(count*0.8)
+    # test_count = round(count*0.2)
+    # batch_size = 5
+    # train_ds = dataset.shuffle(train_num).batch(batch_size)
+    # test_ds = dataset.shuffle(test_count).batch(batch_size)
+    # val_ds = dataset.shuffle(test_count).batch(batch_size)
+    # print(len(train_ds))
+    # print(len(test_ds))
+    # print(len(val_ds))
         #  df[key] = pd.Categorical(df[key])
         #  df[key] = df[key].cat.codes
     # target = df.pop(data['target'])
@@ -169,7 +210,7 @@ def train(data):
     # output_model_file = os.path.join(logdir,
     #                                 "fashion_mnist_model.h5")
     # output_model_file = os.path.join(logdir,
-    #                                 "cp.ckpt")                                
+    #                                 "cp.ckpt")
     # callbacks = [
     #     keras.callbacks.TensorBoard(logdir),
     #     tf.keras.callbacks.ModelCheckpoint(filepath=output_model_file,
@@ -193,6 +234,8 @@ def train(data):
     history = model.fit(train_ds, 
             epochs=100,
             validation_data=val_ds,
+            # verbose=1,
+            batch_size= round(train_count/10),
             callbacks=callbacks)
     plot_learning_curves(history)
     # model.load_weights(logdir)
@@ -238,9 +281,9 @@ def train(data):
     # predictions = model.predict(tf.data.Dataset.from_tensor_slices(df))
     # print(tf.data.Dataset.from_tensor_slices((dict(df1))))
     # predictions = model.predict(x=df1)
-    predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,0.50)]))
-    print(predictions)
-    print("Predicted survival: {:.2%}".format(predictions[0][0]))
+    # predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,0.50)]))
+    # print(predictions)
+    # print("Predicted survival: {:.2%}".format(predictions[0][0]))
     print("xxxxxxxxxxxxxxxxxx")
     res = {}
     res["onehots"] = onehots
