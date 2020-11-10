@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-06 08:55:43
+ * @LastEditTime: 2020-11-10 12:37:32
  */
 import {
   getDataList,
@@ -185,9 +185,9 @@ export default {
     },
     save() {
       createData(this.form).then(res=>{
-        this.$router.push({
-          name:'dataManage'
-        })
+        // this.$router.push({
+        //   name:'dataManage'
+        // })
       })
     },
     train(){
@@ -207,7 +207,6 @@ export default {
         loading.close()
         return
       }
-      console.log(this.form.target)
       train(this.form).then(res=>{
         this.trainData = res
         this.preHeadList = this.headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
@@ -217,6 +216,8 @@ export default {
         })
         this.preDataList = [obj]
         // this.fullscreenLoading = false
+        loading.close()
+      }).catch(err => {
         loading.close()
       })
     },

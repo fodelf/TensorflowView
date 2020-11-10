@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-10 12:39:29
+ * @LastEditTime: 2020-11-10 12:39:03
  */
 import request from '@/utils/request'
 
@@ -27,9 +27,9 @@ export function getServiceType() {
     method: 'GET',
   })
 }
-export function createData(params) {
+export function save(params) {
   return request({
-    url: '/api/v1/model/save',
+    url: '/api/v1/data/createData',
     method: 'POST',
     params: params
   })

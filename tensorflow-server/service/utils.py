@@ -31,11 +31,12 @@ def get_compiled_model(headers):
       feature_columns.append(feature_column.numeric_column(header))
   feature_layer = tf.keras.layers.DenseFeatures(feature_columns)
   model = keras.models.Sequential()
-  # model.add(feature_layer)
+  # model.add(keras.layers.Flatten(input_shape=(0,1, len(headers))),)
   # model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(,  return_sequences=True)))
   for _ in range(20):
     # model.add(keras.layers.Dense(10, activation="selu"))
-    model.add(keras.layers.Dense((len(headers)+1), activation="relu"))
+    model.add(keras.layers.Dense(len(headers), activation="relu"))
+    # model.add(keras.layers.Dense(10, activation="relu"))
   model.add(keras.layers.AlphaDropout(rate=0.5))
     # AlphaDropout: 1. 均值和方差不变 2. 归一化性质也不变
   model.add(keras.layers.Dense(1, activation="sigmoid"))
@@ -86,7 +87,7 @@ def scheduler(epoch):
    
     # if epoch % 5 == 0 and epoch != 0:
     #     return learning_rate * 0.1
-    return learning_rate
+    return 0.0001
 def num(x):
     num = str(x).encode('utf-8')
     str_16 = binascii.b2a_hex(num)
@@ -163,8 +164,11 @@ def train(data):
          grupMap = {}
          for k in groupDict.keys():
             # if str(k) !='1' and str(k) !='2':
+            # grupMap[str(k)] = np.asarray([0,0,1]).astype(np.float32)
+            # grupMap[str(k)] = np.a([0,0,1]).astype(np.float32)
             grupMap[str(k)] = count
             count = count+1
+
          print(grupMap)
          child = {}
          child['name'] = key
@@ -190,6 +194,8 @@ def train(data):
     print(len(test), 'test examples')
     target = train.pop(data['target'])
     train_dataset = tf.data.Dataset.from_tensor_slices((train.values, target.values))
+    print(train_dataset)
+    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     target = test.pop(data['target'])
     test_dataset = tf.data.Dataset.from_tensor_slices((test.values,target.values))
     target = val.pop(data['target'])
@@ -253,17 +259,16 @@ def train(data):
                                       save_best_only = True,
                                       save_Weights_only = False,
                                       ),
-      keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3),
+      # keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3),
       # keras.callbacks.LearningRateScheduler(scheduler),
-      # keras.callbacks.EarlyStopping(
-      #     # patience=5, 
-      #     # min_delta=1e-3,
-      #     monitor='val_loss',
-      #     min_delta=0,
-      #     patience=10,
-      #     verbose=1
-      # )
-                           
+      keras.callbacks.EarlyStopping(
+          # patience=5, 
+          # min_delta=1e-3,
+          monitor='val_loss',
+          min_delta=0,
+          patience=10,
+          verbose=1
+      )
     ]
     history = model.fit(train_ds, 
             epochs=100,
@@ -278,8 +283,8 @@ def train(data):
     # imported = tf.saved_model.load(logdir)
     # outputs = imported(model)
     model.load_weights(output_model_file)
-    # loss, accuracy = model.evaluate(test_ds)
-    predictions = model.predict(test_ds)
+    loss, accuracy = model.evaluate(test_ds)
+    # predictions = model.predict(test_ds)
     # 显示部分结果
     # for prediction, survived in zip(predictions[:2], list(test_ds)[0][1][:2]):
     #   print("Predicted survival: {:.2%}".format(prediction[0]),
@@ -328,13 +333,13 @@ def train(data):
     print("xxxxxxxxxxxxxxxxxx")
     res = {}
     res["onehots"] = onehots
-    # res["test"] = {
-    #   "accuracy":accuracy,
-    #   "loss":loss
-    # }
+    res["test"] = {
+      "accuracy":accuracy,
+      "loss":loss
+    }
     res["imgUrl"] ="http://127.0.0.1:9567/1.jpg"
-    # print("Accuracy", accuracy)    
-    # print("loss", loss)
+    print("Accuracy", accuracy)    
+    print("loss", loss)
     return res     
    
 def parseHeader(filePath):

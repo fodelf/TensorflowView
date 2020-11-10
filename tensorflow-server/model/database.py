@@ -46,6 +46,28 @@ class DataType(Base):
           del dict["_sa_instance_state"]
       return dict
 
+# 模型对象
+class Model(Base):
+    __tablename__ = 'models'
+    id = Column(Integer, primary_key=True)
+    modelId = Column(String)
+    filePath = Column(String)
+    modelName = Column(String)
+    modelConfig = Column(String)
+    def to_json(self):
+      dict = self.__dict__
+      if "_sa_instance_state" in dict:
+          del dict["_sa_instance_state"]
+      return dict
+
+def saveModel(data):
+    model = Model(dataName=data["modelName"],
+          modelConfig=data["modelConfig"],
+          filePath=data["filePath"])
+    session =Session()
+    session.add(model)
+    session.commit()
+
 def getDataTypes():
     session = Session()
     dataTypes = session.query(DataType).all()

@@ -70,12 +70,23 @@ def train():
     }
     return jsonify(t)
 
+# 保存模型
+@app.route('/api/v1/model/save', methods=['POST'])
+def save():
+    data = request_parse(request)
+    res =  model.database.saveModel(data)
+    t = {
+        'code': code,
+        'msg': msg,
+        'data':{}
+    }
+    return jsonify(t)
 # 预测试
 @app.route('/api/v1/data/test', methods=['POST'])
 def test():
     data = request_parse(request)
     res = service.utils.test(data)
-    # res['onehots'] = jsonify(res['onehots'])
+
     t = {
         'code': code,
         'msg': msg,
