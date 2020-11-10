@@ -159,7 +159,7 @@ export default {
       getDataList().then(res=>{
         this.serverList = res || []
         try {
-          this.form.dataType = this.serverList[0]['dataId']
+          this.form.dataType = this.serverList[0]['id']
           this.form.filePath = this.serverList[0]['filePath']
           this.parseHeader()
         } catch (error) {
@@ -215,11 +215,15 @@ export default {
           obj[item] = ''
         })
         this.preDataList = [obj]
+        this.isTrain = true
         // this.fullscreenLoading = false
         loading.close()
       }).catch(err => {
         loading.close()
       })
+    },
+    changeTarget(){
+      this.isTrain = false
     },
     initDetail() {
       let id = this.$route.query.id
@@ -229,8 +233,9 @@ export default {
     },
     updateRule() {
     },
-    handleChange(){
-
+    preTrain(){
+      console.log(this.preDataList)
+      debugger
     }
   },
   created() {

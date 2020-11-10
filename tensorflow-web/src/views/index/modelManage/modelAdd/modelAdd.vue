@@ -21,7 +21,7 @@
       <el-col :span='8'>
         <el-form-item label="数据源" prop='dataType'>
           <el-select v-model="form.dataType" placeholder="数据源"  @change="handleChangeDataType()">
-            <el-option v-for="item in serverList" :key='item.dataId' :label='item.dataName' :value='item.dataId'></el-option>
+            <el-option v-for="item in serverList" :key='item.id' :label='item.dataName' :value='item.id'></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -29,7 +29,7 @@
      <el-row :gutter=20>
       <el-col :span='8'>
         <el-form-item label="神经网络层数" prop='number'>
-          <el-input-number v-model="form.number" @change="handleChange" :min="2" :max="100000"></el-input-number>
+          <el-input-number v-model="form.number"  :min="2" :max="100000"></el-input-number>
         </el-form-item>
       </el-col>
       <el-col :span='8'>
@@ -41,7 +41,7 @@
       </el-col>
       <el-col :span='8'>
         <el-form-item label="训练次数" prop='times'>
-           <el-input-number v-model="form.times" @change="handleChange" :min="1" :max="100000"></el-input-number>
+           <el-input-number v-model="form.times"  :min="2" :max="100000"></el-input-number>
         </el-form-item>
       </el-col>
     </el-row>
@@ -62,7 +62,7 @@
             <template slot="header" slot-scope="scope">
               <span>{{item.name}}</span>
               <span style="margin-left: 10px;">
-                <el-radio v-model="form.target" :label='item.name' v-if ="item.name !='首列'">{{item.radio}}</el-radio>
+                <el-radio v-model="form.target" :label='item.name' v-if ="item.name !='首列'" @change="changeTarget()">{{item.radio}}</el-radio>
               </span>
             </template>
             <template slot-scope="scope">
@@ -99,9 +99,7 @@
                 :label="item.name"
               >
                 <template slot-scope="scope">
-                  <!-- {{item.showValue}} -->
                   <el-input v-model="scope.row[item.code]"></el-input>
-                  <!-- {{ scope.row[item.code] || scope.row[item.code] ==0 ? scope.row[item.code] : '--' }} -->
                 </template>
               </el-table-column>
             </el-table>
@@ -109,8 +107,8 @@
       </el-row>
      <el-form-item>
         <el-button type="primary" v-loading.fullscreen.lock="fullscreenLoading"  @click="train" v-if="$route.query.type === 'add'">训练</el-button>
-        <el-button type="primary">预测试</el-button>
-        <el-button type="primary" @click="train" v-if="isTrain">验证</el-button>
+        <!-- <el-button type="primary" ></el-button> -->
+        <el-button type="primary" @click="preTrain" v-if="isTrain">预测试</el-button>
         <el-button type="primary" @click="save" v-if="$route.query.type === 'add'">保存</el-button>
         <el-button type="primary" @click="updateRule" v-if="$route.query.type === 'edit'">保存</el-button>
         <el-button type='default' @click='cancel' v-if="$route.query.type != 'check'">取消</el-button>

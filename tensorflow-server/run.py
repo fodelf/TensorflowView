@@ -74,7 +74,7 @@ def train():
 @app.route('/api/v1/model/save', methods=['POST'])
 def save():
     data = request_parse(request)
-    res =  model.database.saveModel(data)
+    model.database.saveModel(data)
     t = {
         'code': code,
         'msg': msg,
@@ -82,11 +82,10 @@ def save():
     }
     return jsonify(t)
 # 预测试
-@app.route('/api/v1/data/test', methods=['POST'])
+@app.route('/api/v1/model/preTrain', methods=['POST'])
 def test():
     data = request_parse(request)
     res = service.utils.test(data)
-
     t = {
         'code': code,
         'msg': msg,

@@ -11,6 +11,7 @@ from tensorflow import feature_column
 from sklearn.model_selection import train_test_split
 import os
 import binascii
+import uuid
 def get_compiled_model(headers):
   # model = tf.keras.Sequential([
   #   tf.keras.layers.Dense(10, activation='relu'),
@@ -64,7 +65,9 @@ def plot_learning_curves(history):
     plt.grid(True)
     plt.gca().set_ylim(0, 1)
     # plt.show()
-    plt.savefig('./static/1.jpg')
+    urlstr = str(uuid.uuid1())
+    plt.savefig('./static/'+urlstr+'.jpg')
+    return urlstr
 # predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,2)]))
 # predictions = model.predict(np.array([(67,1,4,160,286,0,2,108,1,1.5,2,3,3)]))
 # print(predictions)
@@ -234,7 +237,7 @@ def train(data):
     # test_dataset = dataset.shuffle(int(len(df)**0.4)).batch(1)
     # val_dataset = dataset.shuffle(len(df)**0.4).batch(1).repeat()
     model = get_compiled_model(headers)
-    logdir = './dnn-selu-dropout-callbacks'
+    logdir = './dnn-selu-dropout-callbacks/'+ str(data["dataType"])
     if not os.path.exists(logdir):
         os.mkdir(logdir)
     # output_model_file = os.path.join(logdir,
@@ -271,12 +274,12 @@ def train(data):
       )
     ]
     history = model.fit(train_ds, 
-            epochs=100,
+            epochs=int(data["times"]),
             validation_data=val_ds,
             # verbose=1,
             batch_size= round(train_count/10),
             callbacks=callbacks)
-    plot_learning_curves(history)
+    urlstr = plot_learning_curves(history)
     # model.load_weights(logdir)
     # tf.saved_model.save(model, logdir)
     model.save(logdir)
@@ -290,26 +293,10 @@ def train(data):
     #   print("Predicted survival: {:.2%}".format(prediction[0]),
     #         " | Actual outcome: ",
     #         ("SURVIVED" if bool(survived) else "DIED"))
-
-    data1 = {
-        "age":[67],
-        "sex":[1],
-        "cp":[4],
-        "trestbps":[4],
-        "chol":[4],
-        "fbs":[4],
-        "restecg":[4],
-        "thalach":[4],
-        "exang":[4],
-        "oldpeak":[4],
-        "slope":[4],
-        "ca":[4],
-        'thal':[0.514844]
-    }
     # data1 = [67,1,4,160,286,0,2,108,1,1.5,2,3,0.514844]
-    df1= pd.DataFrame(data1)
+    # df1= pd.DataFrame(data1)
     # print(df1)
-    print("ssssssssssssssssssssssssssssssssssssssssss")      
+    # print("ssssssssssssssssssssssssssssssssssssssssss")      
     # labels = ["age","sex","cp","trestbps",
     #            "chol","fbs","restecg","thalach","exang","oldpeak","slope","ca","thal"]
     # print(labels)   
@@ -330,14 +317,14 @@ def train(data):
     # predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,0.50)]))
     # print(predictions)
     # print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    print("xxxxxxxxxxxxxxxxxx")
+    # print("xxxxxxxxxxxxxxxxxx")
     res = {}
     res["onehots"] = onehots
     res["test"] = {
       "accuracy":accuracy,
       "loss":loss
     }
-    res["imgUrl"] ="http://127.0.0.1:9567/1.jpg"
+    res["imgUrl"] ="http://127.0.0.1:9567/"+urlstr+".jpg"
     print("Accuracy", accuracy)    
     print("loss", loss)
     return res     
