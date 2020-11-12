@@ -3,8 +3,8 @@
  * @Author: pym
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-30 23:29:01
- * @LastEditors: pym
- * @LastEditTime: 2020-04-06 18:22:28
+ * @LastEditors: 吴文周
+ * @LastEditTime: 2020-11-12 12:35:27
  -->
 <template>
   <div class="header">
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+// import io from 'socket.io-client';
 export default {
   name: 'headerModule',
   data() {
@@ -35,6 +36,19 @@ export default {
       this.$emit('changeCollapse')
     },
   },
+  created(){
+    let namespace = '/mes';
+    // require('socket.io-client')(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    // var socket = require('socket.io-client')(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    socket.on('connect', function() {
+        socket.emit('mes', {data: 'I\'m connected!'});
+    });
+    socket.on('train', function(msg) {
+      console.log(msg)
+    });
+
+  }
 }
 </script>
 

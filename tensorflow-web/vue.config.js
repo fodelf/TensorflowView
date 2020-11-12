@@ -4,7 +4,7 @@
  * @Github: http://gitlab.yzf.net/wuwenzhou
  * @Date: 2019-11-19 08:46:03
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-09-08 08:45:42
+ * @LastEditTime: 2020-11-12 12:29:42
  */
 const path = require('path')
 const ispro = process.env.NODE_ENV !== 'development'
@@ -36,8 +36,12 @@ module.exports = {
     port:9527,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:9567'
-      }
+        target: 'http://localhost:9567'
+      },
+      '/socket.io': {
+        target: 'http://localhost:9567',
+        ws:true
+      },
     }
   },
   chainWebpack: config => {

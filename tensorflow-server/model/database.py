@@ -51,6 +51,7 @@ class Model(Base):
     __tablename__ = 'models'
     id = Column(Integer, primary_key=True)
     modelId = Column(String)
+    dataId = Column(String)
     filePath = Column(String)
     modelName = Column(String)
     modelConfig = Column(String)
@@ -61,9 +62,11 @@ class Model(Base):
       return dict
 
 def saveModel(data):
-    model = Model(dataName=data["modelName"],
-          modelConfig=data["modelConfig"],
-          filePath=data["filePath"])
+    form = data["form"]
+    trainData =  data["trainData"]
+    model = Model(modelName=form["dataName"],
+          modelConfig=str(trainData),
+          filePath=form["filePath"])
     session =Session()
     session.add(model)
     session.commit()

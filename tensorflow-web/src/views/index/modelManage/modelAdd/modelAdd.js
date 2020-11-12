@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-10 12:37:32
+ * @LastEditTime: 2020-11-11 12:53:41
  */
 import {
   getDataList,
@@ -12,6 +12,9 @@ import {
   train,
   parseHeader
 } from '@/api/index/dataManage.js'
+import {
+  preTrain
+} from '@/api/index/modelManage.js'
 export default {
   name: 'dataAdd',
   data() {
@@ -21,49 +24,6 @@ export default {
       } else {
         if((/[^\w\.\/]/g).test(value)){
           callback(new Error('只能输入英文字母和数字'));
-        }
-        callback();
-      }
-    }
-    const validateAddress= (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入服务地址'));
-      } else {
-        if(!((/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/).test(value)||(/^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$/).test(value))){
-          callback(new Error('请输入正确的服务地址'));
-        }
-        callback();
-      }
-    }
-    const validatePort = (rule, value, callback) => {
-      if (value === '') {
-        callback();
-      } else {
-        if(!Number.isInteger(value*1)){
-          callback(new Error('只能输入整数'));
-        }
-        callback();
-      }
-    }
-    const validateBreak = (rule, value, callback) => {
-      if (value === '') {
-        callback();
-      } else {
-        if(isNaN(Number(value))){
-          callback(new Error('只能输入数字'));
-        }
-        callback();
-      }
-    }
-    const validateBreak1=(rule, value, callback) => {
-      if (value === '') {
-        callback();
-      } else {
-        if(isNaN(Number(value))){
-          if(value<0 ||value>100){
-            callback(new Error('只能输入100以内的数字'));
-          }
-          callback(new Error('只能输入数字'));
         }
         callback();
       }
@@ -140,7 +100,8 @@ export default {
       },
       fullscreenLoading:false,
       preDataList:[],
-      preHeadList:[]
+      preHeadList:[],
+      prData:''
     }
   },
   methods:{
@@ -184,7 +145,15 @@ export default {
       } catch (error) {}
     },
     save() {
-      createData(this.form).then(res=>{
+      let param = {
+        form:this.form,
+        trainData:this.trainData
+      }
+      createData(param).then(res=>{
+        this.$message({
+          message: '保存模型成功！',
+          type: 'success'
+        });
         // this.$router.push({
         //   name:'dataManage'
         // })
@@ -209,7 +178,8 @@ export default {
       }
       train(this.form).then(res=>{
         this.trainData = res
-        this.preHeadList = this.headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
+        let headerList = JSON.parse(JSON.stringify(this.headerList))
+        this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
         let obj = {}
         this.preHeadList.forEach(item=>{
           obj[item] = ''
@@ -234,8 +204,20 @@ export default {
     updateRule() {
     },
     preTrain(){
-      console.log(this.preDataList)
-      debugger
+      let headerList = JSON.parse(JSON.stringify(this.headerList))
+      var preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
+      var preData = {};
+      preHeadList.forEach((item,index)=>{
+        preData[item.name] = this.preDataList[0][index];
+      })
+      let param = {
+         form:this.form,
+         trainData:this.trainData,
+         preData:preData
+      }
+      preTrain(param).then((res)=>{
+        this.prData = res;
+      })
     }
   },
   created() {

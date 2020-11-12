@@ -12,6 +12,8 @@ from sklearn.model_selection import train_test_split
 import os
 import binascii
 import uuid
+import service.socketio
+from flask_socketio import SocketIO, emit
 def get_compiled_model(headers):
   # model = tf.keras.Sequential([
   #   tf.keras.layers.Dense(10, activation='relu'),
@@ -144,7 +146,7 @@ def getType(variate):
       return "未知类型"
     return arr[vartype]
 
-def train(data):
+def train(data,socketio):
     df = pd.read_csv(data["filePath"])
     count = len(df)
     train_sum = round(count*0.8)
@@ -325,10 +327,12 @@ def train(data):
       "loss":loss
     }
     res["imgUrl"] ="http://127.0.0.1:9567/"+urlstr+".jpg"
-    print("Accuracy", accuracy)    
+    print("Accuracy", accuracy)
     print("loss", loss)
-    return res     
-   
+    # service.socketio.test_message(res)
+    socketio.emit('train',res,namespace='/mes')
+    # return res
+
 def parseHeader(filePath):
     df = pd.read_csv(filePath,header=0,nrows=1)
     # print(df.dtypes)
@@ -364,3 +368,34 @@ def test(data):
     print(predictions)
     print("Predicted survival: {:.2%}".format(predictions[0][0]))
     return ""
+# 预训练数据
+def preTrain(data):
+    form = data["form"]
+    preData = data["preData"]
+    trainData =  data["trainData"]
+    logdir = './dnn-selu-dropout-callbacks/'+ str(form["dataType"])
+    output_model_file = os.path.join(logdir,
+                                 "fashion_mnist_model.h5")
+    model = tf.keras.models.load_model(output_model_file)
+    # model.load_weights(output_model_file)
+    df = pd.read_csv(form["filePath"],header=0,nrows=1)
+    dtypes = df.dtypes
+    res = []
+    for i in dtypes.keys():
+      typeString = str(dtypes[i])
+      name = str(i)
+      if name != form['target']:
+        if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
+          res.append(float(preData[name]))
+          print(preData[name])
+        if str(dtypes[i]) =="object":
+          for onehot in trainData['onehots']:
+              if onehot['name'] == name:
+                  if preData[name] in onehot["grupMap"].keys():
+                    res.append(onehot["grupMap"][preData[name]])
+                  else:
+                    res.append(0.0)
+    predictions = model.predict(np.array([(res)]))
+    print(predictions)
+    print("Predicted survival: {:.2%}".format(predictions[0][0]))
+    return "{:.2%}".format(predictions[0][0])

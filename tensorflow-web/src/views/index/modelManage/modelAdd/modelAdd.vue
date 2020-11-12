@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-06 08:55:09
+ * @LastEditTime: 2020-11-11 08:50:29
 -->
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
@@ -89,7 +89,7 @@
       </el-row>
       <el-tabs>
       <el-tab-pane label="预测试数据"></el-tab-pane>
-      </el-tabs> 
+      </el-tabs>
       <el-row :gutter=20>
           <div class='tableBox'>
             <el-table :data="preDataList"  style="width:100%" ref="mainTable">
@@ -105,6 +105,13 @@
             </el-table>
           </div>
       </el-row>
+      <el-row :gutter=20>
+         <el-col :span='8'>
+          <el-form-item label="预测值">
+            <span class='labelText'>{{prData}}</span>
+          </el-form-item>
+         </el-col>
+     </el-row>
      <el-form-item>
         <el-button type="primary" v-loading.fullscreen.lock="fullscreenLoading"  @click="train" v-if="$route.query.type === 'add'">训练</el-button>
         <!-- <el-button type="primary" ></el-button> -->

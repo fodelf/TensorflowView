@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import Flask, flash, request, redirect, url_for, jsonify,Response
+from flask_socketio import SocketIO, emit
 import time
 import random
 import string
@@ -8,11 +9,20 @@ import os
 import json
 import model.database
 import service.utils
+import  threading
 UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 app = Flask(__name__,static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = 'tensorflow'
+async_mode = None
+socketio = SocketIO(app,
+            async_handlers=False,
+            ping_timeout=60,
+            cors_allowed_origins="*",
+            always_connect=True,
+            async_mode=async_mode
+            )
 code = 200
 msg = 'success'
 model.database._init()
@@ -62,13 +72,17 @@ def parseHeader():
 @app.route('/api/v1/data/train', methods=['POST'])
 def train():
     data = request_parse(request)
-    res = service.utils.train(data)
+    thead_one = threading.Thread(target=thead, args=(data,))
+    thead_one.start()
     t = {
         'code': code,
         'msg': msg,
-        'data':res
+        'data':"ok"
     }
     return jsonify(t)
+
+def thead(data):
+    service.utils.train(data,socketio)
 
 # 保存模型
 @app.route('/api/v1/model/save', methods=['POST'])
@@ -85,7 +99,7 @@ def save():
 @app.route('/api/v1/model/preTrain', methods=['POST'])
 def test():
     data = request_parse(request)
-    res = service.utils.test(data)
+    res = service.utils.preTrain(data)
     t = {
         'code': code,
         'msg': msg,
@@ -116,6 +130,24 @@ def getDataType():
         'data':result
     }
     return jsonify(res)
+
+@socketio.on('task')
+def test_message(message):
+    print('ssss')
+    emit('taskMes', {'data': 'fail'})
+
+@socketio.on('mes', namespace='/mes')
+def handleMes(json):
+    print('received json: ' + str(json))
+
+@socketio.on('connect', namespace='/mes')
+def test_connect():
+    print("sssssssssssss")
+    emit('my response', {'data': 'Connected'})
+
+@socketio.on('disconnect', namespace='/mes')
+def test_disconnect():
+    print('Client disconnected')
 
 # 查询数据源列表
 @app.route('/api/v1/data/getDataList')
@@ -151,7 +183,8 @@ def upload():
             return filepath
 
 if __name__ == '__main__':
-    app.run(debug=True,
-            # host='0.0.0.0',
-            port='9567')
+    socketio.run(app,port=9567,debug=True)
+    # app.run(debug=True,
+    #         # host='0.0.0.0',
+    #         port='9567')
 
