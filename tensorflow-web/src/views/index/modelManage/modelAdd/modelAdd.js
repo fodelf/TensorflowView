@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-11 12:53:41
+ * @LastEditTime: 2020-11-13 08:22:48
  */
 import {
   getDataList,
@@ -161,35 +161,39 @@ export default {
     },
     train(){
       // this.fullscreenLoading = true
-      const loading = this.$loading({
-        lock: true,
-        text: '训练中，请耐心等待！',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
+      // const loading = this.$loading({
+      //   lock: true,
+      //   text: '训练中，请耐心等待！',
+      //   spinner: 'el-icon-loading',
+      //   background: 'rgba(0, 0, 0, 0.7)'
+      // });
       if(!this.form.target){
         this.$message({
           message: '目标对象不能为空',
           type: 'warning'
         });
         // this.fullscreenLoading = false
-        loading.close()
+        // loading.close()
         return
       }
       train(this.form).then(res=>{
-        this.trainData = res
-        let headerList = JSON.parse(JSON.stringify(this.headerList))
-        this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
-        let obj = {}
-        this.preHeadList.forEach(item=>{
-          obj[item] = ''
-        })
-        this.preDataList = [obj]
-        this.isTrain = true
+        this.$message({
+          message: '训练以及开始，稍后在消息中查看！',
+          type: 'success'
+        });
+        // this.trainData = res
+        // let headerList = JSON.parse(JSON.stringify(this.headerList))
+        // this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
+        // let obj = {}
+        // this.preHeadList.forEach(item=>{
+        //   obj[item] = ''
+        // })
+        // this.preDataList = [obj]
+        // this.isTrain = true
         // this.fullscreenLoading = false
-        loading.close()
+        // loading.close()
       }).catch(err => {
-        loading.close()
+        // loading.close()
       })
     },
     changeTarget(){

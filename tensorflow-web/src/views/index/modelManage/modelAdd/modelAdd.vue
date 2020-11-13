@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-11 08:50:29
+ * @LastEditTime: 2020-11-13 08:20:47
 -->
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
@@ -72,10 +72,10 @@
           </el-table-column>
         </el-table>
       </div>
-      <el-tabs>
+      <el-tabs v-if="isTrain">
         <el-tab-pane label="评估模型"></el-tab-pane>
       </el-tabs>
-      <el-row :gutter=20>
+      <el-row :gutter=20 v-if="isTrain">
          <el-col :span='8'>
           <el-form-item label="预测准确率">
             <span class='labelText'>{{trainData.test.accuracy}}</span>
@@ -87,10 +87,10 @@
           </el-form-item>
          </el-col>
       </el-row>
-      <el-tabs>
+      <el-tabs v-if="isTrain">
       <el-tab-pane label="预测试数据"></el-tab-pane>
       </el-tabs>
-      <el-row :gutter=20>
+      <el-row :gutter=20 v-if="isTrain">
           <div class='tableBox'>
             <el-table :data="preDataList"  style="width:100%" ref="mainTable">
               <el-table-column
@@ -105,7 +105,7 @@
             </el-table>
           </div>
       </el-row>
-      <el-row :gutter=20>
+      <el-row :gutter=20 v-if="isTrain">
          <el-col :span='8'>
           <el-form-item label="预测值">
             <span class='labelText'>{{prData}}</span>
