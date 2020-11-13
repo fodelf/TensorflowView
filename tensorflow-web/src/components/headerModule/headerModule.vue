@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-30 23:29:01
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-13 09:25:42
+ * @LastEditTime: 2020-11-13 19:41:09
  -->
 <template>
   <div class="header">
@@ -12,7 +12,7 @@
     <div class="headerTit clearfix">
       <i class="headerIcon"></i>吴文周
       <i class="el-icon-bell" style="margin-left:20px;font-size:20px" @click="queryMes()"></i>
-      <i class="tips" v-if="count>0">99</i>
+      <i class="tips" v-if="count>0">{{countMes}}</i>
       <span class="iconfont icon-shezhi" style="margin-left:20px;"></span>
       <!-- <el-switch
   v-model="value"
@@ -21,7 +21,6 @@
 </el-switch> -->
     </div>
     <el-drawer
-       withHeader="false"
       :visible.sync="drawer"
        size="20%"
       >
@@ -51,7 +50,8 @@ export default {
       isCollapse: false,
       drawer:false,
       value: '',
-      count:0
+      count:0,
+      countMes:0
     }
   },
   methods: {
@@ -70,12 +70,18 @@ export default {
     socket.on('connect', function() {
         socket.emit('mes', {data: 'I\'m connected!'});
     });
-    socket.on('train', function(msg) {
+    socket.on('train', (msg)=>{
       // console.log(msg)
       //  this.$message({
       //     message: '训练成功，请在消息中查看！',
       //     type: 'success'
       //   });
+      this.count++
+      if(this.count>99){
+        this.countMes = '99+'
+      }else{
+        this.countMes = this.count
+      }
       this.$notify({
         title: '成功',
         message: '训练成功，请在消息中查看！',
