@@ -10,36 +10,41 @@ import request from '@/utils/request'
 
 export function getIndexCount() {
   return request({
-    url: '/api/home/getIndexCount',
+    url: '/api/v1/home/getIndexCount',
     method: 'GET',
-  })
-}
-
-export function getTodoList() {
-  return request({
-    url: '/api/home/queryTodoList',
-    method: 'GET',
-  })
-}
-
-export function insertTask(params) {
-  return request({
-    url: '/api/home/insertTodoList',
-    method: 'POST',
-    params:params
-  })
-}
-export function changeTodoList(params) {
-  return request({
-    url: '/api/home/changeTodoList',
-    method: 'POST',
-    params:params
   })
 }
 
 export function queryIndexTrend() {
   return request({
-    url: '/api/home/queryIndexTrend',
+    url: '/api/v1/home/getTrainCount',
     method: 'GET',
   })
 }
+
+export function getModel() {
+  return request({
+    url: '/api/v1/model/getModel',
+    method: 'GET',
+  })
+}
+
+export function queryMessage() {
+  return request({
+    url: '/api/v1/home/queryMessage',
+    method: 'GET',
+  })
+}
+export function queryMessageCount() {
+  return request({
+    url: '/api/v1/home/queryMessageCount',
+    method: 'GET',
+  })
+}
+export function updateMessage() {
+  return request({
+    url: '/api/v1/home/updateMessage',
+    method: 'GET',
+  })
+}
+

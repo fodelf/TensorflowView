@@ -12,7 +12,7 @@ import {
   confirmConsul,
   confirmMq,
   querySystemDetail
-} from '@/api/system.js'
+} from '@/api/index/system.js'
 export default {
    name:'serviceSet',
    components:{

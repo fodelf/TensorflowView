@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from tensorflow import keras
+import json
 # from keras.backend import K
 # from keras.callbacks import LearningRateScheduler
 from tensorflow.keras.callbacks import LearningRateScheduler
@@ -12,8 +13,7 @@ from sklearn.model_selection import train_test_split
 import os
 import binascii
 import uuid
-import service.socketio
-from flask_socketio import SocketIO, emit
+import model.database as database
 def get_compiled_model(headers):
   # model = tf.keras.Sequential([
   #   tf.keras.layers.Dense(10, activation='relu'),
@@ -122,29 +122,6 @@ def df_to_dataset(dataframe,target,shuffle=True, batch_size=32):
     ds = ds.shuffle(buffer_size=len(dataframe))
   ds = ds.batch(batch_size)
   return ds
-def typeof(variate):
-    type=None
-    if isinstance(variate,int):
-        type = "int"
-    elif isinstance(variate,str):
-        type = "str"
-    elif isinstance(variate,float):
-        type = "float"
-    elif isinstance(variate,list):
-        type = "list"
-    elif isinstance(variate,tuple):
-        type = "tuple"
-    elif isinstance(variate,dict):
-        type = "dict"
-    elif isinstance(variate,set):
-        type = "set"
-    return type  
-def getType(variate):
-    arr = {"int":"整数","float":"浮点","str":"字符串","list":"列表","tuple":"元组","dict":"字典","set":"集合"}
-    vartype = typeof(variate)
-    if not (vartype in arr):
-      return "未知类型"
-    return arr[vartype]
 
 def train(data,socketio):
     df = pd.read_csv(data["filePath"])
@@ -194,13 +171,8 @@ def train(data,socketio):
     # val = pd.read_csv('out.csv',header=0,,skiprows= train_sum,nrows=train_count)
     train, test = train_test_split(df, test_size=0.2)
     train, val = train_test_split(train, test_size=0.2)
-    print(len(train), 'train examples')
-    print(len(val), 'validation examples')
-    print(len(test), 'test examples')
     target = train.pop(data['target'])
     train_dataset = tf.data.Dataset.from_tensor_slices((train.values, target.values))
-    print(train_dataset)
-    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     target = test.pop(data['target'])
     test_dataset = tf.data.Dataset.from_tensor_slices((test.values,target.values))
     target = val.pop(data['target'])
@@ -209,37 +181,8 @@ def train(data,socketio):
     train_ds = train_dataset.shuffle(len(train)).batch(batch_size)
     test_ds = test_dataset.shuffle(len(test)).batch(batch_size)
     val_ds = val_dataset.shuffle(len(val)).batch(batch_size)
-    # dataset = tf.data.Dataset.from_tensor_slices((df.values, target.values))
-    # train_dataset = dataset.shuffle(len(df)).batch(1)
-    # count = len(df)
-    # train_num = round(count*0.8)
-    # test_count = round(count*0.2)
-    # batch_size = 5
-    # train_ds = dataset.shuffle(train_num).batch(batch_size)
-    # test_ds = dataset.shuffle(test_count).batch(batch_size)
-    # val_ds = dataset.shuffle(test_count).batch(batch_size)
-    # print(len(train_ds))
-    # print(len(test_ds))
-    # print(len(val_ds))
-        #  df[key] = pd.Categorical(df[key])
-        #  df[key] = df[key].cat.codes
-    # target = df.pop(data['target'])
-    # train, test = train_test_split(df, test_size=0.2)
-    # train, val = train_test_split(train, test_size=0.2)
-    # batch_size = 5 # 小批量大小用于演示
-    # train_ds = df_to_dataset(train,data['target'],batch_size=batch_size)
-    # val_ds = df_to_dataset(val,data['target'],shuffle=False, batch_size=batch_size)
-    # test_ds = df_to_dataset(test,data['target'],shuffle=False, batch_size=batch_size)
-    # dataset = tf.data.Dataset.from_tensor_slices((df.values, target.values))
-    # train_df, test = train_test_split(df, test_size=0.2)
-    # train_dataset  = tf.data.Dataset.from_tensor_slices((train_df.values, target.values))
-    # train_dataset, val_dataset = train_test_split(train_dataset, test_size=0.2)
-    # train_dataset = dataset.shuffle(int(len(df))).batch(1)
-    # val_dataset =  dataset.shuffle(int(len(df)**0.2)).batch(1)
-    # test_dataset = dataset.shuffle(int(len(df)**0.4)).batch(1)
-    # val_dataset = dataset.shuffle(len(df)**0.4).batch(1).repeat()
     model = get_compiled_model(headers)
-    logdir = './dnn-selu-dropout-callbacks/'+ str(data["dataType"])
+    logdir = './dnn-selu-dropout-callbacks/'+ str(data["id"])+"/"+str(data["trainName"])
     if not os.path.exists(logdir):
         os.mkdir(logdir)
     # output_model_file = os.path.join(logdir,
@@ -303,15 +246,6 @@ def train(data,socketio):
     #            "chol","fbs","restecg","thalach","exang","oldpeak","slope","ca","thal"]
     # print(labels)   
     # predictions = model.predict(tf.data.Dataset.from_tensor_slices((np.array([67,1,4,160,286,0,2,108,1,1.5,2,3,0.514844]),
-    #  np.array(["age","sex","cp","trestbps","chol","fbs","restecg","thalach","exang","oldpeak","slope","ca","thal"]))))
-      # np.array([(67)]), np.array((1])),
-      # np.array([4]), np.array([160]),
-      # np.array([286]), np.array([0]),
-      # np.array([2]), np.array([108]),
-      # np.array([1]), np.array([1.5]),
-      # np.array([2]), np.array([3]),
-      # np.array([0.514844])
-      # ])
     # df = pd.read_csv("./static/2.csv",header=0,nrows=1)
     # predictions = model.predict(tf.data.Dataset.from_tensor_slices(df))
     # print(tf.data.Dataset.from_tensor_slices((dict(df1))))
@@ -327,11 +261,43 @@ def train(data,socketio):
       "loss":loss
     }
     res["imgUrl"] ="http://127.0.0.1:9567/"+urlstr+".jpg"
-    print("Accuracy", accuracy)
-    print("loss", loss)
+    trainObj = {
+      "trainConfig":{
+        "trainMes":res,
+        "form":data
+      },
+      "dataId":data["dataId"],
+      "loss":loss,
+      "trainName":data["trainName"],
+      "accuracy":accuracy
+    }
+    messageObj = {
+      "trainConfig":{
+        "trainMes":res,
+        "form":data
+      }
+    }
+    database.createTrain(trainObj)
+    database.createMessage(messageObj)
     # service.socketio.test_message(res)
-    socketio.emit('train',res,namespace='/mes')
+    socketio.emit('train','',namespace='/mes')
     # return res
+
+def getParam(data):
+    df = pd.read_csv(data["filePath"],header=0,nrows=1)
+    dtypes = df.dtypes
+    res = {
+      'param':{},
+      "target":''
+    }
+    k = 0
+    for i in dtypes.keys():
+      if str(i) != data["target"]:
+        res['param'][str(i)] = df.values[0][k]
+        k = k + 1
+      else:
+        res['target'] = df.values[0][k]
+    return res
 
 def parseHeader(filePath):
     df = pd.read_csv(filePath,header=0,nrows=1)
@@ -373,7 +339,41 @@ def preTrain(data):
     form = data["form"]
     preData = data["preData"]
     trainData =  data["trainData"]
-    logdir = './dnn-selu-dropout-callbacks/'+ str(form["dataType"])
+    logdir = './dnn-selu-dropout-callbacks/'+ str(form["id"])+"/"+str(form["trainName"])
+    output_model_file = os.path.join(logdir,
+                                 "fashion_mnist_model.h5")
+    model = tf.keras.models.load_model(output_model_file)
+    # model.load_weights(output_model_file)
+    df = pd.read_csv(form["filePath"],header=0,nrows=1)
+    dtypes = df.dtypes
+    res = []
+    for i in dtypes.keys():
+      typeString = str(dtypes[i])
+      name = str(i)
+      if name != form['target']:
+        if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
+          res.append(float(preData[name]))
+          print(preData[name])
+        if str(dtypes[i]) =="object":
+          for onehot in trainData['onehots']:
+              if onehot['name'] == name:
+                  if preData[name] in onehot["grupMap"].keys():
+                    res.append(onehot["grupMap"][preData[name]])
+                  else:
+                    res.append(0.0)
+    predictions = model.predict(np.array([(res)]))
+    print(predictions)
+    print("Predicted survival: {:.2%}".format(predictions[0][0]))
+    return "{:.2%}".format(predictions[0][0])
+
+# 预训练数据
+def trainOnline(data):
+    modelId = data["modelId"]
+    preData = data["trainData"]
+    modelObj = database.queryModelById(modelId)
+    form =json.loads(modelObj["formConfig"])
+    trainData =json.loads(modelObj["modelConfig"])
+    logdir = './dnn-selu-dropout-callbacks/'+ str(form["id"])+"/"+str(form["trainName"])
     output_model_file = os.path.join(logdir,
                                  "fashion_mnist_model.h5")
     model = tf.keras.models.load_model(output_model_file)

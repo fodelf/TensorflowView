@@ -8,38 +8,38 @@
  -->
 <template>
   <div class="scriptCard">
-    <p class="cardTit">{{ itemObj.scriptName }}</p>
-    <el-input
-      type="textarea"
-      v-model="itemObj.scriptContent"
-      :rows="7"
-      resize="none"
-    ></el-input>
+    <el-form>
+        <el-form-item label="调用路径">
+        </el-form-item>
+        <div style='background: #272c36;height:40px;line-height:40px;'>{{url}}</div>
+        <el-form-item label="调用参数(默认读取第一行数据除modelId可自行修改)">
+          <el-input
+              type="textarea"
+              v-model="param"
+              :rows="7"
+              resize="none"
+            ></el-input>
+        </el-form-item>
+        <el-form-item label="原始结果">
+          <span style='color:white'>{{org}}</span>
+        </el-form-item>
+        <el-form-item label="预测结果">
+          <span style='color:white'>{{res}}</span>
+        </el-form-item>
+    </el-form>
     <div class="btn_row">
       <div class="col_box">
-        <el-button type="primary" size="small" @click="modify(itemObj)"
-          >修改</el-button
-        >
-        <el-button
-          v-if ='itemObj.scriptId >4'
-          type="danger"
-          size="small"
-          @click="deleteAtion(itemObj.scriptId)"
-          >删除</el-button
-        >
-      </div>
-      <div class="col_box">
-        <el-button type="primary" size="small" @click="action"
-          v-if ='itemObj.scriptId >4'
-          >立即执行</el-button
-        >
+        <el-button type="primary" size="small" @click="test()"
+          >调用</el-button>
+        <!-- <el-button type="primary" size="small" @click="cancle(itemObj)"
+          >取消</el-button>   -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { actionScript, deleteScript } from '@/api/scriptApi.js'
+import { getParam ,trainOnline} from '@/api/index/modelManage'
 export default {
   name: 'scriptCard',
   props: {
@@ -48,15 +48,44 @@ export default {
       default: function() {
         return {
           scriptContent: '',
-          scriptName: ''
+          modelName: ''
         }
       }
     }
   },
   data() {
-    return {}
+    return {
+      url:location.host+"/api/v1/model/trainOnline",
+      param: '',
+      res:'',
+      org:''
+    }
+  },
+  watch: {
+    itemObj: {
+      handler(newVal, oldVal){
+        if('accuracy' in newVal){
+          let formConfig = JSON.parse(newVal.formConfig)
+          getParam(formConfig).then((res) => {
+            let param = {
+              modelId:newVal.modelId,
+              trainData:res.param
+            }
+            this.org= res.target
+            this.param = JSON.stringify(param, null, 2)
+          })
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   methods: {
+    test(){
+      trainOnline(JSON.parse(this.param)).then((res) =>{
+        this.res = res;
+      })
+    },
     action() {
       actionScript({
         scriptContent: this.itemObj.scriptContent
@@ -83,8 +112,8 @@ export default {
         })
         .catch(() => {})
     },
-    modify(itemObj) {
-      this.$emit('modify', itemObj)
+    cancle() {
+      this.$emit('cancle')
     }
   }
 }
@@ -123,7 +152,13 @@ export default {
     padding: 10px 15px;
     box-sizing: border-box;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+  }
+  /deep/.el-form-item__label{
+    color: white
+  }
+  /deep/.el-form-item{
+    margin-bottom: 0px;
   }
 }
 </style>

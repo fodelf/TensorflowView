@@ -16,7 +16,7 @@ const ProjectInit = () =>
 import templateManage from '@/views/templateManage/templateManage.vue'
 import componentManage from '@/views/componentManage/componentManage.vue'
 import scriptManage from '@/views/scriptManage/ScriptManage.vue'
-import ToDoComponent from '@/components/toDoComponent/ToDoComponent.vue'
+// import ToDoComponent from '@/components/toDoComponent/ToDoComponent.vue'
 // const TerminalView = () => import('components/terminal/TerminalView.vue')
 Vue.use(Router)
 const vueRouter = new Router({
@@ -42,7 +42,7 @@ const vueRouter = new Router({
       redirect: '/project/projectManage',
       component: MainLayout,
       meta: {
-        title: '服务管理'
+        title: '数据管理'
       },
       children: [
         {
@@ -177,44 +177,25 @@ const vueRouter = new Router({
         }
       ]
     },
-    {
-      path: '/devOps',
-      name: 'devOps',
-      redirect: '/devOps/Monitor',
-      component: MainLayout,
-      meta: {
-        title: '运维监控'
-      },
-      children: [
-        {
-          path: 'Monitor',
-          component: ToDoComponent,
-          name: 'Monitor',
-          meta: {
-            title: '告警报错'
-          }
-        }
-      ]
-    },
-    {
-      path: '/system',
-      name: 'system',
-      redirect: '/system/systemManage',
-      component: MainLayout,
-      meta: {
-        title: '系统'
-      },
-      children: [
-        {
-          path: 'systemManage',
-          component: ToDoComponent,
-          name: 'systemManage',
-          meta: {
-            title: '系统设置'
-          }
-        }
-      ]
-    }
+    // {
+    //   path: '/system',
+    //   name: 'system',
+    //   redirect: '/system/systemManage',
+    //   component: MainLayout,
+    //   meta: {
+    //     title: '系统'
+    //   },
+    //   children: [
+    //     {
+    //       path: 'systemManage',
+    //       component: ToDoComponent,
+    //       name: 'systemManage',
+    //       meta: {
+    //         title: '系统设置'
+    //       }
+    //     }
+    //   ]
+    // }
   ]
 })
 // const routerPush = Router.prototype.push

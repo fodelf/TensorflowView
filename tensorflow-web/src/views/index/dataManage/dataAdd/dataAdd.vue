@@ -9,7 +9,7 @@
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
     <div @click='cancel' style="width:80px"><i class="el-icon-d-arrow-left" style="color:white;font-size:14px;cursor: pointer;margin-bottom: 20px;"   >返回</i></div>
-    <el-tabs v-model="baseInfo">
+    <el-tabs>
       <el-tab-pane label="基本信息"></el-tab-pane>
     </el-tabs>
     <el-row :gutter=20>

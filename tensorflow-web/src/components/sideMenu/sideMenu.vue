@@ -39,10 +39,10 @@ export default {
   computed: {
     defaultActive() {
       // 暂时写死的
-      if(this.$route.path.indexOf('/project') >=0){
-        return "/project/projectManage";
-      }else if(this.$route.path.indexOf('/system') >=0){
-        return "/system/serviceSet";
+      if(this.$route.path.indexOf('/data') >=0){
+        return "/data/dataManage";
+      }else if(this.$route.path.indexOf('/model') >=0){
+        return "/model/modelManage";
       }else{
         return "/home"
       }

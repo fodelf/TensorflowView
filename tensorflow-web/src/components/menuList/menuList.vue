@@ -8,7 +8,7 @@
  -->
 <template>
   <div class="menuList">
-    <p class="menuTit itemNum clearfix" :class="currentIndex == 'all'? 'active' : ''" @click="handleClickMenu({type:'all'})">
+    <p class="menuTit itemNum clearfix" :class="currentIndex == 'all'? 'active' : ''" >
       <span >{{ menuObj.title }}</span>
       <i>{{ menuObj.total }}</i>
     </p>

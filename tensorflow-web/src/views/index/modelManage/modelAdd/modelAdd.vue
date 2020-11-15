@@ -15,13 +15,13 @@
     <el-row :gutter=20>
       <el-col :span='8'>
         <el-form-item label="模型名称" prop='dataName'>
-          <el-input type='text' v-model="form.dataName" placeholder="请输入英文或者数字"></el-input>
+          <el-input type='text' v-model="form.trainName" placeholder="请输入英文或者数字"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span='8'>
         <el-form-item label="数据源" prop='dataType'>
-          <el-select v-model="form.dataType" placeholder="数据源"  @change="handleChangeDataType()">
-            <el-option v-for="item in serverList" :key='item.id' :label='item.dataName' :value='item.id'></el-option>
+          <el-select v-model="form.dataId" placeholder="数据源"  @change="handleChangeDataType()">
+            <el-option v-for="item in serverList" :key='item.dataId' :label='item.dataName' :value='item.dataId'></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -116,7 +116,7 @@
         <el-button type="primary" v-loading.fullscreen.lock="fullscreenLoading"  @click="train" v-if="$route.query.type === 'add'">训练</el-button>
         <!-- <el-button type="primary" ></el-button> -->
         <el-button type="primary" @click="preTrain" v-if="isTrain">预测试</el-button>
-        <el-button type="primary" @click="save" v-if="$route.query.type === 'add'">保存</el-button>
+        <el-button type="primary" @click="save" v-if="$route.query.type != 'add'">保存</el-button>
         <el-button type="primary" @click="updateRule" v-if="$route.query.type === 'edit'">保存</el-button>
         <el-button type='default' @click='cancel' v-if="$route.query.type != 'check'">取消</el-button>
      </el-form-item>

@@ -19,13 +19,7 @@
         <div class="realChart">
           <el-row :gutter="20" class='titleRow'>
             <el-col :span='20' class='title'>
-              日常请求记录
-            </el-col>
-            <el-col :span='4'>
-              <el-select v-model="serviceType" @change="queryChart">
-                <!-- <el-option label='全部' value='all'></el-option> -->
-                <el-option v-for="(item,index) in serviceList" :key="index" :label='item.serviceName' :value='item.serverId'></el-option>
-              </el-select>
+              日常训练记录
             </el-col>
           </el-row>
           <!--折线图组件-->
@@ -35,15 +29,16 @@
       <div class="rightRow">
         <div class="realRight">
           <div class="weather">
-            <div class="realWeather">
+            <div class="realWeather advertisement">
               <!--播报状态组件-->
-              <weather :systemStatus='systemStatus'></weather>
+              <weather :systemStatus='systemStatus.best' v-if='systemStatus.best' :isgood = 'isgood'></weather>
+              <div v-else class='best'>暂无数据</div>
             </div>
           </div>
           <div class="advertisement rowBox">
             <!--轮播图广告招租组件-->
-            <carousel :carouselList="carouselList" v-if='carouselList.length > 0'></carousel>
-            <div v-else class='noData'>暂无异常</div>
+            <weather :systemStatus='systemStatus.bad' v-if='systemStatus.bad' :isgood = '!isgood'></weather>
+            <div v-else class='noData'>暂无数据</div>
           </div>
         </div>
       </div>

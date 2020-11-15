@@ -7,9 +7,11 @@
  * @LastEditTime: 2020-09-06 19:48:37
  -->
 <template>
-  <div class="weather">
+  <div class="weather" :style="{background:isgood?'#01c0c8':'#fb9678'}">
     <div class="temperature">
-      <el-breadcrumb separator="/">
+      <div class="value"><span>准确率：</span><span>{{systemStatus.accuracy.toFixed(4)}}</span></div>
+      <div class="value"><span>损失值：</span><span>{{systemStatus.loss.toFixed(4)}}</span></div>
+      <!-- <el-breadcrumb separator="/">
         <el-breadcrumb-item>总数</el-breadcrumb-item>
         <el-breadcrumb-item>正常</el-breadcrumb-item>
         <el-breadcrumb-item>错误</el-breadcrumb-item>
@@ -18,12 +20,13 @@
         <el-breadcrumb-item>{{systemStatus.dataSum.total}}</el-breadcrumb-item>
         <el-breadcrumb-item class='success-item'>{{systemStatus.dataSum.success}}</el-breadcrumb-item>
         <el-breadcrumb-item class='fail-item'>{{systemStatus.dataSum.fail}}</el-breadcrumb-item>
-      </el-breadcrumb>
+      </el-breadcrumb> -->
     </div>
-    <p class='title'>系统状态{{systemStatus.todayState==='good' ? '优': systemStatus.todayState==='normal' ? '中等' : '差'}}</p>
+    <p v-if='isgood' class='title'>最优模型  {{systemStatus.modelName}}</p>
+    <p v-if='!isgood' class='title'>最差模型  {{systemStatus.modelName}}</p>
     <div class="weatherBg">
-      <div class="iconfont" :class="systemStatus.todayState==='good' ? 'icon-taiyang-copy': systemStatus.todayState==='normal' ? 'icon-ziyuan' : 'icon-ziyuan1'"></div>
-      <div class="weatherDate">{{systemStatus.realTime}}</div>
+      <div class="iconfont" :class="isgood ? 'icon-taiyang-copy':'icon-ziyuan1'"></div>
+      <div class="weatherDate">{{dateFormat("YYYY/mm/dd",systemStatus.time)}}</div>
     </div>
   </div>
 </template>
@@ -31,11 +34,32 @@
 <script>
 export default {
   name: 'weather',
-  props:['systemStatus'],
+  props:['systemStatus','isgood'],
   data() {
     return {}
   },
-  methods: {},
+  methods: {
+    dateFormat(fmt, date) {
+      date = new Date(date);
+      let ret;
+      const opt = {
+          "Y+": date.getFullYear().toString(),        // 年
+          "m+": (date.getMonth() + 1).toString(),     // 月
+          "d+": date.getDate().toString(),            // 日
+          "H+": date.getHours().toString(),           // 时
+          "M+": date.getMinutes().toString(),         // 分
+          "S+": date.getSeconds().toString()          // 秒
+          // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      };
+      for (let k in opt) {
+          ret = new RegExp("(" + k + ")").exec(fmt);
+          if (ret) {
+              fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+          };
+      };
+      return fmt;
+    }
+  },
   created() {
     
   }
@@ -46,7 +70,7 @@ export default {
 .weather {
   width: 100%;
   height: 100%;
-  background: #01c0c8;
+  // background: #01c0c8;
   padding: 20px;
   // display: flex;
   position: relative;
@@ -114,6 +138,9 @@ export default {
       color: #fff;
       opacity: 0.5;
     }
+  }
+  .value{
+    font-size: 12px;
   }
 }
 </style>

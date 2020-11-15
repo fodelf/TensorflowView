@@ -17,53 +17,10 @@ export default {
   data() {
     const validateEn = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入服务名称'));
+        callback(new Error('请输入数据源名称'));
       } else {
         if((/[^\w\.\/]/g).test(value)){
           callback(new Error('只能输入英文字母和数字'));
-        }
-        callback();
-      }
-    }
-    const validateAddress= (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入服务地址'));
-      } else {
-        if(!((/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/).test(value)||(/^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$/).test(value))){
-          callback(new Error('请输入正确的服务地址'));
-        }
-        callback();
-      }
-    }
-    const validatePort = (rule, value, callback) => {
-      if (value === '') {
-        callback();
-      } else {
-        if(!Number.isInteger(value*1)){
-          callback(new Error('只能输入整数'));
-        }
-        callback();
-      }
-    }
-    const validateBreak = (rule, value, callback) => {
-      if (value === '') {
-        callback();
-      } else {
-        if(isNaN(Number(value))){
-          callback(new Error('只能输入数字'));
-        }
-        callback();
-      }
-    }
-    const validateBreak1=(rule, value, callback) => {
-      if (value === '') {
-        callback();
-      } else {
-        if(isNaN(Number(value))){
-          if(value<0 ||value>100){
-            callback(new Error('只能输入100以内的数字'));
-          }
-          callback(new Error('只能输入数字'));
         }
         callback();
       }
@@ -83,13 +40,9 @@ export default {
         dataName: '',
         dataType: '',
         filePath:'',
-        activeFunction:'relu',
-        number:2
+        fileName:'',
+        fileSize:''
       },
-      activeFuns:[
-        {label: 'relu',value:'relu'},
-        {label: 'sigmoid',value:'sigmoid'},
-      ],
       dataRules:{
         dataName:[
           { required: true, validator: validateEn, trigger: 'blur' },
@@ -98,41 +51,18 @@ export default {
           { required: true, message: '请选择服务类型', trigger: 'blur' },
         ]
       },
-      rules:{
-        apiUrl:[
-          { required: true, message: '请输入正确的拦截地址', validator: validateCheckPath, trigger: 'blur' },
-        ],
-        pathReWriteBefore:[
-          {validator: validateCheckPath, trigger: 'blur' },
-        ],
-        pathReWriteUrl:[
-          {validator: validateCheckPath, trigger: 'blur' },
-        ]
-      },
       serverList:[]
     }
   },
   methods:{
     getFile(res){
-      this.form.filePath = res
-    },
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.ruleForm.dingdingList.push(inputValue);
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
+      this.form.filePath = res.data.filePath
+      this.form.fileName = res.data.fileName
+      this.form.fileSize = res.data.fileSize
     },
     cancel() {
       this.$router.push({
-        name:'projectManage'
+        name:'dataManage'
       })
     },
     queryProjectType() {
@@ -155,33 +85,6 @@ export default {
       dataDetail(id).then(res=>{
         this.ruleForm = JSON.parse(JSON.stringify(res))
       })
-    },
-    updateRule() {
-      if(this.ruleForm.dataRules.length == 0){
-        this.$message({
-          message: '拦截规则不能为空',
-          type: 'warning'
-        });
-        return
-      }
-      this.$refs["ruleForm"].validate((valid) => {
-        if (valid) {
-          let params = JSON.parse(JSON.stringify(this.ruleForm))
-          params.dataPort = params.dataPort*1
-          params.dataLimit = params.dataLimit*1
-          params.dataBreak = params.dataBreak*1
-          params.useConsulPort = params.useConsulPort*1
-          params.useConsulInterval = params.useConsulInterval*1
-          params.useConsulTimeout = params.useConsulTimeout*1
-          updatedata(params).then(res=>{
-            this.$router.push({
-              name:'projectManage'
-            })
-          })
-        } else {
-          return false
-        }
-      })
     }
   },
   created() {
@@ -190,20 +93,6 @@ export default {
       this.initDetail()
     }else {
       this.ruleForm= {
-        dataName: '',
-        dataType: '',
-        dataAddress: '',
-        dataPort: '',
-        dataRules: [],
-        dataBreak:"",
-        dataLimit:'',
-        useConsulId:'',
-        useConsulTag:'',
-        useConsulCheckPath:'',
-        useConsulPort:'',
-        useConsulInterval:'',
-        useConsulTimeout:'',
-        dingdingList:[],
       }
     }
   }

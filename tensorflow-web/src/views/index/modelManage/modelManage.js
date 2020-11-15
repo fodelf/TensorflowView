@@ -6,48 +6,26 @@
  * @LastEditors: 吴文周
  * @LastEditTime: 2020-11-03 19:56:24
  */
-import menuList from 'components/menuList/menuList.vue'
-import tableBox from 'components/tableBox/tableBox.vue'
-import proDialog from 'components/proDialog/proDialog.vue'
-import compCard from './children/compCard.vue'
-import {
-  getServiceSum,
-  getServiceList,
-  deleteService
-} from '@/api/index/projectManage.js'
+import{queryModelList} from "@/api/index/modelManage"
+import{dateFormat} from "@/utils/index"
+import scriptCard from "@/components/scriptCard/scriptCard"
 export default {
   name: 'projectManage',
+  components: {
+    scriptCard
+  },
   data() {
     return {
       type: 'add',
-      menuObj: {
-        title: '数据源总计',
-        total: 0,
-        menuList: [],
-        active:'all'
-      },
       tablePag: {
         pageNo: 1,
         pageSize: 15,
         totalRecord: 0
       },
-      dataList: [],
-      headerList: [
-        { name: '数据源名称', code: 'dataName' },
-        { name: '文件名称', code: 'fileName' },
-        { name: '文件类型', code: 'fileType' },
-        { name: '文件大小', code: 'fileSize' }
-      ],
-      keyword: '',
       itemObj: {},
-      proFormObj: {}
+      tableData: [],
+      dialogTableVisible:false,
     }
-  },
-  components: {
-    menuList,
-    tableBox,
-    proDialog,
-    compCard
   },
   methods: {
     addPro() {
@@ -58,49 +36,12 @@ export default {
         }
       })
     },
-    /**
-     * @name: selectMenu
-     * @description: 根据服务类型查询服务
-     * @param {type}: 默认参数
-     * @return {type}: 默认类型
-     */
-    selectMenu(item) {
-      let params = {}
-      if(!item) {
-        params = {
-          type: 'all'
-        }
-      }else {
-        this.itemObj = item
-        params = {
-          type: item.value
-        }
-      }
-      getServiceList(params).then((res) => {
-        this.dataList = res.serverList || []
-        this.$forceUpdate()
-        // this.$nextTick(() => {
-        //   this.$refs.table.doLayout()
-        // })
-      })
+    cancle(){
+      this.dialogTableVisible = true
     },
-    /**
-     * @name: queryProList
-     * @description: 获取服务列表
-     * @param {type}: 默认参数
-     * @return {type}: 默认类型
-     */
-    queryProList() {
-      getServiceSum({}).then(res => {
-        this.menuObj.total = res.sum || 0
-        this.menuObj.menuList = res.serverList || []
-        // this.menuObj.active = this.itemObj.type ? this.itemObj.type : this.menuObj.menuList[0].type
-        // if (this.menuObj.menuList.length !== 0 && flag) {
-          this.$nextTick(() => {
-            this.selectMenu()
-          })
-        // }
-      })
+    handleWakeUp(item){
+      this.itemObj = item
+      this.dialogTableVisible = true
     },
     deleteRow(data) {
       this.$confirm('确认删除此服务？')
@@ -132,12 +73,19 @@ export default {
           type:'check'
         }
       })
+    },
+    queryModelList(){
+      queryModelList().then((res)=>{
+        res.forEach((row)=>{
+          row.accuracy = row.accuracy.toFixed(4)
+          row.loss = row.loss.toFixed(4)
+          row.time = dateFormat('YYYY/mm/dd',row.time)
+        })
+        this.tableData = res
+      })
     }
   },
   mounted() {
-    this.queryProList(true)
-  },
-  created() {
-    
+    this.queryModelList()
   }
 }

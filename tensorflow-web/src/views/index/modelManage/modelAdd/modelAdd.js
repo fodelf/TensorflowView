@@ -39,9 +39,12 @@ export default {
       }
     }
     return {
+      dataList:[],
       form: {
-        dataName: '',
-        dataType: '',
+        trainName: '',
+        dataName:"",
+        dataId: '',
+        id:"",
         filePath:'',
         target:'',
         activeFunction:'relu',
@@ -57,7 +60,7 @@ export default {
         dataName:[
           { required: true, validator: validateEn, trigger: 'blur' },
         ],
-        dataType:[
+        dataId:[
           { required: true, message: '请选择服务类型', trigger: 'blur' },
         ],
         activeFuns:[
@@ -83,13 +86,12 @@ export default {
       },
       serverList:[],
       src:'',
-      dataList:[{index:'类型',dataName:"xx"},{index:'类型',dataName:"xx"}],
       headerList:[
-        { name: '首列', code: 'index' },
-        { name: '列一', code: 'dataName' },
-        { name: '列二', code: 'fileName' },
-        { name: '列三', code: 'fileType' },
-        { name: '列四', code: 'fileSize' }
+        // { name: '首列', code: 'index' },
+        // { name: '列一', code: 'dataName' },
+        // { name: '列二', code: 'fileName' },
+        // { name: '列三', code: 'fileType' },
+        // { name: '列四', code: 'fileSize' }
       ],
       trainData:{
         imgUrl:"",
@@ -109,19 +111,22 @@ export default {
       this.form.filePath = res
     },
     cancel() {
-      this.$router.push({
-        name:'projectManage'
-      })
+      this.$router.go(-1)
+      // this.$router.push({
+      //   name:'projectManage'
+      // })
     },
-    handleChangeDataType(){
+    handleChangedataId(){
       this.parseHeader()
     },
     queryProjectType() {
       getDataList().then(res=>{
         this.serverList = res || []
         try {
-          this.form.dataType = this.serverList[0]['id']
+          this.form.dataId = this.serverList[0]['dataId']
+          this.form.id = this.serverList[0]['id']
           this.form.filePath = this.serverList[0]['filePath']
+          this.form.dataName = this.serverList[0]['dataName']
           this.parseHeader()
         } catch (error) {
           console.log(error)
@@ -167,9 +172,9 @@ export default {
       //   spinner: 'el-icon-loading',
       //   background: 'rgba(0, 0, 0, 0.7)'
       // });
-      if(!this.form.target){
+      if(!this.form.target||!this.form.trainName){
         this.$message({
-          message: '目标对象不能为空',
+          message: '名称和目标对象不能为空',
           type: 'warning'
         });
         // this.fullscreenLoading = false
@@ -231,7 +236,7 @@ export default {
     }else {
       this.ruleForm= {
         dataName: '',
-        dataType: '',
+        dataId: '',
         dataAddress: '',
         dataPort: '',
         dataRules: [],

@@ -14,7 +14,12 @@ export function getDataType() {
     method: 'GET'
   })
 }
-
+export function getDataSum() {
+  return request({
+    url: '/api/v1/data/getDataSum',
+    method: 'GET'
+  })
+}
 export function getDataList() {
   return request({
     url: '/api/v1/data/getDataList',
@@ -29,15 +34,16 @@ export function getServiceType() {
 }
 export function createData(params) {
   return request({
-    url: '/api/v1/model/save',
+    url: '/api/v1/data/createData',
     method: 'POST',
     params: params
   })
 }
-export function serviceDetail(id) {
+export function queryTrainById(params) {
   return request({
-    url: `/uiApi/v1/service/serviceDetail?serverId=${id}`,
-    method: 'GET'
+    url: `/api/v1/data/queryTrainById`,
+    method: 'POST',
+    params: params
   })
 }
 export function train(params) {

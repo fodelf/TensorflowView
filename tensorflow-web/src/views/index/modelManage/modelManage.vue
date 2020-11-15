@@ -8,29 +8,53 @@
 -->
 <template>
   <div class="projectManage">
-    <div class="leftMenu">
-      <!--左侧列表组件-->
-      <menuList :menuObj="menuObj" @clickMenu="selectMenu"></menuList>
-    </div>
     <div class="rightList">
       <p class="rightTit clearfix">
-        <el-button type="primary" icon="el-icon-plus" @click="addPro"
+        <!-- <el-button type="primary" icon="el-icon-plus" @click="addPro"
           >新增</el-button
-        >
+        > -->
       </p>
       <!--表格组件-->
-      <div class="tableCon">
-        <tableBox
-          ref="table"
-          :dataList="dataList"
-          :headerList="headerList"
-          :actionType ="'project'"
-          @editRow="editRow"
-          @deleteRow="deleteRow"
-          @checkRow="checkRow"
-        ></tableBox>
+      <div class="tableBox">
+        <el-table
+          :data="tableData"
+          style="width: 100%">
+          <el-table-column
+            prop="modelName"
+            label="模型名称"
+           >
+          </el-table-column>
+          <el-table-column
+            prop="dataName"
+            label="数据源名称"
+            >
+          </el-table-column>
+          <el-table-column
+            prop="accuracy"
+            label="准确率">
+          </el-table-column>
+          <el-table-column
+            prop="loss"
+            label="损失值">
+          </el-table-column>
+          <el-table-column
+            prop="time"
+            label="创建时间">
+          </el-table-column>
+            <el-table-column label="操作" width="250">
+            <template slot-scope="scope">
+              <el-button type="primary" @click="handleWakeUp(scope.row)">调用</el-button>
+              <el-button type="primary" @click="handleCheck(scope.row)">下载</el-button>
+              <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
     </div>
+    <el-dialog :title="itemObj.modelName" :visible.sync="dialogTableVisible">
+      <scriptCard :itemObj='itemObj' @cancle ='cancle()'></scriptCard>
+    </el-dialog>
   </div>
 </template>
 

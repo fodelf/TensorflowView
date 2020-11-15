@@ -12,7 +12,7 @@ const menuTree = [
     name: 'dataManage',
     path: '/data/dataManage',
     icon: 'icon-xiangmu',
-    label: '服务管理'
+    label: '数据管理'
   },
   {
     name: 'modelManage',
@@ -20,12 +20,12 @@ const menuTree = [
     icon: 'icon-mobanguanli1',
     label: '模型管理'
   },
-  {
-    name: 'serviceSet',
-    path: '/system/serviceSet',
-    icon: 'icon-shezhi',
-    label: '系统设置'
-  }
+  // {
+  //   name: 'serviceSet',
+  //   path: '/system/serviceSet',
+  //   icon: 'icon-shezhi',
+  //   label: '系统设置'
+  // }
 ]
 
 export default menuTree

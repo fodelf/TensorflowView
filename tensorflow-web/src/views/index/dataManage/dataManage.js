@@ -7,14 +7,11 @@
  * @LastEditTime: 2020-11-02 09:22:18
  */
 import menuList from 'components/menuList/menuList.vue'
-import tableBox from 'components/tableBox/tableBox.vue'
-import proDialog from 'components/proDialog/proDialog.vue'
-import compCard from './children/compCard.vue'
 import {
-  getServiceSum,
-  getServiceList,
-  deleteService
-} from '@/api/index/projectManage.js'
+  getDataSum,
+  getDataList,
+  queryTrainById
+} from '@/api/index/dataManage.js'
 export default {
   name: 'projectManage',
   data() {
@@ -24,7 +21,7 @@ export default {
         title: '数据源总计',
         total: 0,
         menuList: [],
-        active:'all'
+        active:'file'
       },
       tablePag: {
         pageNo: 1,
@@ -32,27 +29,26 @@ export default {
         totalRecord: 0
       },
       dataList: [],
-      headerList: [
-        { name: '数据源名称', code: 'dataName' },
-        { name: '文件名称', code: 'fileName' },
-        { name: '文件类型', code: 'fileType' },
-        { name: '文件大小', code: 'fileSize' }
-      ],
-      keyword: '',
+      expandTableLoding: true,
       itemObj: {},
-      proFormObj: {}
+      tableData: []
     }
   },
   components: {
     menuList,
-    tableBox,
-    proDialog,
-    compCard
   },
   methods: {
     addPro() {
       this.$router.push({
         name:'dataAdd',
+        query:{
+          type:'add'
+        }
+      })
+    },
+    addTrain(){
+      this.$router.push({
+        name:'modelAdd',
         query:{
           type:'add'
         }
@@ -76,13 +72,6 @@ export default {
           type: item.value
         }
       }
-      getServiceList(params).then((res) => {
-        this.dataList = res.serverList || []
-        this.$forceUpdate()
-        // this.$nextTick(() => {
-        //   this.$refs.table.doLayout()
-        // })
-      })
     },
     /**
      * @name: queryProList
@@ -91,15 +80,12 @@ export default {
      * @return {type}: 默认类型
      */
     queryProList() {
-      getServiceSum({}).then(res => {
-        this.menuObj.total = res.sum || 0
-        this.menuObj.menuList = res.serverList || []
-        // this.menuObj.active = this.itemObj.type ? this.itemObj.type : this.menuObj.menuList[0].type
-        // if (this.menuObj.menuList.length !== 0 && flag) {
+      getDataSum({}).then(res => {
+        this.menuObj.total = res.total
+        this.menuObj.menuList = res.menuList || []
           this.$nextTick(() => {
             this.selectMenu()
           })
-        // }
       })
     },
     deleteRow(data) {
@@ -115,27 +101,74 @@ export default {
         })
         .catch(() => {})
     },
-    editRow(row) {
-      this.$router.push({
-        name:'projectAdd',
-        query:{
-          id: row.serverId,
-          type:'edit'
-        }
+    dateFormat(fmt, date) {
+      date = new Date(date);
+      let ret;
+      const opt = {
+          "Y+": date.getFullYear().toString(),        // 年
+          "m+": (date.getMonth() + 1).toString(),     // 月
+          "d+": date.getDate().toString(),            // 日
+          "H+": date.getHours().toString(),           // 时
+          "M+": date.getMinutes().toString(),         // 分
+          "S+": date.getSeconds().toString()          // 秒
+          // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      };
+      for (let k in opt) {
+          ret = new RegExp("(" + k + ")").exec(fmt);
+          if (ret) {
+              fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+          };
+      };
+      return fmt;
+    },
+    getDataList(){
+      getDataList().then((res)=>{
+        res.forEach((data)=>{
+          data.fileSize = Math.floor(data.fileSize/1024) +"k"
+          data.time = this.dateFormat("YYYY/mm/dd HH:MM:SS",data.time)
+          data.hasChildren = true
+          data.children = []
+          data.isOpen = false
+        })
+        this.tableData = res
       })
     },
-    checkRow(row){
-      this.$router.push({
-        name:'projectAdd',
-        query:{
-          id: row.serverId,
-          type:'check'
+    handleExpandChange(row){
+      if(row.isOpen){
+        row.isOpen = false
+        for(let i =0 ; i <this.tableData.length;i++){
+          let children = this.tableData[i];
+          if(children.dataId ==row.dataId){
+            this.tableData[i] = row
+            this.tableData = JSON.parse(JSON.stringify(this.tableData))
+            this.$forceUpdate()
+            break;
+          }
         }
+        return;
+      }else{
+        row.isOpen = true
+      }
+      queryTrainById({dataId:row.dataId}).then((res)=>{
+        row.children = res
+        for(let i =0 ; i <this.tableData.length;i++){
+           let children = this.tableData[i];
+           if(children.dataId ==row.dataId){
+             this.tableData[i] = row
+             this.tableData = JSON.parse(JSON.stringify(this.tableData))
+             this.$forceUpdate()
+             break;
+           }
+        }
+       
+        this.expandTableLoding = false
       })
-    }
+    //  alert("ss")
+    },
   },
   mounted() {
     this.queryProList(true)
+    this.getDataList();
   },
   created() {
     

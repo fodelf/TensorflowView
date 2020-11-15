@@ -15,7 +15,7 @@
       <!--头部组件-->
       <headerModule @changeCollapse="changeMenu"></headerModule>
       <!--面包屑组件-->
-      <tabBread :currentTab="'服务管理'"></tabBread>
+      <tabBread :currentTab="'数据管理'"></tabBread>
       <div class="main">
         <router-view />
         <!--底部组件-->

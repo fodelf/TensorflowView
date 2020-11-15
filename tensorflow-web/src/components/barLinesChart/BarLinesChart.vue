@@ -130,26 +130,52 @@ export default {
     chartData:function(newValue) {
       if(JSON.stringify(newValue) != '{}'){
         console.log(newValue)
+        let xAxis =[]
+        let yAxis =[]
+        if(newValue.length < 7){
+          let dis =  7 - newValue.length;
+          let child = newValue[0]?newValue[0]:[new Date()]
+          let time  = child[0]
+          for(let i = 0; i < dis; i++){
+            var now=new Date(time);
+            var date=new Date(now.getTime()-(i+1)*24*3600*1000);
+            var year=date.getFullYear();
+            var month=date.getMonth()+1>9?date.getMonth()+1:"0"+(date.getMonth()+1);
+            var day=date.getDate()>9?date.getDate():"0"+date.getDate();
+            var date=year+"/"+month+"/"+day;
+            var childData =[date ,0]
+            newValue.unshift(childData);
+          }
+        }
+        newValue.forEach((item)=>{
+          xAxis.push(item[0]);
+          yAxis.push(item[1]);
+        })
         this.option.series = []
-        this.option.xAxis[0].data = newValue.timeList
-        let failObj = {
-          name: '失败次数',
-          type:'bar',
-          data: newValue.failList
-        }
-        this.option.series.push(failObj)
-        let successObj = {
-          name: '成功次数',
-          type:'bar',
-          data: newValue.successList
-        }
-        this.option.series.push(successObj)
-        let totalObj = {
-          name: '汇总次数',
-          type:'line',
-          data: newValue.totalList
-        }
-        this.option.series.push(totalObj)
+        this.option.xAxis[0].data = xAxis;
+        let series = [{
+          data:yAxis,
+          type: 'line'
+        }]
+        // let failObj = {
+        //   name: '失败次数',
+        //   type:'bar',
+        //   data: newValue.failList
+        // }
+        // this.option.series.push(failObj)
+        // let successObj = {
+        //   name: '成功次数',
+        //   type:'bar',
+        //   data: newValue.successList
+        // }
+        // this.option.series.push(successObj)
+        // let totalObj = {
+        //   name: '汇总次数',
+        //   type:'line',
+        //   data: newValue.totalList
+        // }
+        // this.option.series.push(totalObj)
+        this.option.series = series;
         this.myChart.setOption(this.option)
       }
     }

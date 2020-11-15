@@ -6,13 +6,10 @@
  * @LastEditors: 吴文周
  * @LastEditTime: 2020-09-22 08:50:24
  */
-import cardNum from '@/components/cardNum/cardNum'
-import carousel from '@/components/carousel/carousel.vue'
-import actionModule from '@/components/actionModule/actionModule.vue'
+import cardNum from '@/components/cardNum/cardNum.vue'
 import barLinesChart from '@/components/barLinesChart/BarLinesChart'
 import weather from '@/components/weather/weather.vue'
-import { getIndexCount, queryIndexTrend, queryActualTime, queryWarningList} from '@/api/home.js'
-import { getServiceList } from '@/api/index/projectManage.js'
+import { getIndexCount, queryIndexTrend,getModel} from '@/api/index/home.js'
 export default {
   name: 'home',
   data() {
@@ -26,59 +23,47 @@ export default {
       cardList: [
         {
           icon: 'icon-xiangmu',
-          label: '服务总数',
+          label: '数据源总数',
           num: 0,
           percent: '50%',
           proColor: '#fb9678',
-          key: 'serverSum'
-        },
-        {
-          icon: 'icon-mobanguanli1',
-          label: '告警总数',
-          num: 0,
-          percent: '60%',
-          proColor: '#01c0c8',
-          key: 'warningSum'
+          key: 'dataSum'
         },
         {
           icon: 'icon-mobanguanli',
-          label: '请求总数',
+          label: '训练总数',
           num: 0,
           percent: '70%',
           proColor: '#ab8ce4',
-          key: 'requestSum'
+          key: 'trainSum'
+        },
+        {
+          icon: 'icon-mobanguanli1',
+          label: '模型总数',
+          num: 0,
+          percent: '60%',
+          proColor: '#01c0c8',
+          key: 'modelSum'
         },
         {
           icon: 'icon-gongju',
-          label: '失败总数',
+          label: '请求总数',
           num: 0,
           percent: '80%',
           proColor: '#00c292',
-          key: 'failSum'
+          key: 'resquestSum'
         }
       ],
       systemStatus:{
-        "dataSum":{"fail":0,"success":0,"total":0},
-        "realTime":"2020/09/09",
-        "todayState":
-        "good"
+        best:false,
+        bad:false,
       },
       carouselList: [],
-      todoList: [],
-      personalObj: {
-        msgTit: '个人动态',
-        msgList: []
-      },
-      teamObj: {
-        msgTit: '团队动态',
-        msgList: []
-      }
+      isgood:true
     }
   },
   components: {
     cardNum,
-    carousel,
-    actionModule,
     barLinesChart,
     weather
   },
@@ -90,7 +75,6 @@ export default {
      * @return {type}: 默认类型
      */
     queryIndexCount() {
-      console.log('0000')
       getIndexCount().then(res => {
         console.log('2222')
         console.log(res)
@@ -104,30 +88,16 @@ export default {
         this.chartData = res
       })
     },
-    getActualTime() {
-      queryActualTime().then(res=>{
-        this.systemStatus = res
-      })
-    },
     getWarningList() {
       queryWarningList().then(res=>{
         this.carouselList = res.warningList || []
       })
     },
-    getServiceList() {
-      // let params = {}
-      // params = {
-      //   type: "all"
-      // }
-      let list =  [{
-        "serviceName":"全部",
-        "serverId":"all"
-      }]
-      this.serviceList = list
-      getServiceList().then((res) => {
-        this.serviceList = list.concat(res.serverList || [])
+    getModel(){
+      getModel().then(res=>{
+        this.systemStatus = res
       })
-    },
+    }
   },
   mounted() {
     console.log("pc")
@@ -141,8 +111,9 @@ export default {
   created() {
     this.queryIndexCount()
     this.queryChart()
-    this.getActualTime()
-    this.getWarningList()
-    this.getServiceList()
+    this.getModel()
+    // this.getActualTime()
+    // this.getWarningList()
+    // this.getServiceList()
   }
 }

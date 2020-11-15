@@ -13,11 +13,11 @@ const Home = () => import('@/views/index/home/Home.vue')
 const DataManage = () => import('@/views/index/dataManage/dataManage.vue')
 const ModelManage = () => import('@/views/index/modelManage/modelManage.vue')
 const ModelAdd = () =>  import('@/views/index/modelManage/modelAdd/modelAdd.vue')
-const ProjectInit = () =>
-  import('@/views/index/projectManage/projectInit/ProjectInit.vue')
-const ProjectAdd = () =>  import('@/views/index/projectManage/projectAdd/projectAdd.vue')
+// const ProjectInit = () =>
+//   import('@/views/index/projectManage/projectInit/ProjectInit.vue')
+// const ProjectAdd = () =>  import('@/views/index/projectManage/projectAdd/projectAdd.vue')
 const DataAdd = () =>  import('@/views/index/dataManage/dataAdd/dataAdd.vue')
-import serviceSet from '@/views/index/systemManage/serviceSet/serviceSet.vue'
+// import serviceSet from '@/views/index/systemManage/serviceSet/serviceSet.vue'
 
 // const TerminalView = () => import('components/terminal/TerminalView.vue')
 Vue.use(Router)
@@ -44,7 +44,7 @@ const vueRouter = new Router({
       redirect: '/data/dataManage',
       component: MainLayout,
       meta: {
-        title: '服务管理'
+        title: '数据管理'
       },
       children: [
         {
@@ -55,14 +55,14 @@ const vueRouter = new Router({
             title: '数据源列表'
           }
         },
-        {
-          path: 'projectInit',
-          component: ProjectInit,
-          name: 'projectInit',
-          meta: {
-            title: '服务初始化'
-          }
-        },
+        // {
+        //   path: 'projectInit',
+        //   component: ProjectInit,
+        //   name: 'projectInit',
+        //   meta: {
+        //     title: '服务初始化'
+        //   }
+        // },
         {
           path: 'dataAdd',
           component: DataAdd,
@@ -90,14 +90,14 @@ const vueRouter = new Router({
             title: '模型列表'
           }
         },
-        {
-          path: 'projectInit',
-          component: ProjectInit,
-          name: 'projectInit',
-          meta: {
-            title: '服务初始化'
-          }
-        },
+        // {
+        //   path: 'projectInit',
+        //   component: ProjectInit,
+        //   name: 'projectInit',
+        //   meta: {
+        //     title: '服务初始化'
+        //   }
+        // },
         {
           path: 'modelAdd',
           component: ModelAdd,
@@ -108,25 +108,25 @@ const vueRouter = new Router({
         }
       ]
     },
-    {
-      path: '/system',
-      name: 'system',
-      redirect: '/system/serviceSet',
-      component: MainLayout,
-      meta: {
-        title: '系统设置'
-      },
-      children: [
-        {
-          path: 'serviceSet',
-          component: serviceSet,
-          name: 'serviceSet',
-          meta: {
-            title: '服务设置'
-          }
-        }
-      ]
-    }
+    // {
+    //   path: '/system',
+    //   name: 'system',
+    //   redirect: '/system/serviceSet',
+    //   component: MainLayout,
+    //   meta: {
+    //     title: '系统设置'
+    //   },
+    //   children: [
+    //     {
+    //       path: 'serviceSet',
+    //       component: serviceSet,
+    //       name: 'serviceSet',
+    //       meta: {
+    //         title: '服务设置'
+    //       }
+    //     }
+    //   ]
+    // }
   ]
 })
 const routerPush = Router.prototype.push

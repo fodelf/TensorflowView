@@ -11,8 +11,10 @@
     <span class="menuIcon iconfont icon-zhankai" @click="changeMenu()"></span>
     <div class="headerTit clearfix">
       <i class="headerIcon"></i>吴文周
-      <i class="el-icon-bell" style="margin-left:20px;font-size:20px" @click="queryMes()"></i>
-      <i class="tips" v-if="count>0">{{countMes}}</i>
+      <span @click="queryMes()">
+        <i class="el-icon-bell" style="margin-left:20px;font-size:20px"></i>
+        <i class="tips" v-show = "count>0" >{{countMes}}</i>
+      </span>
       <span class="iconfont icon-shezhi" style="margin-left:20px;"></span>
       <!-- <el-switch
   v-model="value"
@@ -22,19 +24,37 @@
     </div>
     <el-drawer
       :visible.sync="drawer"
-       size="20%"
       >
       <template slot="title" >
         <div class="title">
           系统消息
         </div>
       </template>
-      <el-card class="box-card">
-        <div slot="header" class="clearfix">
-          <span>卡片名称</span>
+      <el-card class="box-card" v-for="(item,key) in cardList" :key='key'>
+        <div slot="header">
+          <span>{{item.trainConfig.form.trainName}}</span>
         </div>
-        <div v-for="o in 4" :key="o" class="text item">
-          {{'列表内容 ' + o }}
+        <div class="text line">
+          <span>
+            <span class="m-20">预测准确率: </span>
+            <span>{{item.trainConfig.trainMes.test.accuracy.toFixed(4)}}</span>
+          </span>
+          <span>
+            <span class="m-20">预测准确率: </span>
+            <span>{{item.trainConfig.trainMes.test.loss.toFixed(4)}}</span>
+          </span>
+        </div>
+        <div class='img'  style="height: 100px">
+          <span class='label m-20'>训练预览: </span>
+          <el-image 
+              style="width: 100px; height: 100px"
+              :src="item.trainConfig.trainMes.imgUrl" 
+              :preview-src-list="[item.trainConfig.trainMes.imgUrl]">
+            </el-image>
+        </div>  
+        <div class="text item">
+          <el-link style='margin-right:10px' type="primary" :underline="false" icon='el-icon-folder-add' @click="save(item)" >保存</el-link>
+          <el-link  type="primary" :underline="false" icon="el-icon-edit">编辑</el-link>
         </div>
       </el-card>
     </el-drawer>
@@ -42,7 +62,8 @@
 </template>
 
 <script>
-// import io from 'socket.io-client';
+import {queryMessage ,updateMessage,queryMessageCount} from '@/api/index/home.js';
+import {saveModel} from '@/api/index/modelManage.js';
 export default {
   name: 'headerModule',
   data() {
@@ -51,7 +72,8 @@ export default {
       drawer:false,
       value: '',
       count:0,
-      countMes:0
+      countMes:0,
+      cardList:[]
     }
   },
   methods: {
@@ -59,10 +81,38 @@ export default {
       this.$emit('changeCollapse')
     },
     queryMes(){
-      this.drawer = !this.drawer
+      this.drawer = true
+      this.count = 0
+      this.countMes = 0
+      if(this.drawer){
+        queryMessage().then((res)=>{
+          this.cardList = res
+          updateMessage().then(() =>{})
+        })
+      }
+    },
+    queryMessageCount(){
+      queryMessageCount().then((res)=>{
+        this.count = res
+        this.countMes = res
+      })
+    },
+    // 模型保存
+    save(item){
+      let params = {
+        form:item.trainConfig.form,
+        trainData:item.trainConfig.trainMes
+      }
+      saveModel(params).then((res)=>{
+        this.$message({
+          message: '保存成功！',
+          type: 'success'
+        })
+      })
     }
   },
-  created(){
+  mounted(){
+    this.queryMessageCount();
     let namespace = '/mes';
     // require('socket.io-client')(location.protocol + '//' + document.domain + ':' + location.port + namespace);
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
@@ -70,22 +120,24 @@ export default {
     socket.on('connect', function() {
         socket.emit('mes', {data: 'I\'m connected!'});
     });
+    var that = this
     socket.on('train', (msg)=>{
       // console.log(msg)
       //  this.$message({
       //     message: '训练成功，请在消息中查看！',
       //     type: 'success'
       //   });
-      this.count++
-      if(this.count>99){
-        this.countMes = '99+'
+      that.count = that.count?that.count:0 + 1
+      if(that.count>99){
+        that.countMes = '99+'
       }else{
-        this.countMes = this.count
+        that.countMes = that.count
       }
-      this.$notify({
+      that.$notify({
         title: '成功',
         message: '训练成功，请在消息中查看！',
-        type: 'success'
+        type: 'success',
+        position: 'top-left'
       });
     });
 
@@ -141,8 +193,8 @@ export default {
     background: #fb9678;
     border-radius: 10px;
     position: absolute;
-    margin-left: 118px;
-    margin-top: -10px;
+    margin-left: -10px;
+    margin-top: 16px;
   }
 }
 /deep/.el-tabs__nav-wrap::after {
@@ -170,7 +222,51 @@ export default {
  outline: none;
 }
 /deep/.el-drawer__body{
-  padding:20px 20px 0px;
+  padding:0px 20px 0px;
   box-sizing: border-box;
+}
+/deep/.el-card{
+  background:#353c48;
+  border: 1px solid #353c48;
+  .text{
+    color:white;
+    font-size:12px;
+    height: 40px;
+    line-height: 40px;
+  }
+  .line{
+    display:flex;
+    justify-content: space-between;
+  }
+  .item{
+    display: flex;
+    justify-content:flex-end;
+  }
+  .m-20{
+    margin-right:20px;
+  }
+  .img{
+    display: flex;
+    height: 100px;
+    color: white;
+    font-size: 12px;
+    .label{
+      height: 20px;
+      line-height: 20px;
+    }
+  }
+  /deep/.el-card__header{
+    color:#fb9678;
+    height: 40px;
+    padding: 0px 18px;
+    font-size:14px;
+    div{
+      height: 40px;
+      line-height: 40px;
+    }
+  }
+  /deep/.el-card__body{
+    padding:20px 20px 0px 20px;
+  }
 }
 </style>

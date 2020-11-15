@@ -43,7 +43,7 @@ export default {
           name: 'projectManage',
           path: '/project/projectManage',
           icon: 'icon-xiangmu',
-          label: '服务管理'
+          label: '数据管理'
         },
         {
           name: 'systemManage',

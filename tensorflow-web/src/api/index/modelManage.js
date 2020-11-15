@@ -21,9 +21,9 @@ export function getDataList() {
     method: 'GET'
   })
 }
-export function getServiceType() {
+export function queryModelList() {
   return request({
-    url: '/uiApi/v1/eumn/serverTypeList',
+    url: '/api/v1/model/queryModelList',
     method: 'GET',
   })
 }
@@ -47,6 +47,20 @@ export function train(params) {
     params: params
   })
 }
+export function getParam(params) {
+  return request({
+    url: '/api/v1/model/getParam',
+    method: 'POST',
+    params: params
+  })
+}
+export function trainOnline(params) {
+  return request({
+    url: '/api/v1/model/trainOnline',
+    method: 'POST',
+    params: params
+  })
+}
 export function parseHeader(params) {
   return request({
     url: '/api/v1/data/parseHeader',
@@ -61,4 +75,10 @@ export function preTrain(params) {
     params: params
   })
 }
-
+export function saveModel(params) {
+  return request({
+    url: '/api/v1/model/saveModel',
+    method: 'POST',
+    params: params
+  })
+}
