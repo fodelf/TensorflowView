@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-16 08:37:44
+ * @LastEditTime: 2020-11-16 09:20:48
 -->
 <template>
   <div class="projectManage">
@@ -22,7 +22,6 @@
       <el-table
         :data="tableData"
         row-key="id"
-        height="100%"
         style="width: 100%">
         <!-- <el-table-column type="expand">
           <template slot-scope="props">
