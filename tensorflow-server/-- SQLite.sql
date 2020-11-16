@@ -1,0 +1,1 @@
+DELETE from files where dataName	='ssd'

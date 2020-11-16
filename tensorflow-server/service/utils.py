@@ -112,7 +112,7 @@ def onehot_hash(df, column):
     df[column] = df[column].apply(lambda x: num(x))
 def onehot(df, column,max,min):
     dis = max - min
-    df[column] = df[column].apply(lambda x: abs((x - min)/dis))   
+    df[column] = df[column].apply(lambda x: abs((x - min)/dis))
 def df_to_dataset(dataframe,target,shuffle=True, batch_size=32):
   dataframe = dataframe.copy()
   labels = dataframe.pop(target)
@@ -269,7 +269,8 @@ def train(data,socketio):
       "dataId":data["dataId"],
       "loss":loss,
       "trainName":data["trainName"],
-      "accuracy":accuracy
+      "accuracy":accuracy,
+      "dataName":data["dataName"]
     }
     messageObj = {
       "trainConfig":{

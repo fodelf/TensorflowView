@@ -3,8 +3,8 @@
  * @version: 
  * @Author: pym
  * @Date: 2020-08-11 10:20:11
- * @LastEditors: pym
- * @LastEditTime: 2020-09-06 21:48:00
+ * @LastEditors: 吴文周
+ * @LastEditTime: 2020-11-16 08:50:34
  */
 const menuTree = [
   { name: 'home', path: '/home', icon: 'icon-shouye', label: '首页' },
@@ -13,6 +13,12 @@ const menuTree = [
     path: '/data/dataManage',
     icon: 'icon-xiangmu',
     label: '数据管理'
+  },
+  {
+    name: 'trainManage',
+    path: '/train/trainManage',
+    icon: 'icon-mobanguanli',
+    label: '训练管理'
   },
   {
     name: 'modelManage',

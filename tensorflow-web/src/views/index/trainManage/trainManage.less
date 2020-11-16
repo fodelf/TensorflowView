@@ -1,0 +1,109 @@
+.projectManage {
+  width: 100%;
+  height: calc(100% - 56px);
+  padding: 20px 25px;
+  box-sizing: border-box;
+  display: flex;
+  .leftMenu {
+    flex: 0 0 250px;
+    height: 100%;
+    padding: 20px;
+    border-right: 1px solid #4f5467;
+    box-sizing: border-box;
+    background: #353c48;
+  }
+  .rightList {
+    flex: auto;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background: #353c48;
+
+    .rightTit {
+      width: 100%;
+      margin-bottom: 10px;
+      .keyInpt {
+        float: right;
+        width: 250px;
+        margin-right: 15px;
+        /deep/.el-input__inner {
+          background: #303641;
+          width: 250px;
+          border: none;
+        }
+      }
+      /deep/.el-button {
+        float: right;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 15px;
+      }
+    }
+    .tableCon {
+      height: calc(100% - 50px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
+}
+@border-color: #4f5467;
+@bg-color: #353c48;
+.tableBox {
+  height: 100%;
+  /deep/.el-table {
+    background: @bg-color;
+    border-color: @border-color;
+    tr {
+      color: #ced4da;
+
+      th {
+        background: @bg-color;
+        border-color: @border-color;
+      }
+      td {
+        background: @bg-color;
+        border-color: @border-color;
+        /deep/.el-button {
+          height: 25px;
+          line-height: 25px;
+          padding: 0 10px;
+        }
+      }
+    }
+  }
+  .el-table::before {
+    background: @border-color;
+  }
+  .el-table::after {
+    background: @border-color;
+  }
+  .pageBox {
+    width: 100%;
+    margin-top: 5px;
+    /deep/.el-pagination {
+      float: right;
+      .btn-prev {
+        background: #303641;
+      }
+      .btn-next {
+        background: #303641;
+      }
+      .el-input__inner {
+        background: #303641;
+      }
+    }
+  }
+  /deep/.el-form-item{
+    margin-bottom: 0px;
+  }
+}
+/deep/.el-dialog__title{
+  color:white;
+}
+/deep/.el-dialog__header{
+  background: #353c48;
+}
+/deep/.el-dialog__body{
+  background: #353c48;
+  padding: 0px 20px;
+}

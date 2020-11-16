@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-13 08:20:47
+ * @LastEditTime: 2020-11-16 09:07:17
 -->
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
@@ -127,14 +127,14 @@
 </template>
 
 <script>
-import modelAdd from './modelAdd.js'
+import trainAdd from './trainAdd.js'
 export default {
-  ...modelAdd
+  ...trainAdd
 }
 </script>
 
 <style lang="less" scoped>
-@import './modelAdd.less';
+@import './trainAdd.less';
 @border-color: #4f5467;
 @bg-color: #353c48;
 .tableBox {

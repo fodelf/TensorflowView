@@ -4,11 +4,12 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-16 09:10:31
+ * @LastEditTime: 2020-11-16 09:15:21
  */
-import{queryModelList} from "@/api/index/modelManage"
+import{queryTrainList} from "@/api/index/trainManage"
 import{dateFormat} from "@/utils/index"
 import scriptCard from "@/components/scriptCard/scriptCard"
+import {saveModel} from '@/api/index/modelManage.js';
 export default {
   name: 'projectManage',
   components: {
@@ -74,8 +75,8 @@ export default {
         }
       })
     },
-    queryModelList(){
-      queryModelList().then((res)=>{
+    queryTrainList(){
+      queryTrainList().then((res)=>{
         res.forEach((row)=>{
           row.accuracy = row.accuracy.toFixed(4)
           row.loss = row.loss.toFixed(4)
@@ -83,9 +84,21 @@ export default {
         })
         this.tableData = res
       })
+    },
+    saveModel(item){
+      let params = {
+        form:item.trainConfig.form,
+        trainData:item.trainConfig.trainMes
+      }
+      saveModel(params).then((res)=>{
+        this.$message({
+          message: '保存模型成功！',
+          type: 'success'
+        })
+      })
     }
   },
   mounted() {
-    this.queryModelList()
+    this.queryTrainList()
   }
 }

@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-08-11 10:08:07
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-09-09 17:56:30
+ * @LastEditTime: 2020-11-16 08:51:10
 -->
 <template>
   <div class="sideMenu" :class="isCollapse?'min-sideBar':'sideBar'">
@@ -43,6 +43,8 @@ export default {
         return "/data/dataManage";
       }else if(this.$route.path.indexOf('/model') >=0){
         return "/model/modelManage";
+      } else if(this.$route.path.indexOf('/train') >=0){
+        return "/train/trainManage";
       }else{
         return "/home"
       }

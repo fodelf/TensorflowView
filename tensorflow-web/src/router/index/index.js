@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2019-06-05 18:57:53
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-03 19:43:39
+ * @LastEditTime: 2020-11-16 09:07:55
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -12,7 +12,8 @@ import MainLayout from '@/views/layout/Layout.vue'
 const Home = () => import('@/views/index/home/Home.vue')
 const DataManage = () => import('@/views/index/dataManage/dataManage.vue')
 const ModelManage = () => import('@/views/index/modelManage/modelManage.vue')
-const ModelAdd = () =>  import('@/views/index/modelManage/modelAdd/modelAdd.vue')
+const TrainManage = () => import('@/views/index/trainManage/trainManage.vue')
+const ModelAdd = () =>  import('@/views/index/trainManage/trainAdd/trainAdd.vue')
 // const ProjectInit = () =>
 //   import('@/views/index/projectManage/projectInit/ProjectInit.vue')
 // const ProjectAdd = () =>  import('@/views/index/projectManage/projectAdd/projectAdd.vue')
@@ -55,14 +56,6 @@ const vueRouter = new Router({
             title: '数据源列表'
           }
         },
-        // {
-        //   path: 'projectInit',
-        //   component: ProjectInit,
-        //   name: 'projectInit',
-        //   meta: {
-        //     title: '服务初始化'
-        //   }
-        // },
         {
           path: 'dataAdd',
           component: DataAdd,
@@ -90,43 +83,35 @@ const vueRouter = new Router({
             title: '模型列表'
           }
         },
-        // {
-        //   path: 'projectInit',
-        //   component: ProjectInit,
-        //   name: 'projectInit',
-        //   meta: {
-        //     title: '服务初始化'
-        //   }
-        // },
+      ]
+    },
+    {
+      path: '/train',
+      name: 'train',
+      redirect: '/train/trainManage',
+      component: MainLayout,
+      meta: {
+        title: '训练管理'
+      },
+      children: [
         {
-          path: 'modelAdd',
-          component: ModelAdd,
-          name: 'modelAdd',
+          path: 'trainManage',
+          component: TrainManage,
+          name: 'trainManage',
           meta: {
-            title: '新增模型'
+            title: '训练列表'
+          }
+        },
+        {
+          path: 'trainAdd',
+          component: ModelAdd,
+          name: 'trainAdd',
+          meta: {
+            title: '新增训练'
           }
         }
       ]
-    },
-    // {
-    //   path: '/system',
-    //   name: 'system',
-    //   redirect: '/system/serviceSet',
-    //   component: MainLayout,
-    //   meta: {
-    //     title: '系统设置'
-    //   },
-    //   children: [
-    //     {
-    //       path: 'serviceSet',
-    //       component: serviceSet,
-    //       name: 'serviceSet',
-    //       meta: {
-    //         title: '服务设置'
-    //       }
-    //     }
-    //   ]
-    // }
+    }
   ]
 })
 const routerPush = Router.prototype.push

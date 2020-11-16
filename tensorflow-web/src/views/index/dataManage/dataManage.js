@@ -48,7 +48,7 @@ export default {
     },
     addTrain(){
       this.$router.push({
-        name:'modelAdd',
+        name:'trainAdd',
         query:{
           type:'add'
         }

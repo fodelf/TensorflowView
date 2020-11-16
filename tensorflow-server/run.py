@@ -248,6 +248,16 @@ def queryModelList():
         'data':result
     }
     return jsonify(res)
+# 查询模型列表
+@app.route('/api/v1/model/queryTrainList')
+def queryTrainList():
+    result = model.database.queryTrainList()
+    res = {
+        'code': code,
+        'msg': msg,
+        'data':result
+    }
+    return jsonify(res)
 # 查询数据源列表
 @app.route('/api/v1/data/dataList')
 def dataList():

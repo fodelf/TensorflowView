@@ -84,6 +84,7 @@ class Train(Base):
     __tablename__ = 'train'
     id = Column(Integer, autoincrement=True, primary_key=True)
     trainName = Column(String, unique=True)
+    dataName = Column(String, unique=True)
     trainConfig = Column(String)
     dataId = Column(String)
     time = Column(DateTime,nullable=False, server_default=func.now())
@@ -176,6 +177,7 @@ def queryModelById(id):
 # 新建训练
 def createTrain(data):
     train = Train(trainConfig=json.dumps(data["trainConfig"], indent=2),
+                dataName=data["dataName"],
                 dataId=str(data["dataId"]),
                 loss = float(data["loss"]),
                 trainName=str(data["trainName"]),
@@ -290,4 +292,15 @@ def queryModelList():
     result = []
     for f in tarins:
         result.append(f.to_json())
-    return result    
+    return result
+
+# 查询训练列表
+def queryTrainList():
+    session = Session()
+    tarins = session.query(Train).all()
+    result = []
+    for f in tarins:
+      child = f.to_json()
+      child['trainConfig']= json.loads(child['trainConfig'])
+      result.append(child)
+    return result

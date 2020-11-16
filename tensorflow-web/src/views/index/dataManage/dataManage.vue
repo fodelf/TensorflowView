@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-09-09 19:15:05
+ * @LastEditTime: 2020-11-16 08:37:44
 -->
 <template>
   <div class="projectManage">
@@ -23,9 +23,8 @@
         :data="tableData"
         row-key="id"
         height="100%"
-        @expand-change="handleExpandChange"
         style="width: 100%">
-        <el-table-column type="expand">
+        <!-- <el-table-column type="expand">
           <template slot-scope="props">
              <div v-loading="expandTableLoding" style="height:60px;">
                 <div v-if=" props.row.children.length == 0" style="text-align: center;">暂无数据</div>
@@ -57,7 +56,7 @@
                 </div>
             </div>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           label="数据源名称"
           prop="dataName">
