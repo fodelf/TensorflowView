@@ -84,7 +84,7 @@ class Train(Base):
     __tablename__ = 'train'
     id = Column(Integer, autoincrement=True, primary_key=True)
     trainName = Column(String, unique=True)
-    dataName = Column(String, unique=True)
+    dataName = Column(String)
     trainConfig = Column(String)
     dataId = Column(String)
     time = Column(DateTime,nullable=False, server_default=func.now())
