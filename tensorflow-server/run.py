@@ -7,7 +7,7 @@ import string
 from werkzeug.utils import secure_filename
 import os
 import json
-import model.database
+import model.base as dataBase
 import service.utils
 import  threading
 UPLOAD_FOLDER = 'static'
@@ -25,7 +25,7 @@ socketio = SocketIO(app,
             )
 code = 200
 msg = 'success'
-model.database._init()
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -40,7 +40,7 @@ def request_parse(req_data):
 # 查询首页汇总数据
 @app.route('/api/v1/home/getIndexCount')
 def getIndexCount():
-    indexSum = model.database.querySum()
+    indexSum = dataBase.querySum()
     res = {
         'code': code,
         'msg': msg,
@@ -51,7 +51,7 @@ def getIndexCount():
 # 查询训练趋势数据
 @app.route('/api/v1/home/getTrainCount')
 def getTrainCount():
-    indexSum = model.database.queryTrainCount()
+    indexSum = dataBase.queryTrainCount()
     res = {
         'code': code,
         'msg': msg,
@@ -62,7 +62,7 @@ def getTrainCount():
 # 获取消息列表
 @app.route('/api/v1/home/queryMessage')
 def queryMessage():
-    result = model.database.queryMessage()
+    result = dataBase.queryMessage()
     res = {
         'code': code,
         'msg': msg,
@@ -72,7 +72,7 @@ def queryMessage():
 # 获取消息列表
 @app.route('/api/v1/home/queryMessageCount')
 def queryMessageCount():
-    result = model.database.queryMessageCount()
+    result = dataBase.queryMessageCount()
     res = {
         'code': code,
         'msg': msg,
@@ -82,7 +82,7 @@ def queryMessageCount():
 # 重置消息状态
 @app.route('/api/v1/home/updateMessage')
 def updateMessage():
-    model.database.updateMessage()
+    dataBase.updateMessage()
     res = {
         'code': code,
         'msg': msg,
@@ -92,7 +92,7 @@ def updateMessage():
 # 查询训练趋势数据
 @app.route('/api/v1/data/getDataSum')
 def getDataSum():
-    dataSum = model.database.getDataSum()
+    dataSum = dataBase.getDataSum()
     res = {
         'code': code,
         'msg': msg,
@@ -109,7 +109,7 @@ def createData():
         'data':"ok"
     }
     data = request_parse(request)
-    model.database.saveFile(data)
+    dataBase.saveFile(data)
     # session.add(ed_user)
     return jsonify(t)
 
@@ -117,7 +117,7 @@ def createData():
 @app.route('/api/v1/data/queryTrainById',methods=['POST', 'GET'])
 def queryTrainById():
     data = request_parse(request)
-    res = model.database.queryTrainById(data)
+    res = dataBase.queryTrainById(data)
     t = {
         'code': code,
         'msg': msg,
@@ -142,7 +142,7 @@ def parseHeader():
 @app.route('/api/v1/data/train', methods=['POST'])
 def train():
     data = request_parse(request)
-    if model.database.queryTrainByName(data["trainName"]) == 1:
+    if dataBase.queryTrainByName(data["trainName"]) == 1:
         t = {
         'code': 500,
         'msg': "训练名称已存在",
@@ -162,7 +162,7 @@ def train():
 @app.route('/api/v1/model/createTrain', methods=['POST'])
 def createTrain():
     data = request_parse(request)
-    model.database.createTrain(data)
+    dataBase.createTrain(data)
     t = {
         'code': code,
         'msg': msg,
@@ -177,14 +177,14 @@ def thead(data):
 @app.route('/api/v1/model/saveModel', methods=['POST'])
 def save():
     data = request_parse(request)
-    if model.database.queryModelByName(data["form"]["trainName"]) == 1:
+    if dataBase.queryModelByName(data["form"]["trainName"]) == 1:
         t = {
         'code': 500,
         'msg': "模型名称已存在",
         'data':"error"
         }
         return jsonify(t)
-    model.database.saveModel(data)
+    dataBase.saveModel(data)
     t = {
         'code': code,
         'msg': msg,
@@ -230,7 +230,7 @@ def getParam():
 # 查询最好和最差模型
 @app.route('/api/v1/model/getModel')
 def getModel():
-    result = model.database.queryModel()
+    result = dataBase.queryModel()
     res = {
         'code': code,
         'msg': msg,
@@ -241,7 +241,7 @@ def getModel():
 # 查询模型列表
 @app.route('/api/v1/model/queryModelList')
 def queryModelList():
-    result = model.database.queryModelList()
+    result = dataBase.queryModelList()
     res = {
         'code': code,
         'msg': msg,
@@ -251,7 +251,7 @@ def queryModelList():
 # 查询模型列表
 @app.route('/api/v1/model/queryTrainList')
 def queryTrainList():
-    result = model.database.queryTrainList()
+    result = dataBase.queryTrainList()
     res = {
         'code': code,
         'msg': msg,
@@ -271,7 +271,7 @@ def dataList():
 # 查询数据类型列表
 @app.route('/api/v1/data/getDataType')
 def getDataType():
-    result = model.database.getDataTypes()
+    result = dataBase.getDataTypes()
     res = {
         'code': code,
         'msg': msg,
@@ -294,7 +294,7 @@ def test_disconnect():
 # 查询数据源列表
 @app.route('/api/v1/data/getDataList')
 def getDataList():
-    result = model.database.getDataList()
+    result = dataBase.getDataList()
     res = {
         'code': code,
         'msg': msg,
