@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:32:11
 LastEditors: 吴文周
-LastEditTime: 2020-11-17 09:32:36
+LastEditTime: 2020-11-17 21:52:41
 '''
 from model.base import *
 
@@ -42,3 +42,10 @@ def getDataList():
     for f in Files:
         result.append(f.to_json())
     return result
+
+# 删除数据源(关联太多)
+def deleteDataById(dataId):
+    session = Session()
+    fileObj= session.query(File).filter(File.dataId == dataId)
+    session.delete(fileObj)
+    session.commit()
