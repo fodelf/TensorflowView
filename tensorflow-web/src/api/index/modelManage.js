@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-10 12:39:03
+ * @LastEditTime: 2020-11-18 19:09:04
  */
 import request from '@/utils/request'
 
@@ -21,10 +21,11 @@ export function getDataList() {
     method: 'GET'
   })
 }
-export function queryModelList() {
+export function queryModelList(params) {
   return request({
     url: '/api/v1/model/queryModelList',
     method: 'GET',
+    params:params
   })
 }
 export function save(params) {

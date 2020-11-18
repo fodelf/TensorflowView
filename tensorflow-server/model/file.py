@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:32:11
 LastEditors: 吴文周
-LastEditTime: 2020-11-17 21:52:41
+LastEditTime: 2020-11-18 19:43:51
 '''
 from model.base import *
 
@@ -35,13 +35,27 @@ def saveFile(data):
     session.commit()
 
 
-def getDataList():
+def getDataList(data):
+    session = Session()
+    Files = session.query(File).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
+    total = session.query(File).count()
+    dataList = []
+    for f in Files:
+        dataList.append(f.to_json())
+    result={
+      "list":dataList,
+      "total":total
+    }
+    return result
+
+def getDataAll():
     session = Session()
     Files = session.query(File).all()
-    result = []
+    dataList = []
     for f in Files:
-        result.append(f.to_json())
-    return result
+        dataList.append(f.to_json())
+    return dataList
+
 
 # 删除数据源(关联太多)
 def deleteDataById(dataId):

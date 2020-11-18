@@ -7,6 +7,18 @@
 # LastEditTime: 2020-11-17 21:15:10
 # '''
 from router.common import *
+from werkzeug.utils import secure_filename
+import  threading
+import os
+import service.utils
+import sys
+sys.path.append('..')
+import run
+# module = __import__('tensorflow-server')
+# import tensorflow-server.run as app
+def thead(data):
+    service.utils.train(data,run.socketio)
+ALLOWED_EXTENSIONS = {'txt', 'csv'}
 # 查询训练趋势数据
 @data.route('/getDataSum')
 def getDataSum():
@@ -99,7 +111,19 @@ def getDataType():
 # 查询数据源列表
 @data.route('/getDataList')
 def getDataList():
-    result = dataBase.getDataList()
+    data = request_parse(request)
+    result = dataBase.getDataList(data)
+    res = {
+        'code': code,
+        'msg': msg,
+        'data':result
+    }
+    return jsonify(res)
+
+# 查询数据源列表
+@data.route('/getDataAll')
+def getDataAll():
+    result = dataBase.getDataAll()
     res = {
         'code': code,
         'msg': msg,
@@ -117,3 +141,33 @@ def deleteDataById():
         'data':result
     }
     return jsonify(res)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# 上传文件功能
+@data.route('/upload', methods=['POST', 'GET'])
+def upload():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return 'No file part'
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return 'No selected file'
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            if not os.path.exists('static'):
+                os.mkdir('static')
+            filepath = os.path.join('static',filename)
+            file.save(filepath)
+            fileSize = os.path.getsize(filepath)
+            result = {'fileName':filename,'filePath':filepath,'fileSize':fileSize}
+            res = {
+                'code': code,
+                'msg': msg,
+                'data':result
+            }
+            return jsonify(res)

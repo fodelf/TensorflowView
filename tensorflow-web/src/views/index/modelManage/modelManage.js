@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-16 09:10:31
+ * @LastEditTime: 2020-11-18 19:10:37
  */
 import{queryModelList} from "@/api/index/modelManage"
 import{dateFormat} from "@/utils/index"
@@ -75,14 +75,20 @@ export default {
       })
     },
     queryModelList(){
-      queryModelList().then((res)=>{
-        res.forEach((row)=>{
+      queryModelList(this.tablePag).then((res)=>{
+        let list = res.list
+        list.forEach((row)=>{
           row.accuracy = row.accuracy.toFixed(4)
           row.loss = row.loss.toFixed(4)
           row.time = dateFormat('YYYY/mm/dd',row.time)
         })
-        this.tableData = res
+        this.tableData = list
+        this.tablePag.totalRecord = res.total;
       })
+    },
+    handleCurrentChange(val){
+      this.tablePag.pageNo = val;
+      this.queryModelList();
     }
   },
   mounted() {

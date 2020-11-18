@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-02 09:22:18
+ * @LastEditTime: 2020-11-18 09:07:54
  */
 import menuList from 'components/menuList/menuList.vue'
 import {
@@ -122,16 +122,22 @@ export default {
       return fmt;
     },
     getDataList(){
-      getDataList().then((res)=>{
-        res.forEach((data)=>{
+      getDataList(this.tablePag).then((res)=>{
+        let list = res.list
+        list.forEach((data)=>{
           data.fileSize = Math.floor(data.fileSize/1024) +"k"
           data.time = this.dateFormat("YYYY/mm/dd HH:MM:SS",data.time)
           data.hasChildren = true
           data.children = []
           data.isOpen = false
         })
-        this.tableData = res
+        this.tableData = list
+        this.tablePag.totalRecord = res.total;
       })
+    },
+    handleCurrentChange(val){
+     this.tablePag.pageNo = val;
+     this.getDataList();
     },
     handleExpandChange(row){
       if(row.isOpen){

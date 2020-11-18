@@ -20,9 +20,6 @@ def createTrain():
     }
     return jsonify(t)
 
-def thead(data):
-    service.utils.train(data,socketio)
-
 # 保存模型
 @model.route('/saveModel', methods=['POST'])
 def save():
@@ -91,7 +88,8 @@ def getModel():
 # 查询模型列表
 @model.route('/queryModelList')
 def queryModelList():
-    result = dataBase.queryModelList()
+    data = request_parse(request)
+    result = dataBase.queryModelList(data)
     res = {
         'code': code,
         'msg': msg,
@@ -101,7 +99,8 @@ def queryModelList():
 # 查询模型列表
 @model.route('/queryTrainList')
 def queryTrainList():
-    result = dataBase.queryTrainList()
+    data = request_parse(request)
+    result = dataBase.queryTrainList(data)
     res = {
         'code': code,
         'msg': msg,

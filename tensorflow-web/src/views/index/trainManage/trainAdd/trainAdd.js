@@ -4,17 +4,21 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-13 08:22:48
+ * @LastEditTime: 2020-11-18 20:47:41
  */
 import {
-  getDataList,
+  getDataAll,
   createData,
   train,
-  parseHeader
+  parseHeader,
 } from '@/api/index/dataManage.js'
 import {
-  preTrain
+  preTrain,
+  saveModel
 } from '@/api/index/modelManage.js'
+import {
+  queryTrainByTrainId
+} from '@/api/index/trainManage.js'
 export default {
   name: 'dataAdd',
   data() {
@@ -119,21 +123,37 @@ export default {
     handleChangedataId(){
       this.parseHeader()
     },
-    queryProjectType() {
-      getDataList().then(res=>{
+    getDataAll(flag) {
+      getDataAll().then(res=>{
         this.serverList = res || []
         try {
-          this.form.dataId = this.serverList[0]['dataId']
-          this.form.id = this.serverList[0]['id']
-          this.form.filePath = this.serverList[0]['filePath']
-          this.form.dataName = this.serverList[0]['dataName']
+          if(flag){
+            this.form.dataId = this.serverList[0]['dataId']
+            this.form.id = this.serverList[0]['id']
+            this.form.filePath = this.serverList[0]['filePath']
+            this.form.dataName = this.serverList[0]['dataName']
+          }
           this.parseHeader()
         } catch (error) {
           console.log(error)
         }
       })
     },
-    parseHeader(){
+    getDataAllCheck(){
+      getDataAll().then(res=>{
+        this.serverList = res || []
+        this.parseHeader(()=>{
+          let headerList = JSON.parse(JSON.stringify(this.headerList))
+          this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
+          let obj = {}
+          this.preHeadList.forEach(item=>{
+            obj[item] = ''
+          })
+          this.preDataList = [obj]
+        })
+      })
+    },
+    parseHeader(func){
       try {
         parseHeader({filePath:this.form.filePath}).then(res=>{
           let lineOne = {"index":"源数据"};
@@ -146,6 +166,9 @@ export default {
           this.headerList = res;
           this.headerList.unshift({ name: '首列', code: 'index' });
           this.dataList = [lineOne,lineTow];
+          if(func){
+            func().bind(this)
+          }
         })
       } catch (error) {}
     },
@@ -154,14 +177,14 @@ export default {
         form:this.form,
         trainData:this.trainData
       }
-      createData(param).then(res=>{
+      saveModel(param).then(res=>{
         this.$message({
           message: '保存模型成功！',
           type: 'success'
         });
-        // this.$router.push({
-        //   name:'dataManage'
-        // })
+        this.$router.push({
+          name:'trainManage'
+        })
       })
     },
     train(){
@@ -230,26 +253,20 @@ export default {
     }
   },
   created() {
-    this.queryProjectType()
+    if(this.$route.query.type =='check'){
+      queryTrainByTrainId({trainId:this.$route.query.trainId}).then((res)=>{
+        this.isTrain = true;
+        let trainConfig = JSON.parse(res.trainConfig)
+        this.form = trainConfig['form']
+        this.trainData =  trainConfig['trainMes']
+        this.getDataAllCheck()
+      })
+    }else if(this.$route.query.type =='add'){
+      this.getDataAll(true)
+    }
     if(this.$route.query.id){
       this.initDetail()
     }else {
-      this.ruleForm= {
-        dataName: '',
-        dataId: '',
-        dataAddress: '',
-        dataPort: '',
-        dataRules: [],
-        dataBreak:"",
-        dataLimit:'',
-        useConsulId:'',
-        useConsulTag:'',
-        useConsulCheckPath:'',
-        useConsulPort:'',
-        useConsulInterval:'',
-        useConsulTimeout:'',
-        dingdingList:[],
-      }
     }
   }
 }

@@ -4,13 +4,14 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:29:31
 LastEditors: 吴文周
-LastEditTime: 2020-11-17 12:34:13
+LastEditTime: 2020-11-18 19:21:59
 '''
 from model.base import *
 
 class Train(Base):
     __tablename__ = 'train'
     id = Column(Integer, autoincrement=True, primary_key=True)
+    trainId = Column(String,default=gen_id)
     trainName = Column(String, unique=True)
     dataName = Column(String)
     trainConfig = Column(String)
@@ -38,15 +39,20 @@ def createTrain(data):
     session.commit()
 
 # 查询训练列表
-def queryTrainList():
+def queryTrainList(data):
     session = Session()
-    tarins = session.query(Train).all()
+    trains = session.query(Train).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
+    total = session.query(Train).count()
     result = []
-    for f in tarins:
+    for f in trains:
       child = f.to_json()
       child['trainConfig']= json.loads(child['trainConfig'])
       result.append(child)
-    return result
+    res={
+      "list":result,
+      "total":total
+    }
+    return res
 
 # 根据id查询训练集
 def queryTrainById(data):
@@ -72,3 +78,9 @@ def queryTrainByName(name):
     session =Session()
     sum = session.query(Train).filter(Train.trainName == name).count()
     return sum
+
+# 根据id查询训练对象
+def queryTrainByTrainId(data):
+    session = Session()
+    train = session.query(Train).filter(Train.trainId ==data["trainId"]).first()
+    return train.to_json()

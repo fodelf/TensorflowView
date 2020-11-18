@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-10 12:39:29
+ * @LastEditTime: 2020-11-18 19:43:02
  */
 import request from '@/utils/request'
 
@@ -20,12 +20,20 @@ export function getDataSum() {
     method: 'GET'
   })
 }
-export function getDataList() {
+export function getDataList(params) {
   return request({
     url: '/api/v1/data/getDataList',
+    method: 'GET',
+    params: params
+  })
+}
+export function getDataAll() {
+  return request({
+    url: '/api/v1/data/getDataAll',
     method: 'GET'
   })
 }
+
 export function getServiceType() {
   return request({
     url: '/uiApi/v1/eumn/serverTypeList',

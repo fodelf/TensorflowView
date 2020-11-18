@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-16 08:57:33
+ * @LastEditTime: 2020-11-18 19:26:21
  */
 import request from '@/utils/request'
 
@@ -15,16 +15,18 @@ export function getDataType() {
   })
 }
 
-export function getDataList() {
+export function queryTrainByTrainId(params) {
   return request({
-    url: '/api/v1/data/getDataList',
-    method: 'GET'
+    url: '/api/v1/train/queryTrainByTrainId',
+    method: 'GET',
+    params:params
   })
 }
-export function queryTrainList() {
+export function queryTrainList(params) {
   return request({
     url: '/api/v1/model/queryTrainList',
     method: 'GET',
+    params: params
   })
 }
 export function save(params) {

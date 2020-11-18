@@ -61,10 +61,15 @@ def queryModelById(id):
     return modelObj
 
 # 根据模型列表
-def queryModelList():
+def queryModelList(data):
     session = Session()
-    tarins = session.query(Model).all()
+    models = session.query(Model).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
+    total = session.query(Model).count()
     result = []
-    for f in tarins:
+    for f in models:
         result.append(f.to_json())
-    return result
+    res = {
+      "total":total,
+      "list":result
+    }
+    return res
