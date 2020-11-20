@@ -72,7 +72,7 @@ def getParam():
         'msg': msg,
         'data':res
     }
-    return jsonify(t)    
+    return jsonify(t)
 
 # 查询最好和最差模型
 @model.route('/getModel')
@@ -107,3 +107,15 @@ def queryTrainList():
         'data':result
     }
     return jsonify(res)
+
+# 预测试
+@model.route('/deleteModelById', methods=['POST'])
+def deleteModelById():
+    data = request_parse(request)
+    dataBase.deleteModelById(data)
+    t = {
+        'code': code,
+        'msg': msg,
+        'data':'ok'
+    }
+    return jsonify(t)

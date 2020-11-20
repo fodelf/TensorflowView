@@ -4,9 +4,9 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-18 19:10:37
+ * @LastEditTime: 2020-11-20 08:42:22
  */
-import{queryModelList} from "@/api/index/modelManage"
+import{queryModelList,deleteModelById} from "@/api/index/modelManage"
 import{dateFormat} from "@/utils/index"
 import scriptCard from "@/components/scriptCard/scriptCard"
 export default {
@@ -89,6 +89,20 @@ export default {
     handleCurrentChange(val){
       this.tablePag.pageNo = val;
       this.queryModelList();
+    },
+    handleDelete(data) {
+      this.$confirm('确认删除此训练？')
+        .then(() => {
+          deleteModelById({ modelId: data.modelId }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+            this.tablePag.pageNo = 1;
+            this.queryModelList();
+          })
+        })
+        .catch(() => {})
     }
   },
   mounted() {

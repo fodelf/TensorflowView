@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-18 19:26:21
+ * @LastEditTime: 2020-11-19 09:12:25
  */
 import request from '@/utils/request'
 
@@ -80,6 +80,14 @@ export function preTrain(params) {
 export function saveModel(params) {
   return request({
     url: '/api/v1/model/saveModel',
+    method: 'POST',
+    params: params
+  })
+}
+
+export function deleteTrain(params) {
+  return request({
+    url: '/api/v1/train/deleteTrain',
     method: 'POST',
     params: params
   })

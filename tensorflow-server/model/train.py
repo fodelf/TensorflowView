@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:29:31
 LastEditors: 吴文周
-LastEditTime: 2020-11-18 19:21:59
+LastEditTime: 2020-11-19 20:01:41
 '''
 from model.base import *
 
@@ -84,3 +84,10 @@ def queryTrainByTrainId(data):
     session = Session()
     train = session.query(Train).filter(Train.trainId ==data["trainId"]).first()
     return train.to_json()
+
+# 删除训练
+def deleteTrainById(data):
+    session = Session()
+    train = session.query(Train).filter(Train.trainId == data["trainId"]).first()
+    session.delete(train)
+    session.commit()

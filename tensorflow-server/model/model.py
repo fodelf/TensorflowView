@@ -73,3 +73,10 @@ def queryModelList(data):
       "list":result
     }
     return res
+
+# 删除训练
+def deleteModelById(data):
+    session = Session()
+    model = session.query(Model).filter(Model.modelId == data["modelId"]).first()
+    session.delete(model)
+    session.commit()

@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-18 20:02:43
+ * @LastEditTime: 2020-11-19 20:00:04
  */
 import{queryTrainList,deleteTrain} from "@/api/index/trainManage"
 import{dateFormat} from "@/utils/index"
@@ -56,7 +56,7 @@ export default {
     deleteRow(data) {
       this.$confirm('确认删除此训练？')
         .then(() => {
-          deleteTrain({ serverId: data.serverId }).then(() => {
+          deleteTrain({ trainId: data.trainId }).then(() => {
             this.$message({
               type: 'success',
               message: '删除成功'

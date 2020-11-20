@@ -14,7 +14,7 @@ import os
 import binascii
 import uuid
 import model.base as database
-def get_compiled_model(headers):
+def get_compiled_model(headers,targetGroup):
   # model = tf.keras.Sequential([
   #   tf.keras.layers.Dense(10, activation='relu'),
   #   tf.keras.layers.Dense(10, activation='relu'),
@@ -37,25 +37,76 @@ def get_compiled_model(headers):
   # model.add(keras.layers.Flatten(input_shape=(0,1, len(headers))),)
   # model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(,  return_sequences=True)))
   for _ in range(20):
-    # model.add(keras.layers.Dense(10, activation="selu"))
-    model.add(keras.layers.Dense(len(headers), activation="relu"))
+    # model.add(keras.layers.Dense(10))
+  #   # model.add(keras.layers.Dense(10, activation="selu"))
+  #   # model.add(keras.layers.Dense(len(headers), activation="relu"))
+    model.add(keras.layers.Dense(128, activation="relu"))
     # model.add(keras.layers.Dense(10, activation="relu"))
   model.add(keras.layers.AlphaDropout(rate=0.5))
+  # model.add(tf.keras.layers.Dense(128,activation='relu'))
+  # model.add(tf.keras.layers.Flatten())
     # AlphaDropout: 1. 均值和方差不变 2. 归一化性质也不变
-  model.add(keras.layers.Dense(1, activation="sigmoid"))
+  denseCount = 1
+  if len(targetGroup) > 2:
+    denseCount =len(targetGroup)
+    model.add(keras.layers.Dense(denseCount, activation="softmax"))
+    model.compile(optimizer='adam',
+                loss='sparse_categorical_crossentropy',
+                metrics=['accuracy'])
+  else:
+    model.add(keras.layers.Dense(1, activation="sigmoid"))
+    model.compile(
+              optimizer='adam',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'],
+              run_eagerly=True,
+              # optimizer='sgd'
+              )
+  # model.add(keras.layers.Dense(denseCount, activation="sigmoid"))
+  # 配置 SGD，学习率为 0.1
+  # optimizer = tf.keras.optimizers.SGD(0.1)
+  # model.compile(optimizer=optimizer,
+  #             loss = loss,
+  #             metrics=['accuracy'])
+
+  # model.compile(optimizer = 'adam' , loss = 'sparse_categorical_crossentropy',metrics = ['accuracy'])
   # model = tf.keras.Sequential([
   #   feature_layer,
   #   keras.layers.Dense(128, activation='relu'),
   #   keras.layers.Dense(128, activation='relu'),
   #   keras.layers.Dense(1, activation='sigmoid')
   # ])
-  model.compile(
-                optimizer='adam',
-                loss='binary_crossentropy',
-                metrics=['accuracy'],
-                run_eagerly=True,
-                # optimizer='sgd'
-                )
+#    layer0 = tf.keras.layers.Dense(class_num, input_shape=(x_data.shape[1],), activation='softmax')
+#  model = tf.keras.Sequential([layer0])
+#  model.compile(loss='categorical_crossentropy', optimizer='adam')
+# #首先先将数据集归一化
+# train_image = train_image/255
+# test_image = test_image/255
+# #创建model
+# model = tf.keras.Sequential()
+# #添加隐含层
+# model.add(tf.keras.layers.Flatten(input_shape=(28,28)))
+# model.add(tf.keras.layers.Dense(128,activation = 'relu'))
+# model.add(tf.keras.layers.Dense(10,activation = 'softmax'))
+
+# #编译model
+# model.compile(optimizer = 'adam' , loss = 'sparse_categorical_crossentropy',metrics = ['acc'])
+  # model.compile(loss='categorical_crossentropy', optimizer='adam')
+# #训练model
+# model.fit(train_image , train_label,epochs = 5)
+# #进行model的预测
+# model.predict(test_image , test_label)
+
+  # model.compile(
+  #               optimizer='adam',
+  #               loss='categorical_crossentropy',
+  #               metrics=['accuracy'],
+  #               run_eagerly=True,
+  #               # optimizer='sgd'
+  #               )
+  # model.compile(optimizer=tf.keras.optimizers.RMSprop(),
+  #               loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+  #               metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
   # model.compile(optimizer='adam',
   #             loss='binary_crossentropy',
   #             metrics=['accuracy'],
@@ -132,12 +183,37 @@ def train(data,socketio):
     dtypes = df.dtypes
     headers = []
     onehots = []
+    targetGroup = []
     for i in dtypes.keys():
       dtype = str(dtypes[i])
       name = str(i)
       if name != data['target']:
          headers.append(name)
-      if dtype == "object":
+      if name == data['target']:
+         key = str(i)
+         dataframe = df.copy()
+         count = 0
+         grupMap = {}
+         groupby = dataframe.groupby(key)
+         groupDict = dict(list(groupby))
+         for k in groupDict.keys():
+            targetGroup.append(str(k))
+            grupMap[str(k)] = count
+            count = count+1
+         print(grupMap)
+         child = {}
+         child['name'] = key
+         child['grupMap'] = grupMap
+         onegrounp(df,key,grupMap)
+        #  onehot_hash(df,key)
+        #  maxvalue = df[key].max()
+        #  minvalue = df[key].min()
+        #  onehot(df,key,maxvalue,minvalue)
+        #  child['max'] = str(maxvalue)
+        #  child['min'] = str(minvalue)
+        #  onehots.append(child)
+        #  print(df[key])
+      if dtype == "object" and name != data['target']:
          key = str(i)
          dataframe = df.copy()
          groupby = dataframe.groupby(key)
@@ -181,7 +257,7 @@ def train(data,socketio):
     train_ds = train_dataset.shuffle(len(train)).batch(batch_size)
     test_ds = test_dataset.shuffle(len(test)).batch(batch_size)
     val_ds = val_dataset.shuffle(len(val)).batch(batch_size)
-    model = get_compiled_model(headers)
+    model = get_compiled_model(headers,targetGroup)
     logdir = './dnn-selu-dropout-callbacks/'+ str(data["id"])+"/"+str(data["trainName"])
     if not os.path.exists(logdir):
         os.mkdir(logdir)
@@ -210,7 +286,7 @@ def train(data,socketio):
       # keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3),
       # keras.callbacks.LearningRateScheduler(scheduler),
       keras.callbacks.EarlyStopping(
-          # patience=5, 
+          # patience=5,
           # min_delta=1e-3,
           monitor='val_loss',
           min_delta=0,
@@ -218,7 +294,7 @@ def train(data,socketio):
           verbose=1
       )
     ]
-    history = model.fit(train_ds, 
+    history = model.fit(train_ds,
             epochs=int(data["times"]),
             validation_data=val_ds,
             # verbose=1,
@@ -256,6 +332,7 @@ def train(data,socketio):
     # print("xxxxxxxxxxxxxxxxxx")
     res = {}
     res["onehots"] = onehots
+    res["group"] = targetGroup
     res["test"] = {
       "accuracy":accuracy,
       "loss":loss
@@ -364,9 +441,9 @@ def preTrain(data):
                     res.append(0.0)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
-    print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    return "{:.2%}".format(predictions[0][0])
-
+    # print("Predicted survival: {:.2%}".format(predictions[0][0]))
+    # return "{:.2%}".format(predictions[0])
+    return predictions
 # 预训练数据
 def trainOnline(data):
     modelId = data["modelId"]
