@@ -65,13 +65,13 @@ def get_compiled_model(headers,targetGroup,denseNum):
     # for _ in range(2):
     #   model.add(keras.layers.Dense(5*len(headers), activation='relu'))
     # model.add(keras.layers.Dense(10*len(headers), activation='relu'))
-    for _ in range(denseNum):
-      model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # for _ in range(denseNum):
+    #   model.add(keras.layers.Dense(len(headers), activation='relu'))
       
-    # model.add(keras.layers.Dense(len(headers), activation='relu'))
-    model.add(keras.layers.AlphaDropout(rate=0.5))
-    # model.add(keras.layers.Dense(denseCount))
-    model.add(tf.keras.layers.Dense(denseCount, activation='softmax'))
+    # # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # model.add(keras.layers.AlphaDropout(rate=0.5))
+    # # model.add(keras.layers.Dense(denseCount))
+    # model.add(tf.keras.layers.Dense(denseCount, activation='softmax'))
     # model.add(tf.keras.layers.Dense(denseCount))
     # model.compile(optimizer='adam',
     #           loss='sparse_categorical_crossentropy',
@@ -79,6 +79,14 @@ def get_compiled_model(headers,targetGroup,denseNum):
     # model.compile(optimizer= tf.keras.optimizers.Adam(),
     #               loss= tf.keras.losses.SparseCategoricalCrossentropy(),
     #              metrics=['accuracy'])
+    model = keras.Sequential([
+      # keras.layers.Dense(64, activation='relu',input_dim=len(headers)),
+      keras.layers.Dense(64, activation='relu',input_dim=len(headers)),
+      keras.layers.Dense(64, activation='relu'),
+      keras.layers.AlphaDropout(rate=0.5),
+      # keras.layers.Dense(len(headers), activation='relu'),
+      keras.layers.Dense(denseCount, activation='softmax')
+    ])
     model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
@@ -105,14 +113,22 @@ def get_compiled_model(headers,targetGroup,denseNum):
     #           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     #           metrics=['accuracy'])
   else:
-    for _ in range(denseNum):
-      model.add(keras.layers.Dense(len(headers), activation='relu'))
-      # model.add(keras.layers.Dense(10, activation='relu'))
-    # model.add(keras.layers.Dense(len(headers), activation='relu'))
-    # model.add(keras.layers.Dense(len(headers), activation='relu'))
-    # model.add(keras.layers.Dense(len(headers), activation='relu'))
-    model.add(keras.layers.AlphaDropout(rate=0.5))
-    model.add(keras.layers.Dense(1, activation="sigmoid"))
+    # for _ in range(denseNum):
+    #   model.add(keras.layers.Dense(len(headers), activation='relu'))
+    #   # model.add(keras.layers.Dense(10, activation='relu'))
+    # # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # model.add(keras.layers.AlphaDropout(rate=0.5))
+    # model.add(keras.layers.Dense(1, activation="sigmoid"))
+    model = keras.Sequential([
+      # keras.layers.Dense(64, activation='relu',input_dim=len(headers)),
+      keras.layers.Dense(64, activation='relu',input_dim=len(headers)),
+      keras.layers.Dense(64, activation='relu'),
+      keras.layers.AlphaDropout(rate=0.5),
+      # keras.layers.Dense(len(headers), activation='relu'),
+      keras.layers.Dense(1, activation='sigmoid')
+    ])
     model.compile(optimizer='adam',
               loss='binary_crossentropy',
               metrics=['accuracy'],
@@ -397,7 +413,7 @@ def train(data,socketio):
             validation_data=val_ds,
             # class_weight = 'auto',
             # verbose=1,
-            # class_weight=class_weight,
+            class_weight=class_weight,
             batch_size= round(train_count/10),
             callbacks=callbacks)
     urlstr = plot_learning_curves(history)

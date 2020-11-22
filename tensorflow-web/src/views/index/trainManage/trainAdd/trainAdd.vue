@@ -26,13 +26,18 @@
           </el-select>
         </el-form-item>
       </el-col>
+       <el-col :span='8'>
+        <el-form-item label="训练次数" prop='times'>
+           <el-input-number v-model="form.times"  :min="100" :max="100000"></el-input-number>
+        </el-form-item>
+      </el-col>
     </el-row>
      <el-row :gutter=20>
-      <el-col :span='8'>
+      <!-- <el-col :span='8'>
         <el-form-item label="神经网络层数" prop='number'>
           <el-input-number v-model="form.number"  :min="1" :max="100000"></el-input-number>
         </el-form-item>
-      </el-col>
+      </el-col> -->
       <!-- <el-col :span='8'>
         <el-form-item label="激活函数" prop='activeFuns'>
           <el-select v-model="form.activeFunction" placeholder="激活函数">
@@ -40,11 +45,11 @@
           </el-select>
         </el-form-item>
       </el-col> -->
-      <el-col :span='8'>
+      <!-- <el-col :span='8'>
         <el-form-item label="训练次数" prop='times'>
            <el-input-number v-model="form.times"  :min="100" :max="100000"></el-input-number>
         </el-form-item>
-      </el-col>
+      </el-col> -->
     </el-row>
     <el-row :gutter=20>
       <el-col :span='8'>
