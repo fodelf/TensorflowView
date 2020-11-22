@@ -54,13 +54,6 @@ export function queryTrainById(params) {
     params: params
   })
 }
-export function train(params) {
-  return request({
-    url: '/api/v1/data/train',
-    method: 'POST',
-    params: params
-  })
-}
 export function parseHeader(params) {
   return request({
     url: '/api/v1/data/parseHeader',

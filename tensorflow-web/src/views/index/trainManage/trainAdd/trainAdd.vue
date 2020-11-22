@@ -30,20 +30,33 @@
      <el-row :gutter=20>
       <el-col :span='8'>
         <el-form-item label="神经网络层数" prop='number'>
-          <el-input-number v-model="form.number"  :min="2" :max="100000"></el-input-number>
+          <el-input-number v-model="form.number"  :min="1" :max="100000"></el-input-number>
         </el-form-item>
       </el-col>
-      <el-col :span='8'>
+      <!-- <el-col :span='8'>
         <el-form-item label="激活函数" prop='activeFuns'>
           <el-select v-model="form.activeFunction" placeholder="激活函数">
             <el-option v-for="item in activeFuns" :key='item.label' :label='item.label' :value='item.value'></el-option>
           </el-select>
         </el-form-item>
-      </el-col>
+      </el-col> -->
       <el-col :span='8'>
         <el-form-item label="训练次数" prop='times'>
-           <el-input-number v-model="form.times"  :min="2" :max="100000"></el-input-number>
+           <el-input-number v-model="form.times"  :min="100" :max="100000"></el-input-number>
         </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row :gutter=20>
+      <el-col :span='8'>
+        <el-form-item label="模型类型" prop='learnType'>
+          <el-select v-model="form.learnType" placeholder="模型类型">
+            <el-option v-for="(item1,index) in typeList" :key='index' :label='item1.label' :value='item1.value'></el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span='16' style="color:#ced4da;font-size:12px;line-height: 40px;">
+        <span v-if="form.learnType=='regression'">预测出如价格或概率这样连续值的输出（如，预测房价趋势）</span>
+        <span v-else>从一系列的分类出选择出一个分类（如，给出包含苹果或橘子数据，识别出是哪种水果）</span>
       </el-col>
     </el-row>
     <el-tabs>
@@ -103,6 +116,7 @@
               >
                 <template slot-scope="scope">
                   <el-input v-model="scope.row[item.code]"></el-input>
+                   <!-- {{ scope.row[item.code] || scope.row[item.code] ==0 ? scope.row[item.code] : '--' }}  -->
                 </template>
               </el-table-column>
             </el-table>

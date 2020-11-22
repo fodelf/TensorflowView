@@ -8,7 +8,6 @@
 # '''
 from router.common import *
 from werkzeug.utils import secure_filename
-import  threading
 import os
 import service.utils
 import sys
@@ -16,8 +15,6 @@ sys.path.append('..')
 import run
 # module = __import__('tensorflow-server')
 # import tensorflow-server.run as app
-def thead(data):
-    service.utils.train(data,run.socketio)
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 # 查询训练趋势数据
 @data.route('/getDataSum')
@@ -68,25 +65,6 @@ def parseHeader():
     # session.add(ed_user)
     return jsonify(t)
 
-# 训练
-@data.route('/train', methods=['POST'])
-def train():
-    data = request_parse(request)
-    if dataBase.queryTrainByName(data["trainName"]) == 1:
-        t = {
-        'code': 500,
-        'msg': "训练名称已存在",
-        'data':"error"
-        }
-        return jsonify(t)
-    thead_one = threading.Thread(target=thead, args=(data,))
-    thead_one.start()
-    t = {
-        'code': code,
-        'msg': msg,
-        'data':"ok"
-    }
-    return jsonify(t)
   # 查询数据源列表
 @data.route('/dataList')
 def dataList():

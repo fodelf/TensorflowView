@@ -10,6 +10,7 @@ from flask.blueprints import Blueprint
 from flask import Flask, flash, request, redirect, url_for, jsonify,Response
 import model.base as dataBase
 import service.utils
+import service.regression
 data = Blueprint('data', __name__)
 def request_parse(req_data):
     if req_data.method == 'POST':

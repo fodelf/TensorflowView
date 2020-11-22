@@ -41,7 +41,10 @@
             prop="time"
             label="创建时间">
           </el-table-column>
-          <el-table-column label="操作" width="250">
+          <el-table-column 
+            fixed="right"
+            label="操作"
+            width="250">
             <template slot-scope="scope">
               <el-button type="primary" @click="handleWakeUp(scope.row)">调用</el-button>
               <el-button type="primary" @click="handleCheck(scope.row)">下载</el-button>

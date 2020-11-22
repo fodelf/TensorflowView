@@ -69,13 +69,6 @@ export function parseHeader(params) {
     params: params
   })
 }
-export function preTrain(params) {
-  return request({
-    url: '/api/v1/model/preTrain',
-    method: 'POST',
-    params: params
-  })
-}
 export function saveModel(params) {
   return request({
     url: '/api/v1/model/saveModel',

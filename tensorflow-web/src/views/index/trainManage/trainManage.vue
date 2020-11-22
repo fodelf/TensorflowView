@@ -18,7 +18,7 @@
       <div class="tableBox">
         <el-table
           :data="tableData"
-          style="width: 100%">
+          style="width: 100%;height:calc(100% - 40px);overflow-y:auto">
           <el-table-column
             prop="trainName"
             label="训练名称"
@@ -41,7 +41,10 @@
             prop="time"
             label="创建时间">
           </el-table-column>
-            <el-table-column label="操作" >
+            <el-table-column 
+            fixed="right"
+            label="操作"
+            width="250">
             <template slot-scope="scope">
               <el-button type="primary" @click="check(scope.row)">查看</el-button>
               <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>

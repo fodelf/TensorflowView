@@ -72,7 +72,7 @@
           label="上传时间"
           prop="time">
         </el-table-column>
-        <el-table-column label="操作" width="250">
+        <el-table-column fixed="right" label="操作" width="200">
             <template slot-scope="scope">
               <el-button type="primary" @click="handleWakeUp(scope.row)">查看</el-button>
               <el-button type="primary" @click="handleCheck(scope.row)">编辑</el-button>

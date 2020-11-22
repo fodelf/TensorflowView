@@ -39,18 +39,6 @@ def save():
     }
     return jsonify(t)
 # 预测试
-@model.route('/preTrain', methods=['POST'])
-def test():
-    data = request_parse(request)
-    res = service.utils.preTrain(data)
-    t = {
-        'code': code,
-        'msg': msg,
-        'data':res
-    }
-    return jsonify(t)
-
-# 预测试
 @model.route('/trainOnline', methods=['POST'])
 def trainOnline():
     data = request_parse(request)

@@ -1,14 +1,16 @@
-from flask import Flask
-from flask import Flask, flash, request, redirect, url_for, jsonify,Response
-from flask_socketio import SocketIO, emit
-import time
 import random
 import string
+import time
+
+from flask import Flask, Response, flash, jsonify, redirect, request, url_for
+from flask_socketio import SocketIO, emit
+
 import model.base as dataBase
-from router.home import home
 from router.data import data
+from router.home import home
 from router.model import model
 from router.train import train
+
 UPLOAD_FOLDER = 'static'
 app = Flask(__name__,static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

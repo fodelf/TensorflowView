@@ -42,9 +42,9 @@ export function serviceDetail(id) {
     method: 'GET'
   })
 }
-export function train(params) {
+export function trainAction(params) {
   return request({
-    url: '/api/v1/data/train',
+    url: '/api/v1/train/trainAction',
     method: 'POST',
     params: params
   })
@@ -72,11 +72,12 @@ export function parseHeader(params) {
 }
 export function preTrain(params) {
   return request({
-    url: '/api/v1/model/preTrain',
+    url: '/api/v1/train/preTrain',
     method: 'POST',
     params: params
   })
 }
+
 export function saveModel(params) {
   return request({
     url: '/api/v1/model/saveModel',

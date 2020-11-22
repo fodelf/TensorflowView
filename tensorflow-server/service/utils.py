@@ -5,16 +5,18 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from tensorflow import keras
 import json
+import tempfile
 # from keras.backend import K
 # from keras.callbacks import LearningRateScheduler
 from tensorflow.keras.callbacks import LearningRateScheduler
 from tensorflow import feature_column
 from sklearn.model_selection import train_test_split
+from sklearn.utils import class_weight
 import os
 import binascii
 import uuid
 import model.base as database
-def get_compiled_model(headers,targetGroup):
+def get_compiled_model(headers,targetGroup,denseNum):
   # model = tf.keras.Sequential([
   #   tf.keras.layers.Dense(10, activation='relu'),
   #   tf.keras.layers.Dense(10, activation='relu'),
@@ -36,32 +38,93 @@ def get_compiled_model(headers,targetGroup):
   model = keras.models.Sequential()
   # model.add(keras.layers.Flatten(input_shape=(0,1, len(headers))),)
   # model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(,  return_sequences=True)))
-  for _ in range(20):
+  # for _ in range(20):
+  #   model.add(keras.layers.Dense(len(headers), activation='relu'))
     # model.add(keras.layers.Dense(10))
   #   # model.add(keras.layers.Dense(10, activation="selu"))
   #   # model.add(keras.layers.Dense(len(headers), activation="relu"))
-    model.add(keras.layers.Dense(128, activation="relu"))
+    # model.add(keras.layers.Dense(len(headers), activation="relu"))
+    # model.add(keras.layers.AlphaDropout(rate=0.5))
     # model.add(keras.layers.Dense(10, activation="relu"))
-  model.add(keras.layers.AlphaDropout(rate=0.5))
   # model.add(tf.keras.layers.Dense(128,activation='relu'))
   # model.add(tf.keras.layers.Flatten())
     # AlphaDropout: 1. 均值和方差不变 2. 归一化性质也不变
-  denseCount = 1
+  # model.add(keras.layers.Dense(len(headers), activation='relu'))
+  # model.add(keras.layers.Dense(3))
   if len(targetGroup) > 2:
+    print('222222222222222222222222222222222222222222')
     denseCount =len(targetGroup)
-    model.add(keras.layers.Dense(denseCount, activation="softmax"))
+    # model.add(keras.layers.Dense(denseCount, activation="softmax"))
+    # model.add(keras.layers.Flatten())
+    # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # model.add(keras.layers.Flatten())
+    # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # for _ in range(2):
+    #   model.add(keras.layers.Dense(10*len(headers), activation='relu'))
+    # for _ in range(2):
+    #   model.add(keras.layers.Dense(5*len(headers), activation='relu'))
+    # model.add(keras.layers.Dense(10*len(headers), activation='relu'))
+    for _ in range(denseNum):
+      model.add(keras.layers.Dense(len(headers), activation='relu'))
+      
+    # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    model.add(keras.layers.AlphaDropout(rate=0.5))
+    # model.add(keras.layers.Dense(denseCount))
+    model.add(tf.keras.layers.Dense(denseCount, activation='softmax'))
+    # model.add(tf.keras.layers.Dense(denseCount))
+    # model.compile(optimizer='adam',
+    #           loss='sparse_categorical_crossentropy',
+    #           metrics=['accuracy'])
+    # model.compile(optimizer= tf.keras.optimizers.Adam(),
+    #               loss= tf.keras.losses.SparseCategoricalCrossentropy(),
+    #              metrics=['accuracy'])
     model.compile(optimizer='adam',
-                loss='sparse_categorical_crossentropy',
-                metrics=['accuracy'])
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+    # model.compile(optimizer=keras.optimizers.Adam(lr=1e-3),
+    #               loss=keras.losses.BinaryCrossentropy(),
+    #              metrics=[keras.metrics.SparseCategoricalAccuracy()])
+    # model.add(tf.keras.layers.Dense(denseCount))
+    # model.add(tf.keras.layers.Dense(denseCount))
+    # model.add(tf.keras.layers.Dense(denseCount))
+    # model.compile(optimizer='adam',
+    #              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    #              metrics=["accuracy"])
+    # model.compile(optimizer= tf.keras.optimizers.Adam(lr=1e-3),
+    #               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    #             metrics=["accuracy"])
+    # model.compile( optimizer=keras.optimizers.Adam(lr=1e-3),
+    #               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    #             metrics=["accuracy"])
+    # model.compile(optimizer=tf.keras.optimizers.Adam(),
+    #           loss='sparse_categorical_crossentropy',
+    #           metrics=["accuracy"])
+    # model.add(keras.layers.Dense(denseCount))
+    # model.compile(optimizer='adam',
+    #           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    #           metrics=['accuracy'])
   else:
+    for _ in range(denseNum):
+      model.add(keras.layers.Dense(len(headers), activation='relu'))
+      # model.add(keras.layers.Dense(10, activation='relu'))
+    # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    # model.add(keras.layers.Dense(len(headers), activation='relu'))
+    model.add(keras.layers.AlphaDropout(rate=0.5))
     model.add(keras.layers.Dense(1, activation="sigmoid"))
-    model.compile(
-              optimizer='adam',
-              loss='categorical_crossentropy',
+    model.compile(optimizer='adam',
+              loss='binary_crossentropy',
               metrics=['accuracy'],
-              run_eagerly=True,
-              # optimizer='sgd'
-              )
+              run_eagerly=True)
+  # model.summary()
+    # model.compile(
+    #           optimizer='adam',
+    #           loss='categorical_crossentropy',
+    #           metrics=['accuracy'],
+    #           run_eagerly=True,
+    #           # optimizer='sgd'
+    #           )
   # model.add(keras.layers.Dense(denseCount, activation="sigmoid"))
   # 配置 SGD，学习率为 0.1
   # optimizer = tf.keras.optimizers.SGD(0.1)
@@ -121,11 +184,6 @@ def plot_learning_curves(history):
     urlstr = str(uuid.uuid1())
     plt.savefig('./static/'+urlstr+'.jpg')
     return urlstr
-# predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,2)]))
-# predictions = model.predict(np.array([(67,1,4,160,286,0,2,108,1,1.5,2,3,3)]))
-# print(predictions)
-# print("Predicted survival: {:.2%}".format(predictions[0][0]))
-# print(predictions)
 # def scheduler(epoch):
 #     # 每隔100个epoch，学习率减小为原来的1/10
 #     if epoch % 10 == 0 and epoch != 0:
@@ -144,23 +202,12 @@ def scheduler(epoch):
     # if epoch % 5 == 0 and epoch != 0:
     #     return learning_rate * 0.1
     return 0.0001
-def num(x):
-    num = str(x).encode('utf-8')
-    str_16 = binascii.b2a_hex(num)
-    print(int(str_16, 16))
-    return int(str_16, 16)
 def getGroup(x,groupmap):
-    # print(x)
-    # print("xxxxxxxxxxxxxxxxxx")
     return groupmap[str(x)]
 def onegrounp(df, column,groupmap):
     # df[column] = df[column].apply(lambda x: abs(hash(str(x))))
     # df[column] = df[column].apply(lambda x: binascii.b2a_hex(x))
     df[column] = df[column].apply(lambda x: getGroup(x,groupmap))
-def onehot_hash(df, column):
-    # df[column] = df[column].apply(lambda x: abs(hash(str(x))))
-    # df[column] = df[column].apply(lambda x: binascii.b2a_hex(x))
-    df[column] = df[column].apply(lambda x: num(x))
 def onehot(df, column,max,min):
     dis = max - min
     df[column] = df[column].apply(lambda x: abs((x - min)/dis))
@@ -176,70 +223,108 @@ def df_to_dataset(dataframe,target,shuffle=True, batch_size=32):
 
 def train(data,socketio):
     df = pd.read_csv(data["filePath"])
-    count = len(df)
-    train_sum = round(count*0.8)
-    test_count = round(count*0.2)
+    totalCount = len(df)
+    train_sum = round(totalCount*0.8)
+    test_count = round(totalCount*0.2)
     train_count = round(train_sum*0.8)
     dtypes = df.dtypes
     headers = []
-    onehots = []
+    onehots = {}
     targetGroup = []
+    class_weight = {}
     for i in dtypes.keys():
       dtype = str(dtypes[i])
       name = str(i)
       if name != data['target']:
          headers.append(name)
-      if name == data['target']:
+         if dtype == "object" and name != data['target']:
+            dataframe = df.copy()
+            groupby = dataframe.groupby(name)
+            groupDict = dict(list(groupby))
+            count = 1
+            grupMap = {}
+            maxvalue = len(groupDict.keys())
+            minvalue = 1
+            dis = maxvalue - minvalue
+            for k in groupDict.keys():
+                grupMap[str(k)] = abs((count - minvalue)/dis)
+            onegrounp(df,name,grupMap)
+            onehots[name] = {}
+            onehots[name]['name'] = name
+            onehots[name]['grupMap'] = grupMap
+            onehots[name]['maxValue'] = float(maxvalue)
+            onehots[name]['minValue'] = float(minvalue)
+         if dtype != "object" and name != data['target']:
+              dataframe = df.copy()
+              groupby = dataframe.groupby(name)
+              groupDict = dict(list(groupby))
+              count = 1
+              grupMap = {}
+              maxvalue = df[name].max()
+              minvalue = df[name].min()
+              onehot(df,name,maxvalue,minvalue)
+              onehots[name] = {}
+              onehots[name]['name'] = name
+              onehots[name]['grupMap'] = grupMap
+              onehots[name]['maxValue'] = float(maxvalue) 
+              onehots[name]['minValue'] = float(minvalue) 
+      else:
          key = str(i)
          dataframe = df.copy()
          count = 0
          grupMap = {}
-         groupby = dataframe.groupby(key)
+         groupby = dataframe.groupby(name)
          groupDict = dict(list(groupby))
+         keysCount = len(groupDict.keys())
          for k in groupDict.keys():
             targetGroup.append(str(k))
             grupMap[str(k)] = count
+            class_weight[count] = (1/len(groupDict[k]))*(totalCount)/keysCount
             count = count+1
-         print(grupMap)
-         child = {}
-         child['name'] = key
-         child['grupMap'] = grupMap
          onegrounp(df,key,grupMap)
-        #  onehot_hash(df,key)
-        #  maxvalue = df[key].max()
-        #  minvalue = df[key].min()
-        #  onehot(df,key,maxvalue,minvalue)
+        #  print(df[name])
+      # if dtype == "object" and name != data['target']:
+      #    dataframe = df.copy()
+      #    groupby = dataframe.groupby(name)
+      #    groupDict = dict(list(groupby))
+      #    count = 1
+      #    grupMap = {}
+      #    maxvalue = len(groupDict.keys())
+      #    minvalue = 1
+      #    dis = maxvalue - minvalue
+      #    for k in groupDict.keys():
+      #       grupMap[str(k)] = abs((count - minvalue)/dis)
+      #    onegrounp(df,name,grupMap)
+      #    child = {}
+      #    child['name'] = name
+      #    child['grupMap'] = grupMap
+      #    onehots.append(child)
+      # if dtype == "object" and name != data['target']:
+      #    dataframe = df.copy()
+      #    groupby = dataframe.groupby(name)
+      #    groupDict = dict(list(groupby))
+      #    count = 1
+      #    grupMap = {}
+      #    for k in groupDict.keys():
+      #       grupMap[str(k)] = count
+      #       count = count+1
+      #    onegrounp(df,name,grupMap)
+      #    maxvalue = df[name].max()
+      #    minvalue = df[name].min()
+      #    count = 0
+      #    grupMap = {}
+      #    dis = maxvalue - minvalue
+      #    for k in groupDict.keys():
+      #       grupMap[str(k)] = abs((count - minvalue)/dis) 
+      #       count = count+1
+      #    child = {}
+      #    child['name'] = name
+      #    child['grupMap'] = grupMap
+      #    onehots.append(child)
+      #    onehot(df,name,maxvalue,minvalue)
         #  child['max'] = str(maxvalue)
         #  child['min'] = str(minvalue)
         #  onehots.append(child)
-        #  print(df[key])
-      if dtype == "object" and name != data['target']:
-         key = str(i)
-         dataframe = df.copy()
-         groupby = dataframe.groupby(key)
-         groupDict = dict(list(groupby))
-         count = 1
-         grupMap = {}
-         for k in groupDict.keys():
-            # if str(k) !='1' and str(k) !='2':
-            # grupMap[str(k)] = np.asarray([0,0,1]).astype(np.float32)
-            # grupMap[str(k)] = np.a([0,0,1]).astype(np.float32)
-            grupMap[str(k)] = count
-            count = count+1
-
-         print(grupMap)
-         child = {}
-         child['name'] = key
-         child['grupMap'] = grupMap
-         onegrounp(df,key,grupMap)
-        #  onehot_hash(df,key)
-         maxvalue = df[key].max()
-         minvalue = df[key].min()
-         onehot(df,key,maxvalue,minvalue)
-         child['max'] = str(maxvalue)
-         child['min'] = str(minvalue)
-         onehots.append(child)
-         print(df[key])
     # return ""
     # df.to_csv('out.csv')
     # train = pd.read_csv('out.csv',header=0, skiprows=3,nrows= train_count)
@@ -253,27 +338,20 @@ def train(data,socketio):
     test_dataset = tf.data.Dataset.from_tensor_slices((test.values,target.values))
     target = val.pop(data['target'])
     val_dataset = tf.data.Dataset.from_tensor_slices((val.values, target.values))
-    batch_size = 1
+    # batch_size = 1
+    # batch_size=round(len(train_dataset)/10)
+    batch_size = round(train_count/10)
+    # print(batch_size)
     train_ds = train_dataset.shuffle(len(train)).batch(batch_size)
     test_ds = test_dataset.shuffle(len(test)).batch(batch_size)
     val_ds = val_dataset.shuffle(len(val)).batch(batch_size)
-    model = get_compiled_model(headers,targetGroup)
+    # train_ds = train_dataset.shuffle(round(len(train)*0.8)).batch(batch_size)
+    # test_ds = test_dataset.shuffle(round(len(test)*0.8)).batch(batch_size)
+    # val_ds = val_dataset.shuffle(round(len(val)*0.8)).batch(batch_size)
+    model = get_compiled_model(headers,targetGroup,int(data["number"]))
     logdir = './dnn-selu-dropout-callbacks/'+ str(data["id"])+"/"+str(data["trainName"])
     if not os.path.exists(logdir):
         os.mkdir(logdir)
-    # output_model_file = os.path.join(logdir,
-    #                                 "fashion_mnist_model.h5")
-    # output_model_file = os.path.join(logdir,
-    #                                 "cp.ckpt")
-    # callbacks = [
-    #     keras.callbacks.TensorBoard(logdir),
-    #     tf.keras.callbacks.ModelCheckpoint(filepath=output_model_file,
-    #                                              save_weights_only=True,
-    #                                              verbose=1)
-    #     # keras.callbacks.ModelCheckpoint(output_model_file,
-    #     #                                 save_best_only = True),
-    #     # keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3)
-    # ]
     output_model_file = os.path.join(logdir,
                                  "fashion_mnist_model.h5")
 
@@ -286,18 +364,40 @@ def train(data,socketio):
       # keras.callbacks.EarlyStopping(patience=5, min_delta=1e-3),
       # keras.callbacks.LearningRateScheduler(scheduler),
       keras.callbacks.EarlyStopping(
+        monitor='val_loss',
+        min_delta=0,
+        patience=100,
+        verbose=0,
+        baseline=None,
+        restore_best_weights=False
           # patience=5,
           # min_delta=1e-3,
-          monitor='val_loss',
-          min_delta=0,
-          patience=10,
-          verbose=1
+          # # monitor='val_loss',
+          # monitor='val_loss',
+          # min_delta=0.00003,
+          # patience=10000,
+          # verbose=1,
+          # mode='min'
+          # # mode="max"
       )
     ]
+    # initial_weights = os.path.join(tempfile.mkdtemp(), 'initial_weights')
+    # model.save_weights(initial_weights)
+    # model.load_weights(initial_weights)
+    # class_weight = {0: 5.57, 1: 0.64,2:0.87}
+    print(class_weight)
+    # class_weight = {0: 0.1, 1: 2,2:1.5}
+
+    # my_class_weight = class_weight.compute_class_weight('balanced',
+    #                                              np.unique(train_dataset1),
+    #                                              train_dataset1)
+    # class_weight_dict = dict(zip([x for x in np.unique(train_dataset1)], my_class_weight))
     history = model.fit(train_ds,
             epochs=int(data["times"]),
             validation_data=val_ds,
+            # class_weight = 'auto',
             # verbose=1,
+            # class_weight=class_weight,
             batch_size= round(train_count/10),
             callbacks=callbacks)
     urlstr = plot_learning_curves(history)
@@ -308,28 +408,6 @@ def train(data,socketio):
     # outputs = imported(model)
     model.load_weights(output_model_file)
     loss, accuracy = model.evaluate(test_ds)
-    # predictions = model.predict(test_ds)
-    # 显示部分结果
-    # for prediction, survived in zip(predictions[:2], list(test_ds)[0][1][:2]):
-    #   print("Predicted survival: {:.2%}".format(prediction[0]),
-    #         " | Actual outcome: ",
-    #         ("SURVIVED" if bool(survived) else "DIED"))
-    # data1 = [67,1,4,160,286,0,2,108,1,1.5,2,3,0.514844]
-    # df1= pd.DataFrame(data1)
-    # print(df1)
-    # print("ssssssssssssssssssssssssssssssssssssssssss")      
-    # labels = ["age","sex","cp","trestbps",
-    #            "chol","fbs","restecg","thalach","exang","oldpeak","slope","ca","thal"]
-    # print(labels)   
-    # predictions = model.predict(tf.data.Dataset.from_tensor_slices((np.array([67,1,4,160,286,0,2,108,1,1.5,2,3,0.514844]),
-    # df = pd.read_csv("./static/2.csv",header=0,nrows=1)
-    # predictions = model.predict(tf.data.Dataset.from_tensor_slices(df))
-    # print(tf.data.Dataset.from_tensor_slices((dict(df1))))
-    # predictions = model.predict(x=df1)
-    # predictions = model.predict(np.array([(63,1,1,145,233,1,2,150,0,2.3,3,0,0.50)]))
-    # print(predictions)
-    # print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    # print("xxxxxxxxxxxxxxxxxx")
     res = {}
     res["onehots"] = onehots
     res["group"] = targetGroup
@@ -417,6 +495,7 @@ def preTrain(data):
     form = data["form"]
     preData = data["preData"]
     trainData =  data["trainData"]
+    group = trainData["group"]
     logdir = './dnn-selu-dropout-callbacks/'+ str(form["id"])+"/"+str(form["trainName"])
     output_model_file = os.path.join(logdir,
                                  "fashion_mnist_model.h5")
@@ -430,20 +509,28 @@ def preTrain(data):
       name = str(i)
       if name != form['target']:
         if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
-          res.append(float(preData[name]))
-          print(preData[name])
-        if str(dtypes[i]) =="object":
-          for onehot in trainData['onehots']:
-              if onehot['name'] == name:
-                  if preData[name] in onehot["grupMap"].keys():
-                    res.append(onehot["grupMap"][preData[name]])
-                  else:
-                    res.append(0.0)
+          if trainData['onehots'][name]['maxValue'] < float(preData[name]):
+             res.append(float(1))
+          if trainData['onehots'][name]['minValue'] > float(preData[name]):
+             res.append(float(0)) 
+          if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
+             dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
+             res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis) 
+        else:
+          if preData[name] in trainData['onehots'][name]["grupMap"].keys():
+             res.append(trainData['onehots'][name]["grupMap"][preData[name]])
+          else:
+            res.append(0.0)
+    print(res)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
+    index = np.argmax(predictions[0])
+    print(np.argmax(predictions[0]))
+    print(group[index])
+    # print(predictions)
     # print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    # return "{:.2%}".format(predictions[0])
-    return predictions
+    return "{:.2%}".format(predictions[0][0])
+    # return group[index]
 # 预训练数据
 def trainOnline(data):
     modelId = data["modelId"]
@@ -457,6 +544,7 @@ def trainOnline(data):
     model = tf.keras.models.load_model(output_model_file)
     # model.load_weights(output_model_file)
     df = pd.read_csv(form["filePath"],header=0,nrows=1)
+    print(preData)
     dtypes = df.dtypes
     res = []
     for i in dtypes.keys():
@@ -465,7 +553,6 @@ def trainOnline(data):
       if name != form['target']:
         if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
           res.append(float(preData[name]))
-          print(preData[name])
         if str(dtypes[i]) =="object":
           for onehot in trainData['onehots']:
               if onehot['name'] == name:
@@ -473,6 +560,7 @@ def trainOnline(data):
                     res.append(onehot["grupMap"][preData[name]])
                   else:
                     res.append(0.0)
+    print(res)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
     print("Predicted survival: {:.2%}".format(predictions[0][0]))

@@ -41,7 +41,7 @@ def createTrain(data):
 # 查询训练列表
 def queryTrainList(data):
     session = Session()
-    trains = session.query(Train).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
+    trains = session.query(Train).order_by(Train.id.desc()).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
     total = session.query(Train).count()
     result = []
     for f in trains:

@@ -9,15 +9,15 @@
 import {
   getDataAll,
   createData,
-  train,
   parseHeader,
 } from '@/api/index/dataManage.js'
 import {
-  preTrain,
   saveModel
 } from '@/api/index/modelManage.js'
 import {
-  queryTrainByTrainId
+  preTrain,
+  queryTrainByTrainId,
+  trainAction,
 } from '@/api/index/trainManage.js'
 export default {
   name: 'dataAdd',
@@ -32,16 +32,6 @@ export default {
         callback();
       }
     }
-    const validateCheckPath = (rule, value, callback) => {
-      if (value === '') {
-        callback();
-      } else {
-        if(!(/^\/[0-9a-zA-Z]*$/).test(value)){
-          callback(new Error('路径格式不正确'));
-        }
-        callback();
-      }
-    }
     return {
       dataList:[],
       form: {
@@ -52,9 +42,18 @@ export default {
         filePath:'',
         target:'',
         activeFunction:'relu',
-        number:2,
-        times:1
+        number:1,
+        times:100,
+        learnType:"classification"
       },
+      typeList:[{
+        label:"回归",
+        value:"regression"
+      },{
+        label:'分类',
+        value:"classification"
+      }
+      ],
       isTrain:false,
       activeFuns:[
         {label: 'relu',value:'relu'},
@@ -75,17 +74,9 @@ export default {
         ],
         times:[
           { required: true, validator: validateEn, trigger: 'blur' },
-        ]
-      },
-      rules:{
-        apiUrl:[
-          { required: true, message: '请输入正确的拦截地址', validator: validateCheckPath, trigger: 'blur' },
         ],
-        pathReWriteBefore:[
-          {validator: validateCheckPath, trigger: 'blur' },
-        ],
-        pathReWriteUrl:[
-          {validator: validateCheckPath, trigger: 'blur' },
+        learnType:[
+          { required: true, validator: validateEn, trigger: 'blur' },
         ]
       },
       serverList:[],
@@ -142,32 +133,30 @@ export default {
     getDataAllCheck(){
       getDataAll().then(res=>{
         this.serverList = res || []
-        this.parseHeader(()=>{
-          let headerList = JSON.parse(JSON.stringify(this.headerList))
-          this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
-          let obj = {}
-          this.preHeadList.forEach(item=>{
-            obj[item] = ''
-          })
-          this.preDataList = [obj]
-        })
+        this.parseHeader(true)
       })
     },
-    parseHeader(func){
+    parseHeader(flag){
       try {
         parseHeader({filePath:this.form.filePath}).then(res=>{
           let lineOne = {"index":"源数据"};
           let lineTow = {"index":"数据类型"};
+          let preLineOne = {}
           res.forEach((item,index)=>{
             lineOne[index] = item[index]
             lineTow[index] = item["type"]
             item["radio"]=''
+            if(flag){
+              preLineOne[index] = item[index]
+            }
           })
           this.headerList = res;
           this.headerList.unshift({ name: '首列', code: 'index' });
           this.dataList = [lineOne,lineTow];
-          if(func){
-            func().bind(this)
+          if(flag){
+            let headerList = JSON.parse(JSON.stringify(this.headerList))
+            this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
+            this.preDataList = [preLineOne]
           }
         })
       } catch (error) {}
@@ -204,7 +193,21 @@ export default {
         // loading.close()
         return
       }
-      train(this.form).then(res=>{
+      if(this.form.learnType == 'regression'){
+        let select = this.headerList.filter((item)=>{
+             return  this.form.target == item.name
+        })
+        if(select[0].type =='文本'){
+          this.$message({
+            message: '文本类型不能进行回归预测',
+            type: 'warning'
+          });
+          // this.fullscreenLoading = false
+          // loading.close()
+          return
+        }
+      }
+      trainAction(this.form).then(res=>{
         this.$message({
           message: '训练以及开始，稍后在消息中查看！',
           type: 'success'
@@ -236,11 +239,10 @@ export default {
     updateRule() {
     },
     preTrain(){
-      let headerList = JSON.parse(JSON.stringify(this.headerList))
-      var preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
+      let headerList = JSON.parse(JSON.stringify(this.preHeadList))
       var preData = {};
-      preHeadList.forEach((item,index)=>{
-        preData[item.name] = this.preDataList[0][index];
+      headerList.forEach((item)=>{
+        preData[item.name] = item[item.code];
       })
       let param = {
          form:this.form,
