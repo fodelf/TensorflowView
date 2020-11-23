@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 09:33:36
+ * @LastEditTime: 2020-11-23 12:58:24
 -->
 <template>
   <div class='projectAdd'>
@@ -98,8 +98,11 @@
       </el-tabs>
       <el-row :gutter=20 v-if="isTrain">
          <el-col :span='8'>
-          <el-form-item label="预测准确率">
+          <el-form-item label="预测准确率" v-if="form.learnType=='classification'">
             <span class='labelText'>{{trainData.test.accuracy}}</span>
+          </el-form-item>
+          <el-form-item label="平均误差" v-else>
+            <span class='labelText'>{{trainData.test.mae}}</span>
           </el-form-item>
          </el-col>
          <el-col :span='8'>
@@ -130,8 +133,8 @@
       <el-row :gutter=20 v-if="isTrain && form.learnType=='classification'">
          <el-col :span='6'>
           <el-form-item label="问题类型">
-            <span class='labelText' v-if="trainData.group.length ==2">这是二元分类</span>
-            <span class='labelText' v-if="trainData.group.length >2">这是多元分类</span>
+            <span class='labelText' v-if="trainData.group.length ==2">二元分类</span>
+            <span class='labelText' v-if="trainData.group.length >2">多元分类</span>
           </el-form-item>
          </el-col>
          <el-col :span='18'>
@@ -145,6 +148,21 @@
           <el-form-item label="结论">
             <span class='labelText' v-if="trainData.group.length ==2">类型为{{trainData.group[1]}}的概率是{{prData}}</span>
             <span class='labelText' v-if="trainData.group.length > 2">各个类型概率分布如下: {{prData}}</span>
+          </el-form-item>
+         </el-col>
+     </el-row>
+     <el-row :gutter=20 v-if="isTrain && form.learnType=='regression'">
+         <el-col :span='6'>
+          <el-form-item label="问题类型">
+            <span class='labelText' v-if="trainData.group.length == 1">一元回归</span>
+            <span class='labelText' v-else>多元回归</span>
+          </el-form-item>
+         </el-col>
+      </el-row>
+      <el-row :gutter=20 v-if="isTrain && isShowPre && form.learnType =='regression'">
+         <el-col :span='24'>
+          <el-form-item label="结论">
+            <span class='labelText'>预测值是： {{prData}}</span>
           </el-form-item>
          </el-col>
      </el-row>

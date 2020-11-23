@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 09:31:57
+ * @LastEditTime: 2020-11-23 12:56:56
  */
 import {
   getDataAll,
@@ -252,14 +252,18 @@ export default {
       }
       preTrain(param).then((res)=>{
         this.isShowPre = true
-        if(this.trainData.group.length ==2){
-          this.prData = (res[0][0]*100).toFixed(2) +'%';
-        }else if(this.trainData.group.length >2){
-          let prData =''
-          this.trainData.group.forEach((item,index) =>{
-            prData = prData + item+"概率是"+(res[0][index]*100).toFixed(2) +'%'+";"
-          })
-          this.prData = prData
+        if(this.form.learnType=='classification'){
+          if(this.trainData.group.length ==2){
+            this.prData = (res[0][0]*100).toFixed(2) +'%';
+          }else if(this.trainData.group.length >2){
+            let prData =''
+            this.trainData.group.forEach((item,index) =>{
+              prData = prData + item+"概率是"+(res[0][index]*100).toFixed(2) +'%'+";"
+            })
+            this.prData = prData
+          }
+        }else{
+          this.prData = res
         }
       })
     }

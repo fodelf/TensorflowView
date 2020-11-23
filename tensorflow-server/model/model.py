@@ -15,6 +15,8 @@ class Model(Base):
     loss = Column(Float)
     accuracy = Column(Float)
     time = Column(DateTime,nullable=False, server_default=func.now())
+    learnType = Column(String)
+    mae = Column(Float)
     def to_json(self):
       dict = self.__dict__
       if "_sa_instance_state" in dict:
@@ -32,7 +34,10 @@ def saveModel(data):
           formConfig=json.dumps(form, indent=2),
           loss = float(trainData["test"]["loss"]),
           accuracy = float(trainData["test"]["accuracy"]),
-          filePath=form["filePath"])
+          learnType=str(form["learnType"]),
+          mae = float((trainData["test"]["mae"])),
+          filePath=form["filePath"]
+          )
     session = Session()
     session.add(model)
     session.commit()

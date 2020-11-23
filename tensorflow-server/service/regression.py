@@ -86,6 +86,7 @@ def train(data,socketio):
       name = str(i)
       if name != data['target']:
          headers.append(name)
+         targetGroup.append(name)
       if dtype == "object" and name != data['target']:
          dataframe = df.copy()
          groupby = dataframe.groupby(name)
@@ -196,8 +197,9 @@ def train(data,socketio):
     res["onehots"] = onehots
     res["group"] = targetGroup
     res["test"] = {
-      "accuracy":mae,
-      "loss":loss
+      "accuracy":0,
+      "loss":loss,
+      "mae":mae
     }
     res["imgUrl"] ="http://127.0.0.1:9567/"+urlstr+".jpg"
     trainObj = {
@@ -208,8 +210,10 @@ def train(data,socketio):
       "dataId":data["dataId"],
       "loss":loss,
       "trainName":data["trainName"],
-      "accuracy":mae,
-      "dataName":data["dataName"]
+      "accuracy":0,
+      "mae":mae,
+      "dataName":data["dataName"],
+      "learnType":data["learnType"]
     }
     messageObj = {
       "trainConfig":{
@@ -274,7 +278,7 @@ def preTrain(data):
     # print(group[index])
     # print(predictions)
     # print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    return  float(predictions[0][0]) 
+    return  float(predictions[0][0])
     # return group[index]
 # 预训练数据
 def trainOnline(data):

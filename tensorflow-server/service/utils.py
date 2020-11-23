@@ -429,7 +429,8 @@ def train(data,socketio):
     res["group"] = targetGroup
     res["test"] = {
       "accuracy":accuracy,
-      "loss":loss
+      "loss":loss,
+      "mes":0
     }
     res["imgUrl"] ="http://127.0.0.1:9567/"+urlstr+".jpg"
     trainObj = {
@@ -441,7 +442,9 @@ def train(data,socketio):
       "loss":loss,
       "trainName":data["trainName"],
       "accuracy":accuracy,
-      "dataName":data["dataName"]
+      "mae":0,
+      "dataName":data["dataName"],
+      "learnType":data["learnType"]
     }
     messageObj = {
       "trainConfig":{

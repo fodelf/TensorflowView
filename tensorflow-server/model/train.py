@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:29:31
 LastEditors: 吴文周
-LastEditTime: 2020-11-19 20:01:41
+LastEditTime: 2020-11-23 12:35:29
 '''
 from model.base import *
 
@@ -19,6 +19,8 @@ class Train(Base):
     time = Column(DateTime,nullable=False, server_default=func.now())
     loss = Column(Float)
     accuracy = Column(Float)
+    learnType= Column(String)
+    mae = Column(Float)
     def to_json(self):
       dict = self.__dict__
       if "_sa_instance_state" in dict:
@@ -32,7 +34,9 @@ def createTrain(data):
                 dataId=str(data["dataId"]),
                 loss = float(data["loss"]),
                 trainName=str(data["trainName"]),
-                accuracy = float(data["accuracy"])
+                accuracy = float(data["accuracy"]),
+                learnType=str(data["learnType"]),
+                mae = float(data["mae"]),
           )
     session = Session()
     session.add(train)
