@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-18 20:43:21
+ * @LastEditTime: 2020-11-23 09:33:36
 -->
 <template>
   <div class='projectAdd'>
@@ -127,10 +127,24 @@
             </el-table>
           </div>
       </el-row>
-      <el-row :gutter=20 v-if="isTrain">
-         <el-col :span='8'>
-          <el-form-item label="预测值">
-            <span class='labelText'>{{prData}}</span>
+      <el-row :gutter=20 v-if="isTrain && form.learnType=='classification'">
+         <el-col :span='6'>
+          <el-form-item label="问题类型">
+            <span class='labelText' v-if="trainData.group.length ==2">这是二元分类</span>
+            <span class='labelText' v-if="trainData.group.length >2">这是多元分类</span>
+          </el-form-item>
+         </el-col>
+         <el-col :span='18'>
+          <el-form-item label="类型明细">
+            <span class='labelText'>{{trainData.group.join(',')}}</span>
+          </el-form-item>
+         </el-col>
+      </el-row>
+      <el-row :gutter=20 v-if="isTrain && isShowPre && form.learnType =='classification'">
+         <el-col :span='24'>
+          <el-form-item label="结论">
+            <span class='labelText' v-if="trainData.group.length ==2">类型为{{trainData.group[1]}}的概率是{{prData}}</span>
+            <span class='labelText' v-if="trainData.group.length > 2">各个类型概率分布如下: {{prData}}</span>
           </el-form-item>
          </el-col>
      </el-row>

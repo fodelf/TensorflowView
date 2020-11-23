@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-18 20:52:59
+ * @LastEditTime: 2020-11-23 08:45:10
 -->
 <template>
   <div class="projectManage">
@@ -41,7 +41,7 @@
             prop="time"
             label="创建时间">
           </el-table-column>
-            <el-table-column 
+          <el-table-column
             fixed="right"
             label="操作"
             width="250">

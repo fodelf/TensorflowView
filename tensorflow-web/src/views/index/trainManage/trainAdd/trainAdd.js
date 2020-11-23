@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-18 20:47:41
+ * @LastEditTime: 2020-11-23 09:31:57
  */
 import {
   getDataAll,
@@ -98,7 +98,8 @@ export default {
       fullscreenLoading:false,
       preDataList:[],
       preHeadList:[],
-      prData:''
+      prData:'',
+      isShowPre:false
     }
   },
   methods:{
@@ -250,7 +251,16 @@ export default {
          preData:preData
       }
       preTrain(param).then((res)=>{
-        this.prData = res;
+        this.isShowPre = true
+        if(this.trainData.group.length ==2){
+          this.prData = (res[0][0]*100).toFixed(2) +'%';
+        }else if(this.trainData.group.length >2){
+          let prData =''
+          this.trainData.group.forEach((item,index) =>{
+            prData = prData + item+"概率是"+(res[0][index]*100).toFixed(2) +'%'+";"
+          })
+          this.prData = prData
+        }
       })
     }
   },

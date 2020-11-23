@@ -528,8 +528,8 @@ def preTrain(data):
           if trainData['onehots'][name]['maxValue'] < float(preData[name]):
              res.append(float(1))
           if trainData['onehots'][name]['minValue'] > float(preData[name]):
-             res.append(float(0)) 
-          if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
+             res.append(float(0))
+          if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]):
              dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
              res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis) 
         else:
@@ -545,7 +545,13 @@ def preTrain(data):
     print(group[index])
     # print(predictions)
     # print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    return "{:.2%}".format(predictions[0][0])
+    res = []
+    for prediction in predictions:
+        resChild = []
+        for child in prediction:
+          resChild.append(float(child))
+        res.append(resChild)
+    return res
     # return group[index]
 # 预训练数据
 def trainOnline(data):
