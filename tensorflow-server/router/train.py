@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-18 19:22:43
 LastEditors: 吴文周
-LastEditTime: 2020-11-19 19:58:58
+LastEditTime: 2020-11-23 20:05:56
 '''
 from router.common import *
 import  threading
@@ -75,4 +75,15 @@ def test():
         'data':res
     }
     return jsonify(t)
-   
+
+# 预测试
+@train.route('/queryTrainSum')
+def queryTrainSum():
+    data = request_parse(request)
+    res = dataBase.queryTrainSum()
+    t = {
+        'code': code,
+        'msg': msg,
+        'data':res
+    }
+    return jsonify(t)

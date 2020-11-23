@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-20 08:42:22
+ * @LastEditTime: 2020-11-23 20:27:07
  */
 import{queryModelList,deleteModelById} from "@/api/index/modelManage"
 import{dateFormat} from "@/utils/index"
@@ -91,7 +91,7 @@ export default {
       this.queryModelList();
     },
     handleDelete(data) {
-      this.$confirm('确认删除此训练？')
+      this.$confirm('确认删除此模型？')
         .then(() => {
           deleteModelById({ modelId: data.modelId }).then(() => {
             this.$message({

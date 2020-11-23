@@ -4,10 +4,14 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 08:45:10
+ * @LastEditTime: 2020-11-23 20:25:09
 -->
 <template>
   <div class="projectManage">
+    <div class="leftMenu">
+      <!--左侧列表组件-->
+      <menuList :menuObj="menuObj" @clickMenu="selectMenu"></menuList>
+    </div>
     <div class="rightList">
       <p class="rightTit clearfix">
         <el-button type="primary" icon="el-icon-plus" @click="addPro"
@@ -30,8 +34,8 @@
             >
           </el-table-column>
           <el-table-column
-            prop="accuracy"
-            label="准确率">
+            :prop="dataProp"
+            :label="label">
           </el-table-column>
           <el-table-column
             prop="loss"
@@ -42,12 +46,11 @@
             label="创建时间">
           </el-table-column>
           <el-table-column
-            fixed="right"
             label="操作"
-            width="250">
+            width="200">
             <template slot-scope="scope">
               <el-button type="primary" @click="check(scope.row)">查看</el-button>
-              <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+              <!-- <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button> -->
               <el-button type="primary" @click="saveModel(scope.row)">保存</el-button>
               <el-button type="danger" @click="deleteRow(scope.row)">删除</el-button>
             </template>

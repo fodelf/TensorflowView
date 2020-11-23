@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:29:31
 LastEditors: 吴文周
-LastEditTime: 2020-11-23 12:35:29
+LastEditTime: 2020-11-23 20:15:38
 '''
 from model.base import *
 
@@ -45,7 +45,7 @@ def createTrain(data):
 # 查询训练列表
 def queryTrainList(data):
     session = Session()
-    trains = session.query(Train).order_by(Train.id.desc()).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
+    trains = session.query(Train).filter(Train.learnType == data["learnType"]).order_by(Train.id.desc()).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
     total = session.query(Train).count()
     result = []
     for f in trains:
@@ -95,3 +95,26 @@ def deleteTrainById(data):
     train = session.query(Train).filter(Train.trainId == data["trainId"]).first()
     session.delete(train)
     session.commit()
+
+# 查询训练汇总
+def queryTrainSum():
+    session =Session()
+    total = session.query(Train).count()
+    regression = session.query(Train).filter(Train.learnType == 'regression').count()
+    classification = session.query(Train).filter(Train.learnType == 'classification').count()
+    res ={
+      "total":total,
+      "list":[
+        {
+          "label":'分类',
+          "count":classification,
+          "type":'classification'
+        },
+        {
+          "label":'回归',
+          "count":regression,
+          "type":'regression'
+        }
+      ]
+    }
+    return res

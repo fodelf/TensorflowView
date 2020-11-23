@@ -300,16 +300,21 @@ def trainOnline(data):
       name = str(i)
       if name != form['target']:
         if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
-          res.append(float(preData[name]))
-        if str(dtypes[i]) =="object":
-          for onehot in trainData['onehots']:
-              if onehot['name'] == name:
-                  if preData[name] in onehot["grupMap"].keys():
-                    res.append(onehot["grupMap"][preData[name]])
-                  else:
-                    res.append(0.0)
+          print(name)
+          if trainData['onehots'][name]['maxValue'] < float(preData[name]):
+             res.append(float(1))
+          if trainData['onehots'][name]['minValue'] > float(preData[name]):
+             res.append(float(0))
+          if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
+             dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
+             res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis)
+        else:
+          if preData[name] in trainData['onehots'][name]["grupMap"].keys():
+             res.append(trainData['onehots'][name]["grupMap"][preData[name]])
+          else:
+             res.append(0.0)
     print(res)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
-    print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    return "{:.2%}".format(predictions[0][0])
+    # print("Predicted survival: {:.2%}".format(predictions[0][0]))
+    return  float(predictions[0][0])

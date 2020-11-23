@@ -469,9 +469,9 @@ def getParam(data):
     for i in dtypes.keys():
       if str(i) != data["target"]:
         res['param'][str(i)] = df.values[0][k]
-        k = k + 1
       else:
         res['target'] = df.values[0][k]
+      k = k + 1
     return res
 
 def parseHeader(filePath):

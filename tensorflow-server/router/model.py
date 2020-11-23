@@ -42,7 +42,13 @@ def save():
 @model.route('/trainOnline', methods=['POST'])
 def trainOnline():
     data = request_parse(request)
-    res = service.utils.trainOnline(data)
+    res =''
+    modelObj = dataBase.queryModelById(data["modelId"])
+    form =json.loads(modelObj["formConfig"])
+    if modelObj['learnType'] == 'classification':
+      res = service.utils.trainOnline(data)
+    else:
+      res = service.regression.trainOnline(data)
     t = {
         'code': code,
         'msg': msg,

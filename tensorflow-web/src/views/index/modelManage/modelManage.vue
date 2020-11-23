@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-18 19:11:00
+ * @LastEditTime: 2020-11-23 20:31:25
 -->
 <template>
   <div class="projectManage">
@@ -41,14 +41,13 @@
             prop="time"
             label="创建时间">
           </el-table-column>
-          <el-table-column 
-            fixed="right"
+          <el-table-column
             label="操作"
-            width="250">
+            width="160">
             <template slot-scope="scope">
               <el-button type="primary" @click="handleWakeUp(scope.row)">调用</el-button>
-              <el-button type="primary" @click="handleCheck(scope.row)">下载</el-button>
-              <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+              <!-- <el-button type="primary" @click="handleCheck(scope.row)">下载</el-button> -->
+              <!-- <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button> -->
               <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
             </template>
           </el-table-column>
