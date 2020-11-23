@@ -24,7 +24,13 @@
           <span style='color:white'>{{org}}</span>
         </el-form-item>
         <el-form-item label="预测结果">
-          <span style='color:white'>{{res}}</span>
+          <!-- <span style='color:white'>{{res}}</span> -->
+          <el-input
+              type="textarea"
+              v-model="res"
+              :rows="2"
+              resize="none"
+          ></el-input>
         </el-form-item>
     </el-form>
     <div class="btn_row">
@@ -74,6 +80,7 @@ export default {
             this.org= res.target
             this.param = JSON.stringify(param, null, 2)
           })
+          this.res =''
         }
       },
       deep: true,
@@ -83,34 +90,12 @@ export default {
   methods: {
     test(){
       trainOnline(JSON.parse(this.param)).then((res) =>{
-        this.res = res;
+        if(typeof res == "object"){
+          this.res = JSON.stringify(res,null, 2)
+        } else{
+          this.res = res
+        } 
       })
-    },
-    action() {
-      actionScript({
-        scriptContent: this.itemObj.scriptContent
-      })
-        .then(() => {
-          this.$message({
-            type: 'success',
-            message: '脚本已经启动'
-          })
-        })
-        .catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '脚本报错了！'
-          })
-        })
-    },
-    deleteAtion(scriptId) {
-      this.$confirm('确认删除此脚本？')
-        .then(() => {
-          deleteScript({ scriptId: scriptId }).then(() => {
-            this.$emit('getList')
-          })
-        })
-        .catch(() => {})
     },
     cancle() {
       this.$emit('cancle')

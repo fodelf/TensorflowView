@@ -131,13 +131,13 @@
           </div>
       </el-row>
       <el-row :gutter=20 v-if="isTrain && form.learnType=='classification'">
-         <el-col :span='6'>
+         <el-col :span='8'>
           <el-form-item label="问题类型">
             <span class='labelText' v-if="trainData.group.length ==2">二元分类</span>
             <span class='labelText' v-if="trainData.group.length >2">多元分类</span>
           </el-form-item>
          </el-col>
-         <el-col :span='18'>
+         <el-col :span='16'>
           <el-form-item label="类型明细">
             <span class='labelText'>{{trainData.group.join(',')}}</span>
           </el-form-item>

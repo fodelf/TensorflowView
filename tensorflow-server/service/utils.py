@@ -430,7 +430,7 @@ def train(data,socketio):
     res["test"] = {
       "accuracy":accuracy,
       "loss":loss,
-      "mes":0
+      "mae":0
     }
     res["imgUrl"] ="http://127.0.0.1:9567/"+urlstr+".jpg"
     trainObj = {
@@ -577,16 +577,33 @@ def trainOnline(data):
       name = str(i)
       if name != form['target']:
         if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
-          res.append(float(preData[name]))
-        if str(dtypes[i]) =="object":
-          for onehot in trainData['onehots']:
-              if onehot['name'] == name:
-                  if preData[name] in onehot["grupMap"].keys():
-                    res.append(onehot["grupMap"][preData[name]])
-                  else:
-                    res.append(0.0)
+          if trainData['onehots'][name]['maxValue'] < float(preData[name]):
+             res.append(float(1))
+          if trainData['onehots'][name]['minValue'] > float(preData[name]):
+             res.append(float(0)) 
+          if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
+             dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
+             res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis) 
+        else:
+          if preData[name] in trainData['onehots'][name]["grupMap"].keys():
+             res.append(trainData['onehots'][name]["grupMap"][preData[name]])
+          else:
+             res.append(0.0)
     print(res)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
-    print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    return "{:.2%}".format(predictions[0][0])
+    print(trainData['group'])
+    if len(trainData['group']) == 2:
+      res = {}
+      res[trainData['group'][1]] = float(predictions[0][0])
+      return res
+    elif len(trainData['group']) > 2:
+      k = 0
+      res = {}
+      for prediction in predictions:
+        for child in prediction:
+          res[trainData['group'][k]] = float(child)
+          k = k + 1
+      return res
+
+      
