@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 12:56:56
+ * @LastEditTime: 2020-11-24 09:38:36
  */
 import {
   getDataAll,
@@ -99,7 +99,8 @@ export default {
       preDataList:[],
       preHeadList:[],
       prData:'',
-      isShowPre:false
+      isShowPre:false,
+      max:''
     }
   },
   methods:{
@@ -210,7 +211,7 @@ export default {
       }
       trainAction(this.form).then(res=>{
         this.$message({
-          message: '训练以及开始，稍后在消息中查看！',
+          message: '训练已经开始，稍后在训练列表中查看！',
           type: 'success'
         });
         // this.trainData = res
@@ -258,8 +259,9 @@ export default {
           }else if(this.trainData.group.length >2){
             let prData =''
             this.trainData.group.forEach((item,index) =>{
-              prData = prData + item+"概率是"+(res[0][index]*100).toFixed(2) +'%'+";"
+              prData = prData + item+"概率是"+(res['detail'][0][index]*100).toFixed(2) +'%'+";"
             })
+            this.max = res['max']
             this.prData = prData
           }
         }else{

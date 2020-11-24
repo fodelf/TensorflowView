@@ -4,18 +4,26 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 20:27:07
+ * @LastEditTime: 2020-11-24 08:51:44
  */
-import{queryModelList,deleteModelById} from "@/api/index/modelManage"
+import{queryModelList,deleteModelById,queryModelSum} from "@/api/index/modelManage"
 import{dateFormat} from "@/utils/index"
 import scriptCard from "@/components/scriptCard/scriptCard"
+import menuList from 'components/menuList/menuList.vue'
 export default {
   name: 'projectManage',
   components: {
-    scriptCard
+    scriptCard,
+    menuList
   },
   data() {
     return {
+      menuObj: {
+        title: '模型总计',
+        total: 0,
+        menuList: [],
+        active:'classification'
+      },
       type: 'add',
       tablePag: {
         pageNo: 1,
@@ -25,6 +33,8 @@ export default {
       itemObj: {},
       tableData: [],
       dialogTableVisible:false,
+      label:'准确率',
+      dataProp:'accuracy'
     }
   },
   methods: {
@@ -75,6 +85,7 @@ export default {
       })
     },
     queryModelList(){
+      this.tablePag.learnType = this.menuObj.active
       queryModelList(this.tablePag).then((res)=>{
         let list = res.list
         list.forEach((row)=>{
@@ -103,9 +114,29 @@ export default {
           })
         })
         .catch(() => {})
-    }
+    },
+    selectMenu(item){
+      this.tablePag= {
+        pageNo: 1,
+        pageSize: 15,
+        learnType:'',
+        totalRecord: 0
+      }
+      this.menuObj.active = item.type
+      this.label = item.type =='classification'?'准确率':'平均误差'
+      this.dataProp = item.type =='classification'?'accuracy':'mae'
+      this.queryModelList()
+    },
+    queryModelSum(){
+      queryModelSum().then((res) =>{
+        this.menuObj.total = res.total
+        this.menuObj.menuList = res.list
+        this.menuObj.active ='classification'
+      })
+    },
   },
   mounted() {
+    this.queryModelSum()
     this.queryModelList()
   }
 }

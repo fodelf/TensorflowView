@@ -113,3 +113,15 @@ def deleteModelById():
         'data':'ok'
     }
     return jsonify(t)
+
+# 查询汇总
+@model.route('/queryModelSum')
+def queryModelSum():
+    data = request_parse(request)
+    res =  dataBase.queryModelSum()
+    t = {
+        'code': code,
+        'msg': msg,
+        'data':res
+    }
+    return jsonify(t)

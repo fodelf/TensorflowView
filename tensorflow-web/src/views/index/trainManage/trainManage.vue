@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 20:25:09
+ * @LastEditTime: 2020-11-24 09:13:36
 -->
 <template>
   <div class="projectManage">
@@ -47,11 +47,11 @@
           </el-table-column>
           <el-table-column
             label="操作"
-            width="200">
+            width="240">
             <template slot-scope="scope">
               <el-button type="primary" @click="check(scope.row)">查看</el-button>
               <!-- <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button> -->
-              <el-button type="primary" @click="saveModel(scope.row)">保存</el-button>
+              <el-button type="primary" @click="saveModel(scope.row)">保存模型</el-button>
               <el-button type="danger" @click="deleteRow(scope.row)">删除</el-button>
             </template>
           </el-table-column>

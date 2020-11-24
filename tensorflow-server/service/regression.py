@@ -282,6 +282,7 @@ def preTrain(data):
     # return group[index]
 # 预训练数据
 def trainOnline(data):
+    database.createRequest()
     modelId = data["modelId"]
     preData = data["trainData"]
     modelObj = database.queryModelById(modelId)

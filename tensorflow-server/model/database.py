@@ -24,6 +24,12 @@ class Request(Base):
       if "_sa_instance_state" in dict:
           del dict["_sa_instance_state"]
       return dict
+# 新增模型
+def createRequest():
+    request = Request()
+    session = Session()
+    session.add(request)
+    session.commit()
 
 
 

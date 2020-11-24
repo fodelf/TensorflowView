@@ -4,10 +4,14 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 20:31:25
+ * @LastEditTime: 2020-11-24 08:50:11
 -->
 <template>
   <div class="projectManage">
+    <div class="leftMenu">
+      <!--左侧列表组件-->
+      <menuList :menuObj="menuObj" @clickMenu="selectMenu"></menuList>
+    </div>
     <div class="rightList">
       <p class="rightTit clearfix">
         <!-- <el-button type="primary" icon="el-icon-plus" @click="addPro"
@@ -30,8 +34,8 @@
             >
           </el-table-column>
           <el-table-column
-            prop="accuracy"
-            label="准确率">
+            :prop="dataProp"
+            :label="label">
           </el-table-column>
           <el-table-column
             prop="loss"
@@ -65,7 +69,7 @@
         </el-pagination>
       </div>
     </div>
-    <el-dialog :title="itemObj.modelName" :visible.sync="dialogTableVisible">
+    <el-dialog :title="itemObj.modelName" :close-on-click-modal ="false" :visible.sync="dialogTableVisible">
       <scriptCard :itemObj='itemObj' @cancle ='cancle()'></scriptCard>
     </el-dialog>
   </div>

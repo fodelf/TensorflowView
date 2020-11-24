@@ -554,10 +554,19 @@ def preTrain(data):
         for child in prediction:
           resChild.append(float(child))
         res.append(resChild)
-    return res
+    if len(trainData['group']) == 2:
+      return res
+    elif len(trainData['group']) > 2:
+      index = np.argmax(predictions[0])
+      r = {
+        'max':group[index],
+        'detail':res
+      }
+      return r
     # return group[index]
 # 预训练数据
 def trainOnline(data):
+    database.createRequest()
     modelId = data["modelId"]
     preData = data["trainData"]
     modelObj = database.queryModelById(modelId)
@@ -598,12 +607,16 @@ def trainOnline(data):
       res[trainData['group'][1]] = float(predictions[0][0])
       return res
     elif len(trainData['group']) > 2:
+      index = np.argmax(predictions[0])
+      print(np.argmax(predictions[0]))
+      print(group[index])
       k = 0
-      res = {}
+      res = {
+        'max':group[index],
+        'detail':{}
+      }
       for prediction in predictions:
         for child in prediction:
-          res[trainData['group'][k]] = float(child)
+          res['detail'][trainData['group'][k]] = float(child)
           k = k + 1
       return res
-
-      
