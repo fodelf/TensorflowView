@@ -44,7 +44,7 @@ def trainOnline():
     data = request_parse(request)
     res =''
     modelObj = dataBase.queryModelById(data["modelId"])
-    form =json.loads(modelObj["formConfig"])
+    form = json.loads(modelObj["formConfig"])
     if modelObj['learnType'] == 'classification':
       res = service.utils.trainOnline(data)
     else:

@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-24 08:51:44
+ * @LastEditTime: 2020-11-24 22:11:16
  */
 import{queryModelList,deleteModelById,queryModelSum} from "@/api/index/modelManage"
 import{dateFormat} from "@/utils/index"
@@ -38,11 +38,11 @@ export default {
     }
   },
   methods: {
-    addPro() {
+    modelAction(data) {
       this.$router.push({
-        name:'trainAdd',
+        name:'modelAction',
         query:{
-          type:'add'
+          modelId:data.modelId
         }
       })
     },
@@ -90,6 +90,7 @@ export default {
         let list = res.list
         list.forEach((row)=>{
           row.accuracy = row.accuracy.toFixed(4)
+          row.mae = row.mae.toFixed(4)
           row.loss = row.loss.toFixed(4)
           row.time = dateFormat('YYYY/mm/dd',row.time)
         })
@@ -127,16 +128,18 @@ export default {
       this.dataProp = item.type =='classification'?'accuracy':'mae'
       this.queryModelList()
     },
-    queryModelSum(){
+    queryModelSum(flag){
       queryModelSum().then((res) =>{
         this.menuObj.total = res.total
         this.menuObj.menuList = res.list
-        this.menuObj.active ='classification'
+        if(flag){
+          this.menuObj.active ='classification'
+        }
       })
     },
   },
   mounted() {
-    this.queryModelSum()
+    this.queryModelSum(true)
     this.queryModelList()
   }
 }

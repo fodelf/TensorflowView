@@ -16,8 +16,8 @@ function delDir(path){
     }
 }
 // 获取web 目录
-let webPath = path.resolve(__dirname, '../gateway-server/web');
-console.log(webPath);
+// let webPath = path.resolve(__dirname, '../gateway-server/web');
+// console.log(webPath);
 // 清除开始
-delDir(webPath)
-console.log("清除完成")
+// delDir(webPath)
+// console.log("清除完成")

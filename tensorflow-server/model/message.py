@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 12:31:41
 LastEditors: 吴文周
-LastEditTime: 2020-11-17 12:32:55
+LastEditTime: 2020-11-26 19:35:04
 '''
 from model.base import *
 
@@ -14,7 +14,7 @@ class Message(Base):
     messageId = Column(String ,default=gen_id)
     trainConfig = Column(String)
     isRead = Column(Integer, default=0)
-    time = Column(DateTime,nullable=False, server_default=func.now())
+    time = Column(String,nullable=False, default= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     def to_json(self):
       dict = self.__dict__
       if "_sa_instance_state" in dict:
@@ -26,6 +26,7 @@ def createMessage(data):
     session =Session()
     session.add(message)
     session.commit()
+    session.close()
 
 def queryMessage():
     session =Session()
@@ -35,17 +36,20 @@ def queryMessage():
         child = f.to_json()
         child['trainConfig']= json.loads(child['trainConfig'])
         result.append(child)
+    session.close()
     return result
 
 def queryMessageById(messageId):
     session =Session()
     message = session.query(Message).filter_by(messageId=messageId).first()
+    session.close()
     return message.to_json()
 
 # 查询消息总共个数
 def queryMessageCount():
     session =Session()
     sum = session.query(Message).filter(Message.isRead == 0).count()
+    session.close()
     return sum
 
 # 更新消息读取状态
@@ -53,3 +57,4 @@ def updateMessage():
     session =Session()
     session.query(Message).filter(Message.isRead == 0).update({Message.isRead:1})
     session.commit()
+    session.close()

@@ -13,7 +13,9 @@ Tensorflow View（一个开箱即用的机器学习工具），降低机器学�
 
 * 低保真设计 https://modao.cc/app/a31abb9e17a47fdb23f4cfd4079a061927c39733#screen=skgftuhgblfuszv
 
-* 掘金文档地址 
+* 掘金文档地址
+
+* 体验地址 http://www.wuwenzhou.com.cn:9567/index.html#/home
 
 ## 使用
 

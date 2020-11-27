@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-24 09:38:36
+ * @LastEditTime: 2020-11-25 09:07:57
  */
 import {
   getDataAll,
@@ -209,25 +209,19 @@ export default {
           return
         }
       }
-      trainAction(this.form).then(res=>{
-        this.$message({
-          message: '训练已经开始，稍后在训练列表中查看！',
-          type: 'success'
-        });
-        // this.trainData = res
-        // let headerList = JSON.parse(JSON.stringify(this.headerList))
-        // this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
-        // let obj = {}
-        // this.preHeadList.forEach(item=>{
-        //   obj[item] = ''
-        // })
-        // this.preDataList = [obj]
-        // this.isTrain = true
-        // this.fullscreenLoading = false
-        // loading.close()
-      }).catch(err => {
-        // loading.close()
-      })
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          trainAction(this.form).then(res=>{
+            this.$message({
+              message: '训练已经开始，稍后在训练列表中查看！',
+              type: 'success'
+              });
+            }).catch(err => {
+          })
+        } else {
+          return false;
+        }
+      });
     },
     changeTarget(){
       this.isTrain = false

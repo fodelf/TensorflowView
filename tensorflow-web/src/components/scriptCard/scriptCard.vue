@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-04-10 21:26:24
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-05-16 11:27:12
+ * @LastEditTime: 2020-11-24 12:58:32
  -->
 <template>
   <div class="scriptCard">
@@ -80,7 +80,6 @@ export default {
             this.org= res.target
             this.param = JSON.stringify(param, null, 2)
           })
-          this.res =''
         }
       },
       deep: true,

@@ -4,7 +4,7 @@
  * @Github: http://gitlab.yzf.net/wuwenzhou
  * @Date: 2019-11-19 08:46:03
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-12 12:29:42
+ * @LastEditTime: 2020-11-27 09:15:26
  */
 const path = require('path')
 const ispro = process.env.NODE_ENV !== 'development'
@@ -27,8 +27,9 @@ module.exports = {
       chunks: ['chunk-vendors', 'chunk-common', 'index']
     }
   },
-  publicPath: ispro ? '' : '/',
-  outputDir: '../gateway-server/web',
+  publicPath: ispro ? 'http://cdn.wuwenzhou.com.cn' : '/',
+  // publicPath: ispro ? '' : '/',
+  // outputDir: '../tensorflow-server/static',
   assetsDir: 'static',
   lintOnSave: false,
   productionSourceMap: false,
@@ -51,5 +52,12 @@ module.exports = {
       .set('components', resolve('src/components'))
       .set('base', resolve('baseConfig'))
       .set('public', resolve('public'))
+    // if (ispro) {
+    //     config.plugin('html')
+    //     .tap(args => {
+    //         args[0].cdn = cdn;
+    //       return args;
+    //     })
+    //   }
   }
 }

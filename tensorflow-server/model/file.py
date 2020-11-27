@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:32:11
 LastEditors: 吴文周
-LastEditTime: 2020-11-18 19:43:51
+LastEditTime: 2020-11-25 17:04:28
 '''
 from model.base import *
 
@@ -17,7 +17,7 @@ class File(Base):
     fileName = Column(String)
     fileSize = Column(String)
     dataType = Column(String)
-    time = Column(DateTime,nullable=False, server_default=func.now())
+    time = Column(String,nullable=False, default= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     def to_json(self):
       dict = self.__dict__
       if "_sa_instance_state" in dict:
@@ -33,7 +33,7 @@ def saveFile(data):
     session = Session()
     session.add(fileObj)
     session.commit()
-
+    session.close()
 
 def getDataList(data):
     session = Session()
@@ -46,6 +46,7 @@ def getDataList(data):
       "list":dataList,
       "total":total
     }
+    session.close()
     return result
 
 def getDataAll():
@@ -54,6 +55,7 @@ def getDataAll():
     dataList = []
     for f in Files:
         dataList.append(f.to_json())
+    session.close()
     return dataList
 
 
@@ -63,3 +65,4 @@ def deleteDataById(dataId):
     fileObj= session.query(File).filter(File.dataId == dataId)
     session.delete(fileObj)
     session.commit()
+    session.close()

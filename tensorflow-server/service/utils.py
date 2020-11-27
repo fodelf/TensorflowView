@@ -195,6 +195,11 @@ def get_compiled_model(headers,targetGroup,denseNum):
 def plot_learning_curves(history):
     pd.DataFrame(history.history).plot(figsize=(8, 5))
     plt.grid(True)
+    # 解决中文乱码问题
+    plt.rcParams['font.sans-serif']=['SimHei']
+    plt.rcParams['axes.unicode_minus']=False
+    plt.xlabel('训练次数')
+    plt.ylabel('指标值')
     plt.gca().set_ylim(0, 1)
     # plt.show()
     urlstr = str(uuid.uuid1())
@@ -238,6 +243,28 @@ def df_to_dataset(dataframe,target,shuffle=True, batch_size=32):
   return ds
 
 def train(data,socketio):
+    df1 = pd.read_csv(data["filePath"],header=0,nrows=1)
+    dtypes = df1.dtypes
+    demoData = {}
+    trainHeaders= []
+    k = 0
+    targetValue =''
+    for i in dtypes.keys():
+      if str(i) != data['target']:
+        typeString = str(dtypes[i])
+        if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
+            typeString ='number'
+        if str(dtypes[i]) =="object":
+            typeString ='text'
+        child= {
+          "label":str(i),
+          "type":typeString
+        }
+        trainHeaders.append(child)
+        demoData[str(i)] = df1.values[0][k]
+      else:
+        targetValue = df1.values[0][k]
+      k = k+1
     df = pd.read_csv(data["filePath"])
     totalCount = len(df)
     train_sum = round(totalCount*0.8)
@@ -425,6 +452,9 @@ def train(data,socketio):
     model.load_weights(output_model_file)
     loss, accuracy = model.evaluate(test_ds)
     res = {}
+    res['targetValue'] = targetValue
+    res['headers'] = trainHeaders
+    res['demoData'] = demoData
     res["onehots"] = onehots
     res["group"] = targetGroup
     res["test"] = {
@@ -458,20 +488,16 @@ def train(data,socketio):
     socketio.emit('train','',namespace='/mes')
     # return res
 
-def getParam(data):
-    df = pd.read_csv(data["filePath"],header=0,nrows=1)
-    dtypes = df.dtypes
+def getParam(d):
+    modelId = d["modelId"]
+    modelObj = database.queryModelById(modelId)
+    data = json.loads(modelObj['formConfig'])
+    trainData = json.loads(modelObj['modelConfig'])
+    print(trainData)
     res = {
-      'param':{},
-      "target":''
+      'param':trainData['demoData'],
+      "target":trainData["targetValue"]
     }
-    k = 0
-    for i in dtypes.keys():
-      if str(i) != data["target"]:
-        res['param'][str(i)] = df.values[0][k]
-      else:
-        res['target'] = df.values[0][k]
-      k = k + 1
     return res
 
 def parseHeader(filePath):
@@ -576,42 +602,47 @@ def trainOnline(data):
     output_model_file = os.path.join(logdir,
                                  "fashion_mnist_model.h5")
     model = tf.keras.models.load_model(output_model_file)
-    # model.load_weights(output_model_file)
-    df = pd.read_csv(form["filePath"],header=0,nrows=1)
     print(preData)
-    dtypes = df.dtypes
+    headers = trainData['headers']
     res = []
-    for i in dtypes.keys():
-      typeString = str(dtypes[i])
-      name = str(i)
-      if name != form['target']:
-        if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
-          if trainData['onehots'][name]['maxValue'] < float(preData[name]):
-             res.append(float(1))
-          if trainData['onehots'][name]['minValue'] > float(preData[name]):
-             res.append(float(0)) 
-          if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
-             dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
-             res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis) 
+    for i in headers:
+      name = str(i['label'])
+      if i['type'] =='number':
+        if trainData['onehots'][name]['maxValue'] < float(preData[name]):
+            res.append(float(1))
+        if trainData['onehots'][name]['minValue'] > float(preData[name]):
+            res.append(float(0))
+        if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
+            dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
+            res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis)
+      else:
+        if preData[name] in trainData['onehots'][name]["grupMap"].keys():
+            res.append(trainData['onehots'][name]["grupMap"][preData[name]])
         else:
-          if preData[name] in trainData['onehots'][name]["grupMap"].keys():
-             res.append(trainData['onehots'][name]["grupMap"][preData[name]])
-          else:
-             res.append(0.0)
+            res.append(0.0)
     print(res)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
     print(trainData['group'])
     if len(trainData['group']) == 2:
-      res = {}
-      res[trainData['group'][1]] = float(predictions[0][0])
+      res = {
+        'learnType':'classification',
+        'type':'binary',
+        'dec':'二元分类',
+        'detail':{}
+      }
+      res['detail'][trainData['group'][1]] = float(predictions[0][0])
       return res
     elif len(trainData['group']) > 2:
       index = np.argmax(predictions[0])
+      group = trainData['group']
       print(np.argmax(predictions[0]))
       print(group[index])
       k = 0
       res = {
+        'learnType':'classification',
+        'type':'multivariate',
+        'dec':'多元分类',
         'max':group[index],
         'detail':{}
       }

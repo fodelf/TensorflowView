@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-30 23:29:01
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-13 19:41:09
+ * @LastEditTime: 2020-11-26 09:00:25
  -->
 <template>
   <div class="header">
@@ -54,7 +54,7 @@
         </div>  
         <div class="text item">
           <el-link style='margin-right:10px' type="primary" :underline="false" icon='el-icon-folder-add' @click="save(item)" >保存</el-link>
-          <el-link  type="primary" :underline="false" icon="el-icon-edit">编辑</el-link>
+          <!-- <el-link  type="primary" :underline="false" icon="el-icon-edit">编辑</el-link> -->
         </div>
       </el-card>
     </el-drawer>

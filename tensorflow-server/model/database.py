@@ -18,7 +18,7 @@ class DataBase(Base):
 class Request(Base):
     __tablename__ = 'request'
     id = Column(Integer, autoincrement=True, primary_key=True)
-    time = Column(DateTime,nullable=False, server_default=func.now())
+    time = Column(String,nullable=False, default= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     def to_json(self):
       dict = self.__dict__
       if "_sa_instance_state" in dict:
@@ -30,6 +30,7 @@ def createRequest():
     session = Session()
     session.add(request)
     session.commit()
+    session.close()
 
 
 

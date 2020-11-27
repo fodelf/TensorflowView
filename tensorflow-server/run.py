@@ -2,7 +2,7 @@ import random
 import string
 import time
 
-from flask import Flask, Response, flash, jsonify, redirect, request, url_for
+from flask import Flask, Response, flash, jsonify, redirect, request, url_for,render_template
 from flask_socketio import SocketIO, emit
 
 import model.base as dataBase
@@ -27,6 +27,11 @@ app.register_blueprint(home, url_prefix='/api/v1/home')
 app.register_blueprint(data, url_prefix='/api/v1/data')
 app.register_blueprint(model, url_prefix='/api/v1/model')
 app.register_blueprint(train, url_prefix='/api/v1/train')
+
+@app.route('/')
+def index():
+    return redirect('index.html')
+
 @socketio.on('mes', namespace='/mes')
 def handleMes(json):
     print('received json: ' + str(json))

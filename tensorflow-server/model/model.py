@@ -14,7 +14,7 @@ class Model(Base):
     formConfig = Column(String)
     loss = Column(Float)
     accuracy = Column(Float)
-    time = Column(DateTime,nullable=False, server_default=func.now())
+    time = Column(String,nullable=False, default= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     learnType = Column(String)
     mae = Column(Float)
     def to_json(self):
@@ -41,34 +41,39 @@ def saveModel(data):
     session = Session()
     session.add(model)
     session.commit()
+    session.close()
 
  # 查询同名模型共个数
 def queryModelByName(name):
     session =Session()
     sum = session.query(Model).filter(Model.modelName == name).count()
+    session.close()
     return sum
 
 # 查询模型状态
 def queryModel():
     session =Session()
     if session.query(Model).count()==0:
+        session.close()
         return ""
     else:
         sum = {}
         sum['best'] = session.query(Model).order_by(Model.loss.asc()).first().to_json()
         sum['bad'] = session.query(Model).order_by(Model.loss.desc()).first().to_json()
+        session.close()
         return sum
 
 # 查询模型状态
 def queryModelById(id):
     session =Session()
     modelObj = session.query(Model).filter(Model.modelId == id).first().to_json()
+    session.close()
     return modelObj
 
 # 根据模型列表
 def queryModelList(data):
     session = Session()
-    models = session.query(Model).filter(Model.learnType == data["learnType"]).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
+    models = session.query(Model).filter(Model.learnType == data["learnType"]).order_by(Model.id.desc()).limit(data["pageSize"]).offset((int(data["pageNo"])-1)*int(data["pageSize"]))
     total = session.query(Model).count()
     result = []
     for f in models:
@@ -77,6 +82,7 @@ def queryModelList(data):
       "total":total,
       "list":result
     }
+    session.close()
     return res
 
 # 删除训练
@@ -85,13 +91,15 @@ def deleteModelById(data):
     model = session.query(Model).filter(Model.modelId == data["modelId"]).first()
     session.delete(model)
     session.commit()
+    session.close()
 
 # 查询训练汇总
 def queryModelSum():
     session =Session()
-    total = session.query(Model).count()
+    # total = session.query(Model).count()
     regression = session.query(Model).filter(Model.learnType == 'regression').count()
     classification = session.query(Model).filter(Model.learnType == 'classification').count()
+    total = regression + classification
     res ={
       "total":total,
       "list":[
@@ -107,4 +115,5 @@ def queryModelSum():
         }
       ]
     }
+    session.close()
     return res

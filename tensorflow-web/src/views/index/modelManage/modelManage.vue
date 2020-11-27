@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-24 08:50:11
+ * @LastEditTime: 2020-11-24 12:41:43
 -->
 <template>
   <div class="projectManage">
@@ -49,7 +49,7 @@
             label="操作"
             width="160">
             <template slot-scope="scope">
-              <el-button type="primary" @click="handleWakeUp(scope.row)">调用</el-button>
+              <el-button type="primary" @click="modelAction(scope.row)">调用</el-button>
               <!-- <el-button type="primary" @click="handleCheck(scope.row)">下载</el-button> -->
               <!-- <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button> -->
               <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>

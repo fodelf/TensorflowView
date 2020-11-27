@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-06 08:36:51
+ * @LastEditTime: 2020-11-25 09:07:15
  */
 import {
   getDataType,
@@ -55,6 +55,18 @@ export default {
     }
   },
   methods:{
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'application/vnd.ms-excel' && file.name.indexOf('csv') >=0;
+      const isLt2M = file.size / 1024  < 500;
+
+      if (!isJPG) {
+        this.$message.error('上传文件只能是 csv 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传文件大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
     getFile(res){
       this.form.filePath = res.data.filePath
       this.form.fileName = res.data.fileName
@@ -74,11 +86,24 @@ export default {
       })
     },
     save() {
-      createData(this.form).then(res=>{
-        this.$router.push({
-          name:'dataManage'
-        })
-      })
+      if(!this.form.dataName || !this.form.filePath){
+        this.$message({
+          message: '数据名称和文件对象不能为空',
+          type: 'warning'
+        });
+        return
+      }
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          createData(this.form).then(res=>{
+            this.$router.push({
+              name:'dataManage'
+            })
+          })
+        } else {
+          return false;
+        }
+      });
     },
     initDetail() {
       let id = this.$route.query.id
