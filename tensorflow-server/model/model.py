@@ -14,7 +14,7 @@ class Model(Base):
     formConfig = Column(String)
     loss = Column(Float)
     accuracy = Column(Float)
-    time = Column(String,nullable=False, default= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    time = Column(String,nullable=False, default= gen_time)
     learnType = Column(String)
     mae = Column(Float)
     def to_json(self):

@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:29:31
 LastEditors: 吴文周
-LastEditTime: 2020-11-26 19:30:07
+LastEditTime: 2020-11-28 13:38:08
 '''
 from model.base import *
 
@@ -16,7 +16,7 @@ class Train(Base):
     dataName = Column(String)
     trainConfig = Column(String)
     dataId = Column(String)
-    time = Column(String,nullable=False, default= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    time = Column(String,nullable=False, default= gen_time)
     loss = Column(Float)
     accuracy = Column(Float)
     learnType= Column(String)

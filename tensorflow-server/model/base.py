@@ -17,7 +17,8 @@ engine = create_engine('sqlite:///tensorflow.db',
 Session = sessionmaker(bind=engine)
 def gen_id():
    return  str(uuid.uuid1())
-
+def gen_time():
+   return  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 from model.dataType import *
 from model.train import *

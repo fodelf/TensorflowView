@@ -4,7 +4,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:32:11
 LastEditors: 吴文周
-LastEditTime: 2020-11-25 17:04:28
+LastEditTime: 2020-11-28 13:41:02
 '''
 from model.base import *
 
@@ -17,7 +17,7 @@ class File(Base):
     fileName = Column(String)
     fileSize = Column(String)
     dataType = Column(String)
-    time = Column(String,nullable=False, default= datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    time = Column(String,nullable=False, default= gen_time)
     def to_json(self):
       dict = self.__dict__
       if "_sa_instance_state" in dict:
