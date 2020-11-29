@@ -3,13 +3,14 @@
  * @Author: pym
  * @Github: https://github.com/fodelf
  * @Date: 2020-04-06 16:39:24
- * @LastEditors: pym
- * @LastEditTime: 2020-09-06 19:48:37
+ * @LastEditors: 吴文周
+ * @LastEditTime: 2020-11-24 09:12:02
  -->
 <template>
   <div class="weather" :style="{background:isgood?'#01c0c8':'#fb9678'}">
     <div class="temperature">
-      <div class="value"><span>准确率：</span><span>{{systemStatus.accuracy.toFixed(4)}}</span></div>
+      <div class="value" v-if="systemStatus.learnType =='classification'"><span>准确率：</span><span>{{systemStatus.accuracy.toFixed(4)}}</span></div>
+      <div class="value" v-if="systemStatus.learnType =='regression'"><span>均误差：</span><span>{{systemStatus.mae.toFixed(4)}}</span></div>
       <div class="value"><span>损失值：</span><span>{{systemStatus.loss.toFixed(4)}}</span></div>
       <!-- <el-breadcrumb separator="/">
         <el-breadcrumb-item>总数</el-breadcrumb-item>
@@ -25,8 +26,9 @@
     <p v-if='isgood' class='title'>最优模型  {{systemStatus.modelName}}</p>
     <p v-if='!isgood' class='title'>最差模型  {{systemStatus.modelName}}</p>
     <div class="weatherBg">
-      <div class="iconfont" :class="isgood ? 'icon-taiyang-copy':'icon-ziyuan1'"></div>
-      <div class="weatherDate">{{dateFormat("YYYY/mm/dd",systemStatus.time)}}</div>
+      <!-- <div class="iconfont" :class="isgood ? 'icon-taiyang-copy':'icon-ziyuan1'"></div> -->
+      <div class="weatherDate"><span>问题类型：</span><span style="display: inline-block;width: 69px;text-align: end;">{{systemStatus.learnType =='classification'?"分类问题":"回归问题"}}</span></div>
+      <div class="weatherDate"><span>创建时间：</span><span>{{dateFormat("YYYY/mm/dd",systemStatus.time)}}</span></div>
     </div>
   </div>
 </template>
@@ -136,7 +138,7 @@ export default {
       width: 100%;
       justify-content: flex-end;
       color: #fff;
-      opacity: 0.5;
+      // opacity: 0.5;
     }
   }
   .value{

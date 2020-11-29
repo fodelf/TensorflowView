@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:41
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-03 19:25:26
+ * @LastEditTime: 2020-11-25 08:40:07
 -->
 <template>
   <el-form ref="form" :model="form" :rules='dataRules' :inline="true" class='projectAdd' label-width='150px' label-position="left" :disabled="$route.query.type=='check'">
@@ -32,6 +32,7 @@
           <el-upload
             class="upload-demo"
             action="/api/v1/data/upload"
+            :before-upload="beforeAvatarUpload"
             accept="csv"
             :limit="1"
             :multiple="false"
@@ -40,6 +41,7 @@
             <el-button size="small" type="primary" class="el-icon-plus"
               >点击上传</el-button
             >
+            <div slot="tip" class="el-upload__tip">只能上传csv文件，且不超过500kb</div>
           </el-upload>
         </el-form-item>
       </el-col>

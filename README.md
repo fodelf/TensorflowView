@@ -1,7 +1,6 @@
-# Tensorflow View,一个基于tensorflow的可是化平台
+# Tensorflow View,一个基于tensorflow的可视化平台
 ### 说明
 Tensorflow View（一个开箱即用的机器学习工具），降低机器学习门槛，使得开发者只需要关注数据源，切换配置项就可训练模型提供给自己使用。
-* 重要:南京前端-吴文周-周末兼职（18651892475）
 * PS:此项目基于flask和Vue开发本人负责需求分析，项目设计，日常开发
 * 前后端端代码开源持续更新。
 
@@ -13,7 +12,9 @@ Tensorflow View（一个开箱即用的机器学习工具），降低机器学�
 
 * 低保真设计 https://modao.cc/app/a31abb9e17a47fdb23f4cfd4079a061927c39733#screen=skgftuhgblfuszv
 
-* 掘金文档地址 
+* 掘金文档地址 https://juejin.cn/post/6900019675183185928
+
+* 体验地址 http://www.wuwenzhou.com.cn:9567/index.html#/home
 
 ## 使用
 
@@ -24,12 +25,14 @@ Tensorflow View（一个开箱即用的机器学习工具），降低机器学�
 
 1. web功能
 
-   - [ ] 首页
-   - [ ] 数据源管理
-   - [ ] 模型管理
+   - [x] 首页
+   - [x] 数据管理
+   - [x] 训练管理
+   - [x] 模型管理
 2. 服务端功能
 
    - [x] 基础功能
+   - [ ] 多种数据库支持
    - [ ] 分布式
 
 #### 技术栈（当前）
@@ -57,5 +60,6 @@ npm run serve
 
 ```
 cd  tensorflow-server
+python run.py
 ```
 

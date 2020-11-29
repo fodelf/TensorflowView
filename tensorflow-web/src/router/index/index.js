@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2019-06-05 18:57:53
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-16 09:07:55
+ * @LastEditTime: 2020-11-24 12:43:20
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -12,6 +12,7 @@ import MainLayout from '@/views/layout/Layout.vue'
 const Home = () => import('@/views/index/home/Home.vue')
 const DataManage = () => import('@/views/index/dataManage/dataManage.vue')
 const ModelManage = () => import('@/views/index/modelManage/modelManage.vue')
+const ModelAction = () => import('@/views/index/modelManage/modelAction/modelAction.vue')
 const TrainManage = () => import('@/views/index/trainManage/trainManage.vue')
 const ModelAdd = () =>  import('@/views/index/trainManage/trainAdd/trainAdd.vue')
 // const ProjectInit = () =>
@@ -83,6 +84,14 @@ const vueRouter = new Router({
             title: '模型列表'
           }
         },
+        {
+          path: 'modelAction',
+          component: ModelAction,
+          name: 'modelAction',
+          meta: {
+            title: '模型调用'
+          }
+        }
       ]
     },
     {

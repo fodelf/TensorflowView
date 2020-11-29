@@ -6,7 +6,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-17 09:29:31
 LastEditors: 吴文周
-LastEditTime: 2020-11-23 20:15:38
+LastEditTime: 2020-11-28 13:38:08
 '''
 from model.base import *
 
@@ -18,7 +18,7 @@ class Train(Base):
     dataName = Column(String)
     trainConfig = Column(String)
     dataId = Column(String)
-    time = Column(DateTime,nullable=False, server_default=func.now())
+    time = Column(String,nullable=False, default= gen_time)
     loss = Column(Float)
     accuracy = Column(Float)
     learnType= Column(String)
@@ -31,18 +31,38 @@ class Train(Base):
 
 # 新建训练
 def createTrain(data):
-    train = Train(trainConfig=json.dumps(data["trainConfig"], indent=2),
-                dataName=data["dataName"],
-                dataId=str(data["dataId"]),
-                loss = float(data["loss"]),
-                trainName=str(data["trainName"]),
-                accuracy = float(data["accuracy"]),
-                learnType=str(data["learnType"]),
-                mae = float(data["mae"]),
-          )
+    # train = Train(trainConfig=json.dumps(data["trainConfig"], indent=2),
+    #             dataName=data["dataName"],
+    #             dataId=str(data["dataId"]),
+    #             loss = float(data["loss"]),
+    #             trainName=str(data["trainName"]),
+    #             accuracy = float(data["accuracy"]),
+    #             learnType=str(data["learnType"]),
+    #             mae = float(data["mae"]),
+    #       )
+    session = Session()
+    session.query(Train).filter(Train.trainName==data["trainName"]).update(
+      {
+      Train.trainConfig:json.dumps(data["trainConfig"], indent=2),
+      Train.dataName:data["dataName"],
+      Train.dataId:str(data["dataId"]),
+      Train.loss:float(data["loss"]),
+      Train.trainName:str(data["trainName"]),
+      Train.accuracy:float(data["accuracy"]),
+      Train.learnType:str(data["learnType"]),
+      Train.mae :float(data["mae"]),
+      }
+    )
+    session.commit()
+    session.close()
+
+# 新建训练
+def createNewTrain(data):
+    train = Train(trainName=data["trainName"])
     session = Session()
     session.add(train)
     session.commit()
+    session.close()
 
 # 查询训练列表
 def queryTrainList(data):
@@ -58,6 +78,7 @@ def queryTrainList(data):
       "list":result,
       "total":total
     }
+    session.close()
     return res
 
 # 根据id查询训练集
@@ -67,6 +88,7 @@ def queryTrainById(data):
     result = []
     for f in tarins:
         result.append(f.to_json())
+    session.close()
     return result
 
 # 训练趋势统计
@@ -77,18 +99,21 @@ def queryTrainCount():
     # result = []
     # for f in tarins:
     #     result.append(json.dumps(f))
+    session.close()
     return tarins
 
 # 查询训练名称是否重复
 def queryTrainByName(name):
     session =Session()
     sum = session.query(Train).filter(Train.trainName == name).count()
+    session.close()
     return sum
 
 # 根据id查询训练对象
 def queryTrainByTrainId(data):
     session = Session()
     train = session.query(Train).filter(Train.trainId ==data["trainId"]).first()
+    session.close()
     return train.to_json()
 
 # 删除训练
@@ -97,13 +122,15 @@ def deleteTrainById(data):
     train = session.query(Train).filter(Train.trainId == data["trainId"]).first()
     session.delete(train)
     session.commit()
+    session.close()
 
 # 查询训练汇总
 def queryTrainSum():
     session =Session()
-    total = session.query(Train).count()
+    # total = session.query(Train).count()
     regression = session.query(Train).filter(Train.learnType == 'regression').count()
     classification = session.query(Train).filter(Train.learnType == 'classification').count()
+    total = regression + classification
     res ={
       "total":total,
       "list":[
@@ -119,4 +146,5 @@ def queryTrainSum():
         }
       ]
     }
+    session.close()
     return res

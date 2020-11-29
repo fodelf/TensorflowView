@@ -41,8 +41,8 @@ def plot_learning_curves(history):
     plt.rcParams['font.sans-serif']=['SimHei']
     plt.rcParams['axes.unicode_minus']=False
     plt.figure()
-    plt.xlabel('Epoch')
-    plt.ylabel('Mean Abs Error [Value]')
+    plt.xlabel('训练次数')
+    plt.ylabel('指标值')
     plt.plot(hist['epoch'], hist['mae'],
             label='Train Error')
     plt.plot(hist['epoch'], hist['val_mae'],
@@ -74,6 +74,28 @@ def norm(x,train_stats):
     return (x - train_stats['mean']) / train_stats['std']
 
 def train(data,socketio):
+    df1 = pd.read_csv(data["filePath"],header=0,nrows=1)
+    dtypes = df1.dtypes
+    demoData = {}
+    trainHeaders= []
+    targetValue =''
+    k = 0
+    for i in dtypes.keys():
+      if str(i) != data['target']:
+        typeString = str(dtypes[i])
+        if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
+            typeString ='number'
+        if str(dtypes[i]) =="object":
+            typeString ='text'
+        child= {
+          "label":str(i),
+          "type":typeString
+        }
+        trainHeaders.append(child)
+        demoData[str(i)] = df1.values[0][k]
+      else:
+        targetValue = df1.values[0][k]
+      k = k+1
     df = pd.read_csv(data["filePath"])
     count = len(df)
     train_sum = round(count*0.8)
@@ -196,6 +218,9 @@ def train(data,socketio):
     print("Testing set Mean Abs Error: {:5.2f} ".format(mae))
     res = {}
     print(onehots)
+    res['targetValue'] = targetValue
+    res['headers'] = trainHeaders
+    res['demoData'] = demoData
     res["onehots"] = onehots
     res["group"] = targetGroup
     res["test"] = {
@@ -228,20 +253,29 @@ def train(data,socketio):
     socketio.emit('train','',namespace='/mes')
 
 def getParam(data):
-    df = pd.read_csv(data["filePath"],header=0,nrows=1)
-    dtypes = df.dtypes
+    modelId = d["modelId"]
+    modelObj = database.queryModelById(modelId)
+    data = modelObj['formConfig']
+    trainData = modelObj['formConfig']
     res = {
-      'param':{},
-      "target":''
+      'param':trainData['demoData'],
+      "target":data["target"]
     }
-    k = 0
-    for i in dtypes.keys():
-      if str(i) != data["target"]:
-        res['param'][str(i)] = df.values[0][k]
-        k = k + 1
-      else:
-        res['target'] = df.values[0][k]
     return res
+    # df = pd.read_csv(data["filePath"],header=0,nrows=1)
+    # dtypes = df.dtypes
+    # res = {
+    #   'param':{},
+    #   "target":''
+    # }
+    # k = 0
+    # for i in dtypes.keys():
+    #   if str(i) != data["target"]:
+    #     res['param'][str(i)] = df.values[0][k]
+    #     k = k + 1
+    #   else:
+    #     res['target'] = df.values[0][k]
+    # return res
 # 预训练数据
 def preTrain(data):
     form = data["form"]
@@ -253,26 +287,23 @@ def preTrain(data):
                                  "fashion_mnist_model.h5")
     model = tf.keras.models.load_model(output_model_file)
     # model.load_weights(output_model_file)
-    df = pd.read_csv(form["filePath"],header=0,nrows=1)
-    dtypes = df.dtypes
+    headers = trainData['headers']
     res = []
-    for i in dtypes.keys():
-      typeString = str(dtypes[i])
-      name = str(i)
-      if name != form['target']:
-        if 'int' in str(dtypes[i]) or  'float' in str(dtypes[i]):
-          if trainData['onehots'][name]['maxValue'] < float(preData[name]):
-             res.append(float(1))
-          if trainData['onehots'][name]['minValue'] > float(preData[name]):
-             res.append(float(0)) 
-          if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
-             dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
-             res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis) 
+    for i in headers:
+      name = str(i['label'])
+      if i['type'] =='number':
+        if trainData['onehots'][name]['maxValue'] < float(preData[name]):
+            res.append(float(1))
+        if trainData['onehots'][name]['minValue'] > float(preData[name]):
+            res.append(float(0))
+        if trainData['onehots'][name]['maxValue'] >= float(preData[name]) and trainData['onehots'][name]['minValue'] <= float(preData[name]): 
+            dis = trainData['onehots'][name]['maxValue'] - trainData['onehots'][name]['minValue']
+            res.append((preData[name] - trainData['onehots'][name]['minValue'])/dis)
+      else:
+        if preData[name] in trainData['onehots'][name]["grupMap"].keys():
+            res.append(trainData['onehots'][name]["grupMap"][preData[name]])
         else:
-          if preData[name] in trainData['onehots'][name]["grupMap"].keys():
-             res.append(trainData['onehots'][name]["grupMap"][preData[name]])
-          else:
-             res.append(0.0)
+            res.append(0.0)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
     # index = np.argmax(predictions[0])
@@ -284,6 +315,7 @@ def preTrain(data):
     # return group[index]
 # 预训练数据
 def trainOnline(data):
+    database.createRequest()
     modelId = data["modelId"]
     preData = data["trainData"]
     modelObj = database.queryModelById(modelId)
@@ -318,5 +350,19 @@ def trainOnline(data):
     print(res)
     predictions = model.predict(np.array([(res)]))
     print(predictions)
-    # print("Predicted survival: {:.2%}".format(predictions[0][0]))
-    return  float(predictions[0][0])
+    res =''
+    if len(trainData['group']) == 1:
+      res = {
+        'learnType':'regression',
+        'type':'simple',
+        'dec':'一元回归',
+        'detail':float(predictions[0][0])
+      }
+    else:
+      res = {
+        'learnType':'regression',
+        'type':'multivariate',
+        'dec':'多元回归',
+        'detail':float(predictions[0][0])
+      }
+    return  res

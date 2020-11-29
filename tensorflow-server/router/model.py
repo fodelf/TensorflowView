@@ -46,7 +46,7 @@ def trainOnline():
     data = request_parse(request)
     res =''
     modelObj = dataBase.queryModelById(data["modelId"])
-    form =json.loads(modelObj["formConfig"])
+    form = json.loads(modelObj["formConfig"])
     if modelObj['learnType'] == 'classification':
       res = service.utils.trainOnline(data)
     else:
@@ -113,5 +113,17 @@ def deleteModelById():
         'code': code,
         'msg': msg,
         'data':'ok'
+    }
+    return jsonify(t)
+
+# 查询汇总
+@model.route('/queryModelSum')
+def queryModelSum():
+    data = request_parse(request)
+    res =  dataBase.queryModelSum()
+    t = {
+        'code': code,
+        'msg': msg,
+        'data':res
     }
     return jsonify(t)

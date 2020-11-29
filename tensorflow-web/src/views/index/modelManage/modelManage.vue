@@ -4,10 +4,14 @@
  * @Author: pym
  * @Date: 2020-09-06 15:27:04
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 20:31:25
+ * @LastEditTime: 2020-11-24 12:41:43
 -->
 <template>
   <div class="projectManage">
+    <div class="leftMenu">
+      <!--左侧列表组件-->
+      <menuList :menuObj="menuObj" @clickMenu="selectMenu"></menuList>
+    </div>
     <div class="rightList">
       <p class="rightTit clearfix">
         <!-- <el-button type="primary" icon="el-icon-plus" @click="addPro"
@@ -30,8 +34,8 @@
             >
           </el-table-column>
           <el-table-column
-            prop="accuracy"
-            label="准确率">
+            :prop="dataProp"
+            :label="label">
           </el-table-column>
           <el-table-column
             prop="loss"
@@ -45,7 +49,7 @@
             label="操作"
             width="160">
             <template slot-scope="scope">
-              <el-button type="primary" @click="handleWakeUp(scope.row)">调用</el-button>
+              <el-button type="primary" @click="modelAction(scope.row)">调用</el-button>
               <!-- <el-button type="primary" @click="handleCheck(scope.row)">下载</el-button> -->
               <!-- <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button> -->
               <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
@@ -65,7 +69,7 @@
         </el-pagination>
       </div>
     </div>
-    <el-dialog :title="itemObj.modelName" :visible.sync="dialogTableVisible">
+    <el-dialog :title="itemObj.modelName" :close-on-click-modal ="false" :visible.sync="dialogTableVisible">
       <scriptCard :itemObj='itemObj' @cancle ='cancle()'></scriptCard>
     </el-dialog>
   </div>

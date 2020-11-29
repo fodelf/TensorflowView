@@ -18,4 +18,5 @@ def getDataTypes():
     result = []
     for dataType in dataTypes:
         result.append(dataType.to_json())
+    session.close()
     return result

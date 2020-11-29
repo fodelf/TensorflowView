@@ -6,7 +6,7 @@ Author: 吴文周
 Github: http://gitlab.yzf.net/wuwenzhou
 Date: 2020-11-18 19:22:43
 LastEditors: 吴文周
-LastEditTime: 2020-11-23 20:05:56
+LastEditTime: 2020-11-24 20:43:49
 '''
 from router.common import *
 import  threading
@@ -46,6 +46,7 @@ def trainAction():
         'data':"error"
         }
         return jsonify(t)
+    dataBase.createNewTrain(data)
     thead_one = threading.Thread(target=thead, args=(data,))
     thead_one.start()
     t = {

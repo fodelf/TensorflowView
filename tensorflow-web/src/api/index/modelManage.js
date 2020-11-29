@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-21 22:21:31
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-20 08:39:18
+ * @LastEditTime: 2020-11-24 08:45:05
  */
 import request from '@/utils/request'
 
@@ -81,5 +81,13 @@ export function deleteModelById(params) {
     url: '/api/v1/model/deleteModelById',
     method: 'POST',
     params: params
+  })
+}
+
+export function queryModelSum(params) {
+  return request({
+    url: '/api/v1/model/queryModelSum',
+    method: 'GET',
+    params:params
   })
 }

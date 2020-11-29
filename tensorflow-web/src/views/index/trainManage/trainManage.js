@@ -4,7 +4,7 @@
  * @Github: https://github.com/fodelf
  * @Date: 2020-03-16 21:55:11
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-23 20:23:47
+ * @LastEditTime: 2020-11-24 21:53:20
  */
 import{queryTrainList,deleteTrain,queryTrainSum} from "@/api/index/trainManage"
 import{dateFormat} from "@/utils/index"
@@ -73,6 +73,7 @@ export default {
               message: '删除成功'
             })
             this.tablePag.pageNo = 1;
+            this.queryTrainSum()
             this.queryTrainList();
           })
         })
@@ -126,11 +127,13 @@ export default {
         })
       })
     },
-    queryTrainSum(){
+    queryTrainSum(flag) {
       queryTrainSum().then((res) =>{
         this.menuObj.total = res.total
         this.menuObj.menuList = res.list
-        this.menuObj.active ='classification'
+        if(flag){
+          this.menuObj.active ='classification'
+        }
       })
     },
     selectMenu(item){
@@ -147,7 +150,7 @@ export default {
     }
   },
   mounted() {
-    this.queryTrainSum()
+    this.queryTrainSum(true)
     this.queryTrainList()
   }
 }

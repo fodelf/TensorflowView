@@ -8,11 +8,13 @@
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "node clear.js && vue-cli-service build",
+    "devBuild": "vue-cli-service build && node copy.js",
+    "build": "vue-cli-service build && node upload.js && node copy.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@vue/cli": "^4.5.6",
+    "ali-oss": "^6.11.2",
     "amqplib": "^0.6.0",
     "connect-multiparty": "^2.2.0",
     "ding-robot": "^1.0.0",
@@ -38,6 +40,7 @@
     "@vue/cli-plugin-babel": "^4.2.0",
     "@vue/cli-plugin-eslint": "^4.2.0",
     "@vue/cli-service": "^4.2.0",
+    "ali-oss-publish": "^0.4.0",
     "axios": "^0.19.2",
     "babel-eslint": "^10.0.3",
     "core-js": "^3.6.4",
