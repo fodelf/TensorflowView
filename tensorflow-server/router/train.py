@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 '''
 Description: 描述
 Author: 吴文周

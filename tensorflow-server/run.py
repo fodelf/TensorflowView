@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 import random
 import string
 import time
@@ -38,7 +40,19 @@ def test_connect():
 @socketio.on('disconnect', namespace='/mes')
 def test_disconnect():
     print('Client disconnected')
+from werkzeug.exceptions import HTTPException
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
+    res = {
+        'code': 500,
+        'msg': '服务端异常',
+        'data':""
+    }
+    return jsonify(res)
 if __name__ == '__main__':
     socketio.run(app,port=9567,debug=True)
     # app.run(debug=True,
