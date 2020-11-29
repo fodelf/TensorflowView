@@ -26,7 +26,7 @@ from model.dataType import *
 from model.train import *
 from model.model import *
 
-from model.dataBase import *
+from model.database import *
 from model.file import *
 from model.message import *
 
