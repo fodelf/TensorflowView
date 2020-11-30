@@ -161,9 +161,12 @@ def train(data,socketio):
     normed_test_data = test_dataset #对测试集进行归一化
 
     model = get_compiled_model(headers,targetGroup)
-    logdir = './dnn-selu-dropout-callbacks/'+ str(data["id"])+"/"+str(data["trainName"])
+    logdir = './dnn-selu-dropout-callbacks/'+ str(data["id"])
     if not os.path.exists(logdir):
-        os.mkdir(logdir)
+      os.mkdir(logdir)
+    logdir = logdir +"/"+str(data["trainName"])
+    if not os.path.exists(logdir):
+      os.mkdir(logdir)
     output_model_file = os.path.join(logdir,
                                  "fashion_mnist_model.h5")
 

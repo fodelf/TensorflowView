@@ -4,7 +4,7 @@
  * @Author: pym
  * @Date: 2020-09-06 15:56:49
  * @LastEditors: 吴文周
- * @LastEditTime: 2020-11-25 09:07:57
+ * @LastEditTime: 2020-11-30 09:02:36
  */
 import {
   getDataAll,
@@ -104,6 +104,16 @@ export default {
     }
   },
   methods:{
+    handleChangeDataType(){
+      let select = this.serverList.filter((item)=>{
+        return item.dataId == this.form.dataId;
+      })
+      this.form.dataId = select[0]['dataId']
+      this.form.id = select[0]['id']
+      this.form.filePath = select[0]['filePath']
+      this.form.dataName = select[0]['dataName']
+      this.parseHeader()
+    },
     getFile(res){
       this.form.filePath = res
     },
@@ -139,6 +149,7 @@ export default {
       })
     },
     parseHeader(flag){
+      this.headerList =[]
       try {
         parseHeader({filePath:this.form.filePath}).then(res=>{
           let lineOne = {"index":"源数据"};
@@ -160,6 +171,7 @@ export default {
             this.preHeadList = headerList.filter(item=>item.name !== this.form.target&&item.name !== '首列')
             this.preDataList = [preLineOne]
           }
+          this.$forceUpdate()
         })
       } catch (error) {}
     },

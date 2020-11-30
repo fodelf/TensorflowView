@@ -394,9 +394,12 @@ def train(data,socketio):
     # test_ds = test_dataset.shuffle(round(len(test)*0.8)).batch(batch_size)
     # val_ds = val_dataset.shuffle(round(len(val)*0.8)).batch(batch_size)
     model = get_compiled_model(headers,targetGroup,int(data["number"]))
-    logdir = './dnn-selu-dropout-callbacks/'+ str(data["id"])+"/"+str(data["trainName"])
+    logdir = './dnn-selu-dropout-callbacks/'+ str(data["id"])
     if not os.path.exists(logdir):
-        os.mkdir(logdir)
+      os.mkdir(logdir)
+    logdir = logdir +"/"+str(data["trainName"])
+    if not os.path.exists(logdir):
+      os.mkdir(logdir)
     output_model_file = os.path.join(logdir,
                                  "fashion_mnist_model.h5")
 
